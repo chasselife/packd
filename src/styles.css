@@ -65,6 +65,6 @@ body {
   width: 100%;
 }
 
-.mat-mdc-dialog-title::before {
+.full-screen-dialog .mat-mdc-dialog-title::before {
   display: none !important;
 }

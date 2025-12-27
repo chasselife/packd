@@ -30,13 +30,13 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
           transform: rotate(0deg);
         }
         25% {
-          transform: rotate(-1.5deg);
+          transform: rotate(-1deg);
         }
         50% {
-          transform: rotate(1.5deg);
+          transform: rotate(1deg);
         }
         75% {
-          transform: rotate(-0.75deg);
+          transform: rotate(-0.5deg);
         }
       }
 
