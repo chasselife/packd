@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Create New Checklist</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter checklist title" />
+      @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+      <mat-error>Title is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Icon</mat-label>
+      <mat-select formControlName="icon">
+        <mat-select-trigger>
+          @if (getSelectedIcon(); as selectedIcon) {
+          <div class="flex items-center gap-2">
+            <mat-icon>{{ selectedIcon.value }}</mat-icon>
+            <span>{{ selectedIcon.label }}</span>
+          </div>
+          }
+        </mat-select-trigger>
+        @for (icon of icons; track icon.value) {
+        <mat-option [value]="icon.value">
+          <div class="flex items-center gap-2">
+            <mat-icon>{{ icon.value }}</mat-icon>
+            <span>{{ icon.label }}</span>
+          </div>
+        </mat-option>
+        }
+      </mat-select>
+      @if (form.get('icon')?.hasError('required') && form.get('icon')?.touched) {
+      <mat-error>Icon is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <div class="mb-4 mr-4">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="!form.valid">
+      Create
+    </button>
+  </div>
+</mat-dialog-actions>

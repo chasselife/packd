@@ -1,0 +1,90 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Define a custom primary color palette
+$custom-primary: (
+  50: #e8f5ed,
+  100: #c5e6d3,
+  200: #9ed5b6,
+  300: #77c499,
+  400: #5ab884,
+  500: #53b87d, // Main primary color
+  600: #4ca770,
+  700: #429d62,
+  800: #389354,
+  900: #2a7f3e,
+  A100: #d4ffdf,
+  A200: #a1ffb8,
+  A400: #6eff91,
+  A700: #55ff7f,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: white,
+  ),
+);
+
+// Define a custom accent color palette (using a complementary color)
+$custom-accent: (
+  50: #fce4ec,
+  100: #f8bbd0,
+  200: #f48fb1,
+  300: #f06292,
+  400: #ec407a,
+  500: #e91e63,
+  600: #d81b60,
+  700: #c2185b,
+  800: #ad1457,
+  900: #880e4f,
+  A100: #ff80ab,
+  A200: #ff4081,
+  A400: #f50057,
+  A700: #c51162,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
+  ),
+);
+
+// Create the theme using m2- prefixed functions for Angular Material 18+
+$custom-theme-primary: mat.m2-define-palette($custom-primary);
+$custom-theme-accent: mat.m2-define-palette($custom-accent);
+$custom-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$custom-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $custom-theme-primary,
+      accent: $custom-theme-accent,
+      warn: $custom-theme-warn,
+    ),
+  )
+);
+
+// Include the theme styles
+@include mat.all-component-themes($custom-theme);
+
