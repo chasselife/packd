@@ -1,6 +1,8 @@
 <div class="max-w-6xl mx-auto p-8 md:p-4">
-  <h1 class="text-4xl md:text-3xl font-semibold text-gray-800 mb-8 font-sans flex gap-1">
-    <img src="icons/icon-128x128.png" alt="Pack for Camp" />Pack for Camp
+  <h1
+    class="text-4xl md:text-3xl font-semibold text-gray-800 mb-12 font-sans flex gap-4 items-center"
+  >
+    <img class="w-12 h-12" src="logo.svg" alt="Pack for Camp" />Pack for Camp
   </h1>
 
   @if (isLoading()) {
@@ -11,18 +13,18 @@
     <p class="text-lg m-0">No checklists yet. Create your first checklist to get started!</p>
   </div>
   } @else {
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4">
+  <div class="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-4">
     @for (checklist of checklists(); track checklist.id) {
     <div
-      class="bg-white rounded-xl p-8 md:p-6 shadow-md cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[180px] md:min-h-[150px] border-2 border-transparent hover:-translate-y-1 hover:shadow-lg hover:border-blue-600"
+      class="bg-linear-to-b from-emerald-50 to-white border-emerald-700 border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] hover:-translate-y-1 text-emerald-700"
       (click)="onChecklistClick(checklist)"
     >
-      <div class="mb-4">
-        <mat-icon class="text-5xl w-12 h-12 text-blue-600">
+      <div class="mb-1">
+        <mat-icon class="text-5xl w-12 h-12">
           {{ checklist.icon || 'checklist' }}
         </mat-icon>
       </div>
-      <div class="text-xl font-medium text-gray-800 text-center break-words">
+      <div class="text-lg font-medium text-center wrap-break-word">
         {{ checklist.title }}
       </div>
     </div>
