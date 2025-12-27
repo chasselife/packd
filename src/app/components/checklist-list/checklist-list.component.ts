@@ -90,15 +90,13 @@ export class ChecklistListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         try {
-          const checklistId = await this.databaseService.createChecklist({
+          await this.databaseService.createChecklist({
             title: result.title,
             icon: result.icon,
             color: result.color,
           });
           // Reload checklists to show the new one
           await this.loadChecklists();
-          // Navigate to the new checklist
-          this.router.navigate(['/checklist', checklistId]);
         } catch (error) {
           console.error('Error creating checklist:', error);
         }
@@ -252,8 +250,6 @@ export class ChecklistListComponent implements OnInit {
 
             // Reload checklists to show the new one
             await this.loadChecklists();
-            // Navigate to the duplicated checklist
-            this.router.navigate(['/checklist', newChecklistId]);
           } catch (error) {
             console.error('Error duplicating checklist:', error);
           }
