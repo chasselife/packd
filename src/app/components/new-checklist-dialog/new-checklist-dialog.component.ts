@@ -27,10 +27,14 @@ import { Checklist } from '../../models/checklist.model';
 export class NewChecklistDialogComponent {
   private fb = inject(FormBuilder);
   public dialogRef = inject(MatDialogRef<NewChecklistDialogComponent>);
-  private dialogData = inject<{ checklist?: Checklist }>(MAT_DIALOG_DATA, { optional: true });
+  public dialogData = inject<{ checklist?: Checklist; isDuplicate?: boolean; items?: any[] }>(
+    MAT_DIALOG_DATA,
+    { optional: true }
+  );
 
   form: FormGroup;
   isEditMode = false;
+  isDuplicateMode = false;
 
   // Popular Material Icons for checklists
   icons = [
@@ -140,10 +144,15 @@ export class NewChecklistDialogComponent {
 
   constructor() {
     const checklist = this.dialogData?.checklist;
-    this.isEditMode = !!checklist;
+    this.isDuplicateMode = !!this.dialogData?.isDuplicate;
+    this.isEditMode = !!checklist && !this.isDuplicateMode;
+
+    // Automatically append "Copy" to the title in duplicate mode
+    const title =
+      this.isDuplicateMode && checklist?.title ? `${checklist.title} Copy` : checklist?.title || '';
 
     this.form = this.fb.group({
-      title: [checklist?.title || '', [Validators.required, Validators.minLength(1)]],
+      title: [title, [Validators.required, Validators.minLength(1)]],
       icon: [checklist?.icon || 'checklist', Validators.required],
       color: [checklist?.color || this.colorOptions[0].value, Validators.required],
     });

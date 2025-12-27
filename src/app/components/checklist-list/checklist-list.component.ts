@@ -154,6 +154,11 @@ export class ChecklistListComponent implements OnInit {
     this.openDeleteChecklistDialog(checklist);
   }
 
+  onDuplicateClick(checklist: Checklist, event: Event): void {
+    event.stopPropagation();
+    this.openDuplicateChecklistDialog(checklist);
+  }
+
   openEditChecklistDialog(checklist: Checklist): void {
     const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
       width: '100vw',
@@ -203,6 +208,60 @@ export class ChecklistListComponent implements OnInit {
         }
       }
     });
+  }
+
+  async openDuplicateChecklistDialog(checklist: Checklist): Promise<void> {
+    if (!checklist.id) return;
+
+    try {
+      // Get all items for the checklist
+      const items = await this.databaseService.getChecklistItems(checklist.id);
+
+      // Open the dialog in duplicate mode
+      const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
+        width: '100vw',
+        height: '100vh',
+        maxWidth: '100vw',
+        maxHeight: '100vh',
+        data: { checklist, isDuplicate: true, items },
+      });
+
+      dialogRef.afterClosed().subscribe(async (result) => {
+        if (result) {
+          try {
+            // Create the duplicated checklist
+            const newChecklistId = await this.databaseService.createChecklist({
+              title: result.title,
+              icon: result.icon,
+              color: result.color,
+            });
+
+            // Duplicate all items
+            if (items.length > 0) {
+              for (const item of items) {
+                await this.databaseService.createChecklistItem({
+                  checklistId: newChecklistId,
+                  title: item.title,
+                  description: item.description || '',
+                  icon: item.icon || '',
+                  isDone: false, // Reset isDone for duplicated items
+                  sortOrder: item.sortOrder,
+                });
+              }
+            }
+
+            // Reload checklists to show the new one
+            await this.loadChecklists();
+            // Navigate to the duplicated checklist
+            this.router.navigate(['/checklist', newChecklistId]);
+          } catch (error) {
+            console.error('Error duplicating checklist:', error);
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error loading checklist items for duplication:', error);
+    }
   }
 
   onDrop(event: CdkDragDrop<Checklist[]>): void {

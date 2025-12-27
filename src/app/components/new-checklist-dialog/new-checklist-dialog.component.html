@@ -1,5 +1,6 @@
 <h2 mat-dialog-title class="text-xl! font-semibold! text-center py-4! border-b border-neutral-200">
-  {{ isEditMode ? 'Edit Checklist' : 'Create New Checklist' }}
+  @if (isDuplicateMode) { Duplicate {{ dialogData?.checklist?.title || 'Checklist' }}
+  } @else if (isEditMode) { Edit Checklist } @else { Create New Checklist }
 </h2>
 
 <mat-dialog-content class="max-h-full! flex-1 flex flex-col content-center">

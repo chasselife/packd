@@ -79,20 +79,36 @@
       <div class="flex-1"></div>
 
       @if (isEditMode()) {
-      <!-- Edit button -->
-      <button
-        mat-button
-        class="pr-4! bg-white/50! rounded-lg! mt-3 h-8! text-sm! md:text-base!"
-        (click)="onEditClick(checklist, $event)"
-        [class]="
-          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-        "
-        [style.color]="checklist?.color || undefined"
-        aria-label="Edit checklist"
-      >
-        <mat-icon>edit</mat-icon>
-        Edit
-      </button>
+      <div class="flex flex-col gap-2 mt-3">
+        <!-- Edit button -->
+        <button
+          mat-button
+          class="pr-4! bg-white/50! rounded-lg! h-8! text-sm! md:text-base!"
+          (click)="onEditClick(checklist, $event)"
+          [class]="
+            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
+          "
+          [style.color]="checklist?.color || undefined"
+          aria-label="Edit checklist"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <!-- Duplicate button -->
+        <button
+          mat-button
+          class="pr-4! bg-white/50! rounded-lg! h-8! text-sm! md:text-base!"
+          (click)="onDuplicateClick(checklist, $event)"
+          [class]="
+            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
+          "
+          [style.color]="checklist?.color || undefined"
+          aria-label="Duplicate checklist"
+        >
+          <mat-icon>content_copy</mat-icon>
+          Duplicate
+        </button>
+      </div>
       }
     </div>
     }
