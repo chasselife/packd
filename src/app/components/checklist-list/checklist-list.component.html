@@ -28,13 +28,23 @@
     </button>
   </div>
   }
-  <div class="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-4 px-4 mt-4">
+  <div
+    class="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-4 px-4 mt-4"
+    cdkDropList
+    cdkDropListOrientation="mixed"
+    (cdkDropListDropped)="onDrop($event)"
+    [cdkDropListDisabled]="!isEditMode()"
+  >
     @for (checklist of checklists(); track checklist.id) { @let colorClasses =
     getColorClasses(checklist.color);
     <div
-      class="rounded-xl p-6 transition-all duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] relative hover:-translate-y-1 backdrop-blur-sm"
+      cdkDrag
+      [cdkDragDisabled]="!isEditMode()"
+      class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] relative backdrop-blur-sm"
+      [class.no-hover]="isEditMode()"
       [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass"
       [class.cursor-pointer]="!isEditMode()"
+      [class.cursor-move]="isEditMode()"
       (click)="!isEditMode() && onChecklistClick(checklist)"
       (mousedown)="onTileMouseDown(checklist, $event)"
       (mouseup)="onTileMouseUp($event)"
@@ -44,6 +54,12 @@
       (touchcancel)="onTileMouseLeave()"
     >
       @if (isEditMode()) {
+      <!-- Drag handle - top left corner -->
+      <div class="absolute top-2 left-2 text-gray-400 cursor-move z-10">
+        <mat-icon class="text-2xl!" [style.color]="checklist?.color || undefined"
+          >drag_indicator</mat-icon
+        >
+      </div>
       <!-- Delete button - top right corner with red circular background -->
       <button
         mat-icon-button
@@ -70,7 +86,7 @@
       <!-- Edit button -->
       <button
         mat-button
-        class="mt-2 -ml-4"
+        class="mt-2 pr-4!"
         (click)="onEditClick(checklist, $event)"
         [class]="
           colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass

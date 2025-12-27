@@ -247,7 +247,7 @@ export class DummyDataService {
       const selectedItems = this.getRandomItems(template.items, itemCount);
 
       // Create the checklist using Checklist model
-      const checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'> = {
+      const checklist: Omit<Checklist, 'id' | 'sortOrder' | 'createdAt' | 'updatedAt'> = {
         title: template.title,
         icon: template.icon,
         color: template.color || '#53b87d', // Default to emerald if no color specified

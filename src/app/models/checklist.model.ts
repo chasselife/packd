@@ -4,6 +4,7 @@ export interface Checklist {
   icon?: string;
   color?: string;
   items?: ChecklistItem[];
+  sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
 }

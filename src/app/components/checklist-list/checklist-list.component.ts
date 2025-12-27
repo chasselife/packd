@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist } from '../../models/checklist.model';
 import { NewChecklistDialogComponent } from '../new-checklist-dialog/new-checklist-dialog.component';
@@ -12,7 +13,14 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
 @Component({
   selector: 'app-checklist-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, RouterModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogModule,
+    RouterModule,
+    DragDropModule,
+  ],
   templateUrl: './checklist-list.component.html',
 })
 export class ChecklistListComponent implements OnInit {
@@ -35,7 +43,28 @@ export class ChecklistListComponent implements OnInit {
     try {
       this.isLoading.set(true);
       const allChecklists = await this.databaseService.getAllChecklists();
-      this.checklists.set(allChecklists);
+      // Ensure all checklists have sortOrder (migration for existing data)
+      const checklistsNeedingMigration = allChecklists.filter((c) => c.sortOrder === undefined);
+      if (checklistsNeedingMigration.length > 0) {
+        // Migrate checklists without sortOrder
+        const maxSortOrder = allChecklists
+          .filter((c) => c.sortOrder !== undefined)
+          .reduce((max, c) => Math.max(max, c.sortOrder!), -1);
+
+        for (let i = 0; i < checklistsNeedingMigration.length; i++) {
+          const checklist = checklistsNeedingMigration[i];
+          if (checklist.id) {
+            await this.databaseService.updateChecklist(checklist.id, {
+              sortOrder: maxSortOrder + 1 + i,
+            });
+          }
+        }
+        // Reload after migration
+        const migratedChecklists = await this.databaseService.getAllChecklists();
+        this.checklists.set(migratedChecklists);
+      } else {
+        this.checklists.set(allChecklists);
+      }
     } catch (error) {
       console.error('Error loading checklists:', error);
     } finally {
@@ -167,6 +196,26 @@ export class ChecklistListComponent implements OnInit {
         }
       }
     });
+  }
+
+  onDrop(event: CdkDragDrop<Checklist[]>): void {
+    if (!this.isEditMode()) {
+      return; // Only allow reordering in edit mode
+    }
+
+    const currentChecklists = [...this.checklists()];
+    moveItemInArray(currentChecklists, event.previousIndex, event.currentIndex);
+    this.checklists.set(currentChecklists);
+
+    // Persist the new order to the database
+    const checklistIds = currentChecklists.map((c) => c.id!).filter((id) => id !== undefined);
+    if (checklistIds.length > 0) {
+      this.databaseService.reorderChecklists(checklistIds).catch((error) => {
+        console.error('Error reordering checklists:', error);
+        // Reload checklists on error to restore correct order
+        this.loadChecklists();
+      });
+    }
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {

@@ -14,4 +14,34 @@
 body {
   font-family: var(--font-sans);
   --mat-button-protected-container-height: 48px;
+  /* background-image: url('/bg.avif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh; */
+}
+
+/* CDK Drag and Drop Styles */
+.cdk-drag-placeholder {
+  opacity: 0.5 !important;
+  border: 2px dashed #9ca3af !important;
+  border-radius: 0.75rem !important;
+  background: rgba(156, 163, 175, 0.15) !important;
+  backdrop-filter: blur(4px);
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
+  opacity: 0.95 !important;
+  /* transform: rotate(2deg) !important; */
+  cursor: grabbing !important;
+  z-index: 1000 !important;
+  overflow: visible;
+  padding: 12px;
+
+}
+
+.cdk-drag-preview .mdc-icon-button {
+  display: none !important;
 }

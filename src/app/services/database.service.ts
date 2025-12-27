@@ -10,7 +10,7 @@ class PackForCampDatabase extends Dexie {
     super('PackForCampDB');
 
     this.version(1).stores({
-      checklists: '++id, title, createdAt, updatedAt',
+      checklists: '++id, title, sortOrder, createdAt, updatedAt',
       checklistItems: '++id, checklistId, sortOrder, createdAt, updatedAt',
     });
   }
@@ -28,7 +28,7 @@ export class DatabaseService {
 
   // Checklist methods
   async getAllChecklists(): Promise<Checklist[]> {
-    return await this.db.checklists.toArray();
+    return await this.db.checklists.orderBy('sortOrder').toArray();
   }
 
   async getChecklist(id: number): Promise<Checklist | undefined> {
@@ -36,11 +36,19 @@ export class DatabaseService {
   }
 
   async createChecklist(
-    checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>
+    checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt' | 'sortOrder'>
   ): Promise<number> {
     const now = new Date();
+    // Get the maximum sortOrder and add 1 for the new checklist
+    const allChecklists = await this.db.checklists.toArray();
+    const sortOrders = allChecklists
+      .map((c) => c.sortOrder)
+      .filter((order): order is number => order !== undefined);
+    const maxSortOrder = sortOrders.length > 0 ? Math.max(...sortOrders) : -1;
+
     return await this.db.checklists.add({
       ...checklist,
+      sortOrder: maxSortOrder + 1,
       createdAt: now,
       updatedAt: now,
     });
@@ -53,6 +61,22 @@ export class DatabaseService {
     return await this.db.checklists.update(id, {
       ...updates,
       updatedAt: new Date(),
+    });
+  }
+
+  async reorderChecklists(checklistIds: number[]): Promise<void> {
+    const updates = checklistIds.map((id, index) => ({
+      id,
+      sortOrder: index,
+    }));
+
+    await this.db.transaction('rw', this.db.checklists, async () => {
+      for (const update of updates) {
+        await this.db.checklists.update(update.id, {
+          sortOrder: update.sortOrder,
+          updatedAt: new Date(),
+        });
+      }
     });
   }
 
