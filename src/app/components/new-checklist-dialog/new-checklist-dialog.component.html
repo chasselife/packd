@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Create New Checklist</h2>
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Checklist' : 'Create New Checklist' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="flex flex-col gap-4">
+  <form [formGroup]="form" class="flex flex-col gap-4 pt-4">
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput formControlName="title" placeholder="Enter checklist title" />
@@ -40,8 +40,13 @@
 <mat-dialog-actions align="end">
   <div class="mb-4 mr-4">
     <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="!form.valid">
-      Create
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="isEditMode ? onSave() : onCreate()"
+      [disabled]="!form.valid"
+    >
+      {{ isEditMode ? 'Save' : 'Create' }}
     </button>
   </div>
 </mat-dialog-actions>

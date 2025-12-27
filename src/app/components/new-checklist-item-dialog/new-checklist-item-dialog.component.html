@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{ isEditMode ? 'Edit Item' : 'Create New Item' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="flex flex-col gap-4">
+  <form [formGroup]="form" class="flex flex-col gap-4 pt-4">
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput formControlName="title" placeholder="Enter item title" />
@@ -56,4 +56,3 @@
     </button>
   </div>
 </mat-dialog-actions>
-
