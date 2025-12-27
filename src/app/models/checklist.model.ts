@@ -2,6 +2,7 @@ export interface Checklist {
   id?: number;
   title: string;
   icon?: string;
+  color?: string;
   items?: ChecklistItem[];
   createdAt: Date;
   updatedAt: Date;

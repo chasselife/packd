@@ -60,6 +60,7 @@ export class ChecklistListComponent implements OnInit {
           const checklistId = await this.databaseService.createChecklist({
             title: result.title,
             icon: result.icon,
+            color: result.color,
           });
           // Reload checklists to show the new one
           await this.loadChecklists();
@@ -132,6 +133,7 @@ export class ChecklistListComponent implements OnInit {
           await this.databaseService.updateChecklist(checklist.id, {
             title: result.title,
             icon: result.icon,
+            color: result.color,
           });
           // Reload checklists to show the updated one
           await this.loadChecklists();
@@ -165,5 +167,70 @@ export class ChecklistListComponent implements OnInit {
         }
       }
     });
+  }
+
+  getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
+    const defaultColor = {
+      bgClass: 'bg-emerald-500/20',
+      borderClass: 'border-emerald-700',
+      textClass: 'text-emerald-700',
+    };
+
+    if (!color) return defaultColor;
+
+    const colorMap: Record<string, { bgClass: string; borderClass: string; textClass: string }> = {
+      '#53b87d': {
+        bgClass: 'bg-emerald-500/20',
+        borderClass: 'border-emerald-700',
+        textClass: 'text-emerald-700',
+      },
+      '#3b82f6': {
+        bgClass: 'bg-blue-500/20',
+        borderClass: 'border-blue-700',
+        textClass: 'text-blue-700',
+      },
+      '#8b5cf6': {
+        bgClass: 'bg-purple-500/20',
+        borderClass: 'border-purple-700',
+        textClass: 'text-purple-700',
+      },
+      '#ec4899': {
+        bgClass: 'bg-pink-500/20',
+        borderClass: 'border-pink-700',
+        textClass: 'text-pink-700',
+      },
+      '#f59e0b': {
+        bgClass: 'bg-amber-500/20',
+        borderClass: 'border-amber-700',
+        textClass: 'text-amber-700',
+      },
+      '#10b981': {
+        bgClass: 'bg-green-500/20',
+        borderClass: 'border-green-700',
+        textClass: 'text-green-700',
+      },
+      '#06b6d4': {
+        bgClass: 'bg-cyan-500/20',
+        borderClass: 'border-cyan-700',
+        textClass: 'text-cyan-700',
+      },
+      '#f97316': {
+        bgClass: 'bg-orange-500/20',
+        borderClass: 'border-orange-700',
+        textClass: 'text-orange-700',
+      },
+      '#6366f1': {
+        bgClass: 'bg-indigo-500/20',
+        borderClass: 'border-indigo-700',
+        textClass: 'text-indigo-700',
+      },
+      '#14b8a6': {
+        bgClass: 'bg-teal-500/20',
+        borderClass: 'border-teal-700',
+        textClass: 'text-teal-700',
+      },
+    };
+
+    return colorMap[color] || defaultColor;
   }
 }

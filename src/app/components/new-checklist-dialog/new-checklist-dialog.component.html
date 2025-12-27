@@ -34,6 +34,39 @@
       <mat-error>Icon is required</mat-error>
       }
     </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Color</mat-label>
+      <mat-select formControlName="color">
+        <mat-select-trigger>
+          @if (getSelectedColor(); as selectedColor) {
+          <div class="flex items-center gap-2">
+            <div
+              class="w-6 h-6 rounded-full border-2"
+              [style.background-color]="selectedColor.value"
+              [style.border-color]="selectedColor.value"
+            ></div>
+            <span>{{ selectedColor.label }}</span>
+          </div>
+          }
+        </mat-select-trigger>
+        @for (color of colorOptions; track color.value) {
+        <mat-option [value]="color.value">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-6 h-6 rounded-full border-2"
+              [style.background-color]="color.value"
+              [style.border-color]="color.value"
+            ></div>
+            <span>{{ color.label }}</span>
+          </div>
+        </mat-option>
+        }
+      </mat-select>
+      @if (form.get('color')?.hasError('required') && form.get('color')?.touched) {
+      <mat-error>Color is required</mat-error>
+      }
+    </mat-form-field>
   </form>
 </mat-dialog-content>
 

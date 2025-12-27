@@ -18,16 +18,22 @@
   </div>
   } @else { @if (isEditMode()) {
   <div class="mb-8 flex justify-end">
-    <button mat-raised-button (click)="deactivateEditMode()" class="text-emerald-700">
+    <button
+      mat-button
+      (click)="deactivateEditMode()"
+      class="border! border-neutral-100! text-emerald-700"
+    >
       <mat-icon>close</mat-icon>
       Exit Edit Mode
     </button>
   </div>
   }
-  <div class="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-4">
-    @for (checklist of checklists(); track checklist.id) {
+  <div class="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-4 px-4 mt-4">
+    @for (checklist of checklists(); track checklist.id) { @let colorClasses =
+    getColorClasses(checklist.color);
     <div
-      class="bg-linear-to-b from-emerald-50 to-white border-emerald-700 border-2 rounded-xl p-4 transition-all duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] text-emerald-700 relative hover:-translate-y-1"
+      class="rounded-xl p-6 transition-all duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] relative hover:-translate-y-1 backdrop-blur-sm"
+      [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass"
       [class.cursor-pointer]="!isEditMode()"
       (click)="!isEditMode() && onChecklistClick(checklist)"
       (mousedown)="onTileMouseDown(checklist, $event)"
@@ -42,7 +48,7 @@
       <button
         mat-icon-button
         color="danger"
-        class="absolute! -top-4 -right-4 bg-red-500! rounded-full flex items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
+        class="absolute! w-10! h-10! -top-4 -right-4 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
         (click)="onDeleteClick(checklist, $event)"
         aria-label="Delete checklist"
       >
@@ -51,20 +57,25 @@
       }
 
       <div class="mb-1">
-        <mat-icon class="text-5xl w-12 h-12">
+        <mat-icon class="text-5xl! w-12! h-12!">
           {{ checklist.icon || 'checklist' }}
         </mat-icon>
       </div>
       <div class="text-lg font-medium text-center wrap-break-word">
         {{ checklist.title }}
       </div>
+      <div class="flex-1"></div>
 
       @if (isEditMode()) {
       <!-- Edit button -->
       <button
         mat-button
-        class="mt-4"
+        class="mt-2 -ml-4"
         (click)="onEditClick(checklist, $event)"
+        [class]="
+          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
+        "
+        [style.color]="checklist?.color || undefined"
         aria-label="Edit checklist"
       >
         <mat-icon>edit</mat-icon>

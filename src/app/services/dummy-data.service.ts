@@ -5,6 +5,7 @@ import { DatabaseService } from './database.service';
 interface ChecklistTemplate {
   title: string;
   icon?: string;
+  color?: string;
   items: Array<{
     title: string;
     description?: string;
@@ -23,6 +24,7 @@ export class DummyDataService {
     {
       title: 'Camping Essentials',
       icon: 'camping',
+      color: '#53b87d', // Emerald
       items: [
         { title: 'Tent', description: 'Weatherproof tent with rainfly', icon: 'home' },
         {
@@ -50,6 +52,7 @@ export class DummyDataService {
     {
       title: 'Cooking Supplies',
       icon: 'restaurant',
+      color: '#f97316', // Orange
       items: [
         { title: 'Cookware Set', description: 'Pots, pans, and utensils', icon: 'soup_kitchen' },
         {
@@ -83,6 +86,7 @@ export class DummyDataService {
     {
       title: 'Clothing',
       icon: 'checkroom',
+      color: '#3b82f6', // Blue
       items: [
         {
           title: 'Hiking Boots',
@@ -118,6 +122,7 @@ export class DummyDataService {
     {
       title: 'Safety & First Aid',
       icon: 'medical_services',
+      color: '#ec4899', // Pink
       items: [
         {
           title: 'First Aid Kit',
@@ -152,6 +157,7 @@ export class DummyDataService {
     {
       title: 'Personal Items',
       icon: 'person',
+      color: '#8b5cf6', // Purple
       items: [
         { title: 'Toiletries', description: 'Toothbrush, toothpaste, soap, etc.', icon: 'bath' },
         { title: 'Sunscreen', description: 'SPF 30+ sunscreen', icon: 'wb_sunny' },
@@ -174,6 +180,7 @@ export class DummyDataService {
     {
       title: 'Entertainment',
       icon: 'sports_esports',
+      color: '#f59e0b', // Amber
       items: [
         { title: 'Books', description: 'Reading materials for downtime', icon: 'menu_book' },
         { title: 'Playing Cards', description: 'Deck of playing cards', icon: 'style' },
@@ -190,6 +197,7 @@ export class DummyDataService {
     {
       title: 'Vehicle & Tools',
       icon: 'build',
+      color: '#6366f1', // Indigo
       items: [
         {
           title: 'Tire Repair Kit',
@@ -242,6 +250,7 @@ export class DummyDataService {
       const checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'> = {
         title: template.title,
         icon: template.icon,
+        color: template.color || '#53b87d', // Default to emerald if no color specified
       };
       const checklistId = await this.databaseService.createChecklist(checklist);
 
