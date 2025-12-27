@@ -22,6 +22,41 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
     DragDropModule,
   ],
   templateUrl: './checklist-list.component.html',
+  styles: [
+    `
+      @keyframes wiggle {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-1.5deg);
+        }
+        50% {
+          transform: rotate(1.5deg);
+        }
+        75% {
+          transform: rotate(-0.75deg);
+        }
+      }
+
+      .wiggle-animation:not(.cdk-drag-preview) {
+        animation: wiggle 0.5s ease-in-out infinite;
+      }
+
+      .wiggle-animation:nth-child(3n + 1):not(.cdk-drag-preview) {
+        animation-delay: 0s;
+      }
+
+      .wiggle-animation:nth-child(3n + 2):not(.cdk-drag-preview) {
+        animation-delay: 0.15s;
+      }
+
+      .wiggle-animation:nth-child(3n + 3):not(.cdk-drag-preview) {
+        animation-delay: 0.3s;
+      }
+    `,
+  ],
 })
 export class ChecklistListComponent implements OnInit {
   private databaseService = inject(DatabaseService);
@@ -34,6 +69,7 @@ export class ChecklistListComponent implements OnInit {
 
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
+  private editModeJustActivated = false;
 
   async ngOnInit(): Promise<void> {
     await this.loadChecklists();
@@ -113,9 +149,12 @@ export class ChecklistListComponent implements OnInit {
     if (event instanceof TouchEvent) {
       event.preventDefault();
     }
+    event.stopImmediatePropagation();
 
     this.longPressTimer = window.setTimeout(() => {
       this.activateEditMode();
+      // Set a flag to prevent immediate deactivation
+      this.editModeJustActivated = true;
       this.longPressTimer = null;
     }, this.LONG_PRESS_DURATION);
   }
@@ -125,6 +164,13 @@ export class ChecklistListComponent implements OnInit {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
+    // Clear the flag after mouse up
+    setTimeout(() => {
+      this.editModeJustActivated = false;
+    }, this.LONG_PRESS_DURATION);
+    // Stop propagation to prevent the event from triggering container click
+    // which would immediately deactivate edit mode after long press
+    event.stopImmediatePropagation();
   }
 
   onTileMouseLeave(): void {
@@ -132,6 +178,12 @@ export class ChecklistListComponent implements OnInit {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
+    // Clear the flag after mouse leave
+    setTimeout(() => {
+      this.editModeJustActivated = false;
+    }, this.LONG_PRESS_DURATION);
+
+    // Note: We don't stop propagation here as mouseleave doesn't trigger click events
   }
 
   activateEditMode(): void {
@@ -277,6 +329,27 @@ export class ChecklistListComponent implements OnInit {
         // Reload checklists on error to restore correct order
         this.loadChecklists();
       });
+    }
+  }
+
+  onContainerClick(event: MouseEvent): void {
+    if (!this.isEditMode()) {
+      return;
+    }
+
+    // Don't deactivate if edit mode was just activated (prevents immediate deactivation after long press)
+    if (this.editModeJustActivated) {
+      return;
+    }
+
+    // Check if the click target is within a tile or is an interactive element
+    const target = event.target as HTMLElement;
+    const clickedTile = target.closest('[cdkDrag]') || target.hasAttribute('cdkDrag');
+    const isInteractiveElement = target.closest('button, a, input, select, textarea');
+
+    // If click is not on a tile and not on an interactive element, deactivate edit mode
+    if (!clickedTile && !isInteractiveElement) {
+      this.deactivateEditMode();
     }
   }
 
