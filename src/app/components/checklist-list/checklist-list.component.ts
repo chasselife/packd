@@ -149,7 +149,7 @@ export class ChecklistListComponent implements OnInit {
     if (event instanceof TouchEvent) {
       event.preventDefault();
     }
-    event.stopImmediatePropagation();
+    event.stopPropagation();
 
     this.longPressTimer = window.setTimeout(() => {
       this.activateEditMode();
@@ -170,7 +170,7 @@ export class ChecklistListComponent implements OnInit {
     }, this.LONG_PRESS_DURATION);
     // Stop propagation to prevent the event from triggering container click
     // which would immediately deactivate edit mode after long press
-    event.stopImmediatePropagation();
+    event.stopPropagation();
   }
 
   onTileMouseLeave(): void {

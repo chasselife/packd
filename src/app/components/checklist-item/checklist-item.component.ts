@@ -107,6 +107,7 @@ export class ChecklistItemComponent {
       height: '100vh',
       maxWidth: '100vw',
       maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
       data: { item },
     });
 
@@ -309,7 +310,7 @@ export class ChecklistItemComponent {
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
   template: `
-    <h2 mat-dialog-title>Delete Item</h2>
+    <h2 mat-dialog-title>Delete Checklist Item</h2>
     <mat-dialog-content>
       <p>Are you sure you want to delete "{{ data.title }}"?</p>
       <p class="text-sm text-gray-600">This action cannot be undone.</p>

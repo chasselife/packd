@@ -1,4 +1,7 @@
-<h2 mat-dialog-title class="text-xl! font-semibold! text-center py-4! border-b border-neutral-200">
+<h2
+  mat-dialog-title
+  class="before:hidden! text-xl! font-semibold! text-center py-4! border-b border-neutral-200"
+>
   @if (isDuplicateMode) { Duplicate {{ dialogData?.checklist?.title || 'Checklist' }}
   } @else if (isEditMode) { Edit Checklist } @else { Create New Checklist }
 </h2>

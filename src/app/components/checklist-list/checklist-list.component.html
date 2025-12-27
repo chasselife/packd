@@ -1,5 +1,5 @@
 <div class="max-w-6xl mx-auto px-4 py-4" (click)="onContainerClick($event)">
-  <div class="flex justify-between items-center mb-4 md:mb-6">
+  <div class="flex justify-between items-center px-4 mb-4 md:mb-6">
     <h1 class="text-2xl font-semibold text-emerald-700 font-sans flex gap-3 items-center">
       <img class="w-10 h-10" src="logo.svg" alt="Pack for Camp" />Pack for Camp
     </h1>
@@ -44,12 +44,12 @@
       [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass"
       [class.cursor-pointer]="!isEditMode()"
       [class.cursor-move]="isEditMode()"
-      (click)="!isEditMode() && onChecklistClick(checklist); $event.stopPropagation()"
+      (click)="!isEditMode() && onChecklistClick(checklist)"
       (mousedown)="onTileMouseDown(checklist, $event)"
       (mouseup)="onTileMouseUp($event)"
       (mouseleave)="onTileMouseLeave()"
       (touchstart)="onTileMouseDown(checklist, $event)"
-      (touchend)="onTileMouseUp($event)"
+      (touchend)="!isEditMode() && onChecklistClick(checklist); onTileMouseUp($event)"
       (touchcancel)="onTileMouseLeave()"
     >
       @if (isEditMode()) {
