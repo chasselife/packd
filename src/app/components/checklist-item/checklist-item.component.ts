@@ -9,6 +9,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { NewChecklistItemDialogComponent } from '../new-checklist-item-dialog/new-checklist-item-dialog.component';
@@ -16,7 +17,14 @@ import { NewChecklistItemDialogComponent } from '../new-checklist-item-dialog/ne
 @Component({
   selector: 'app-checklist-item',
   standalone: true,
-  imports: [CommonModule, MatIconModule, RouterModule, MatButtonModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    RouterModule,
+    MatButtonModule,
+    MatDialogModule,
+    DragDropModule,
+  ],
   templateUrl: './checklist-item.component.html',
 })
 export class ChecklistItemComponent {
@@ -184,6 +192,25 @@ export class ChecklistItemComponent {
         }
       }
     });
+  }
+
+  async onItemDrop(event: CdkDragDrop<ChecklistItem[]>): Promise<void> {
+    const items = this.checklistItems();
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.checklistItems.set([...items]);
+
+    // Update sortOrder in database
+    const itemIds = items.map((item) => item.id!).filter((id): id is number => id !== undefined);
+    try {
+      await this.databaseService.reorderChecklistItems(itemIds);
+    } catch (error) {
+      console.error('Error reordering items:', error);
+      // Reload items on error to restore original order
+      const checklistId = Number(this.id());
+      if (checklistId) {
+        await this.loadChecklistAndItems(checklistId);
+      }
+    }
   }
 
   getColorClasses(color?: string): {

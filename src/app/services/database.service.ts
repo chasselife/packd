@@ -124,6 +124,22 @@ export class DatabaseService {
     await this.db.checklistItems.delete(id);
   }
 
+  async reorderChecklistItems(itemIds: number[]): Promise<void> {
+    const updates = itemIds.map((id, index) => ({
+      id,
+      sortOrder: index,
+    }));
+
+    await this.db.transaction('rw', this.db.checklistItems, async () => {
+      for (const update of updates) {
+        await this.db.checklistItems.update(update.id, {
+          sortOrder: update.sortOrder,
+          updatedAt: new Date(),
+        });
+      }
+    });
+  }
+
   async deleteChecklistItemsByChecklistId(checklistId: number): Promise<number> {
     return await this.db.checklistItems.where('checklistId').equals(checklistId).delete();
   }

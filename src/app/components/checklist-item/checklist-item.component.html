@@ -30,17 +30,26 @@
     <p class="text-lg m-0">No items in this checklist yet.</p>
   </div>
   } @else {
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div
+    cdkDropList
+    (cdkDropListDropped)="onItemDrop($event)"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+  >
     @for (item of checklistItems(); track item.id) {
     <div
-      class="flex justify-between items-center border rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 relative backdrop-blur-sm"
+      cdkDrag
+      class="flex justify-between items-center border rounded-xl p-4 transition-colors duration-300 relative backdrop-blur-sm cursor-move"
       [class.bg-white]="!item.isDone"
       [class.bg-emerald-50]="item.isDone"
       [class.border-gray-300]="!item.isDone"
       [class.border-emerald-500]="item.isDone"
     >
       <div class="flex-1 flex items-center gap-3">
-        <div class="shrink-0 cursor-pointer" (click)="toggleItemDone(item)">
+        <div
+          class="shrink-0 cursor-pointer"
+          (click)="toggleItemDone(item)"
+          (mousedown)="$event.stopPropagation()"
+        >
           @if (item.isDone) {
           <mat-icon class="text-3xl text-emerald-600!">check_circle</mat-icon>
           } @else {
