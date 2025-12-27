@@ -37,6 +37,7 @@ export class ChecklistItemComponent {
   checklist = signal<Checklist | undefined>(undefined);
   checklistItems = signal<ChecklistItem[]>([]);
   isLoading = signal(true);
+  layoutMode = signal<'compact' | 'full'>('full');
 
   constructor() {
     effect(() => {
@@ -211,6 +212,10 @@ export class ChecklistItemComponent {
         await this.loadChecklistAndItems(checklistId);
       }
     }
+  }
+
+  setLayoutMode(mode: 'compact' | 'full'): void {
+    this.layoutMode.set(mode);
   }
 
   getColorClasses(color?: string): {

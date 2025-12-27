@@ -1,5 +1,5 @@
 <div class="max-w-6xl mx-auto p-8 md:p-4">
-  <div class="mb-8 flex items-center gap-2">
+  <div class="mb-4 flex items-center gap-2">
     <button
       (click)="goBack()"
       class="p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -22,7 +22,30 @@
     </button>
   </div>
 
-  @if (isLoading()) {
+  @if (!isLoading() && checklistItems().length > 0) {
+  <div class="mb-6 flex justify-end gap-2">
+    <button
+      mat-icon-button
+      [class.bg-gray-100!]="layoutMode() === 'compact'"
+      [class.opacity-50]="layoutMode() !== 'compact'"
+      (click)="setLayoutMode('compact')"
+      aria-label="Compact view"
+      title="Compact view"
+    >
+      <mat-icon>view_stream</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      [class.bg-gray-100!]="layoutMode() === 'full'"
+      [class.opacity-50]="layoutMode() !== 'full'"
+      (click)="setLayoutMode('full')"
+      aria-label="Full view"
+      title="Full view"
+    >
+      <mat-icon>view_agenda</mat-icon>
+    </button>
+  </div>
+  } @if (isLoading()) {
   <div class="text-center py-12 text-gray-600 text-lg">Loading items...</div>
   } @else if (checklistItems().length === 0) {
   <div class="text-center py-16 px-8 text-gray-600">
@@ -33,12 +56,18 @@
   <div
     cdkDropList
     (cdkDropListDropped)="onItemDrop($event)"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+    [class.gap-4]="layoutMode() === 'full'"
+    [class.gap-2]="layoutMode() !== 'full'"
   >
     @for (item of checklistItems(); track item.id) {
     <div
       cdkDrag
-      class="flex justify-between items-center border rounded-xl p-4 transition-colors duration-300 relative backdrop-blur-sm cursor-move"
+      class="flex justify-between items-center border transition-colors duration-300 relative backdrop-blur-sm cursor-move"
+      [class.p-4]="layoutMode() === 'full'"
+      [class.p-3]="layoutMode() === 'compact'"
+      [class.rounded-xl]="layoutMode() === 'full'"
+      [class.rounded-lg]="layoutMode() !== 'full'"
       [class.bg-white]="!item.isDone"
       [class.bg-emerald-50]="item.isDone"
       [class.border-gray-300]="!item.isDone"
@@ -58,17 +87,19 @@
         </div>
         <div class="flex-1 min-w-0 cursor-pointer" (click)="toggleItemDone(item)">
           <h3
-            class="text-lg font-medium mb-1"
+            class="font-medium mb-1 flex gap-1 items-center"
+            [class.text-lg]="layoutMode() === 'full'"
+            [class.text-base]="layoutMode() === 'compact'"
             [class.text-gray-800]="!item.isDone"
             [class.text-emerald-800]="item.isDone"
             [class.line-through]="item.isDone"
           >
             @if (item.icon) {
-            <mat-icon class="text-xl align-middle mr-1">{{ item.icon }}</mat-icon>
+            <mat-icon class="align-middle mr-1 text-xl">{{ item.icon }}</mat-icon>
             }
             {{ item.title }}
           </h3>
-          @if (item.description) {
+          @if (item.description && layoutMode() === 'full') {
           <p
             class="text-sm m-0 whitespace-pre-wrap"
             [class.text-gray-600]="!item.isDone"
@@ -79,6 +110,7 @@
           }
         </div>
       </div>
+      @if (layoutMode() === 'full') {
       <div class="flex gap-1">
         <button
           mat-icon-button
@@ -97,6 +129,7 @@
           <mat-icon>delete</mat-icon>
         </button>
       </div>
+      }
     </div>
     }
   </div>
