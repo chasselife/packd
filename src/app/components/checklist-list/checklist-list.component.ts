@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist } from '../../models/checklist.model';
@@ -7,11 +8,12 @@ import { Checklist } from '../../models/checklist.model';
 @Component({
   selector: 'app-checklist-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, RouterModule],
   templateUrl: './checklist-list.component.html',
 })
 export class ChecklistListComponent implements OnInit {
   private databaseService = inject(DatabaseService);
+  private router = inject(Router);
 
   checklists = signal<Checklist[]>([]);
   isLoading = signal(true);
@@ -33,7 +35,8 @@ export class ChecklistListComponent implements OnInit {
   }
 
   onChecklistClick(checklist: Checklist): void {
-    // TODO: Navigate to checklist detail page
-    console.log('Clicked checklist:', checklist);
+    if (checklist.id) {
+      this.router.navigate(['/checklist', checklist.id]);
+    }
   }
 }

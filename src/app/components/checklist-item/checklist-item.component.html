@@ -1,0 +1,69 @@
+<div class="max-w-6xl mx-auto p-8 md:p-4">
+  <div class="mb-8 flex items-center gap-4">
+    <button
+      (click)="goBack()"
+      class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+      aria-label="Go back"
+    >
+      <mat-icon class="text-2xl">arrow_back</mat-icon>
+    </button>
+    <h1 class="text-4xl md:text-3xl font-semibold text-gray-800 font-sans flex gap-4 items-center">
+      @if (checklist()) { @if (checklist()!.icon) {
+      <mat-icon class="text-5xl w-12 h-12">{{ checklist()!.icon }}</mat-icon>
+      }
+      {{ checklist()!.title }}
+      }
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+  <div class="text-center py-12 text-gray-600 text-lg">Loading items...</div>
+  } @else if (checklistItems().length === 0) {
+  <div class="text-center py-16 px-8 text-gray-600">
+    <mat-icon class="text-6xl w-16 h-16 text-gray-300 mb-4 block mx-auto"> checklist </mat-icon>
+    <p class="text-lg m-0">No items in this checklist yet.</p>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    @for (item of checklistItems(); track item.id) {
+    <div
+      class="border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1"
+      [class.bg-white]="!item.isDone"
+      [class.bg-emerald-50]="item.isDone"
+      [class.border-gray-300]="!item.isDone"
+      [class.border-emerald-500]="item.isDone"
+      (click)="toggleItemDone(item)"
+    >
+      <div class="flex items-start gap-3">
+        <div class="shrink-0 mt-1">
+          @if (item.isDone) {
+          <mat-icon class="text-3xl text-emerald-600">check_circle</mat-icon>
+          } @else {
+          <mat-icon class="text-3xl text-gray-400">radio_button_unchecked</mat-icon>
+          }
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3
+            class="text-lg font-medium mb-1"
+            [class.text-gray-800]="!item.isDone"
+            [class.text-emerald-800]="item.isDone"
+            [class.line-through]="item.isDone"
+          >
+            {{ item.title }}
+          </h3>
+          @if (item.description) {
+          <p
+            class="text-sm m-0"
+            [class.text-gray-600]="!item.isDone"
+            [class.text-emerald-700]="item.isDone"
+          >
+            {{ item.description }}
+          </p>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
