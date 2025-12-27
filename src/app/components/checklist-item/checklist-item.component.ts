@@ -77,7 +77,11 @@ export class ChecklistItemComponent {
 
   openNewItemDialog(): void {
     const dialogRef = this.dialog.open(NewChecklistItemDialogComponent, {
-      width: '500px',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
       data: {},
     });
 
@@ -90,7 +94,10 @@ export class ChecklistItemComponent {
 
   openEditItemDialog(item: ChecklistItem): void {
     const dialogRef = this.dialog.open(NewChecklistItemDialogComponent, {
-      width: '500px',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
       data: { item },
     });
 

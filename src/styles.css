@@ -14,6 +14,8 @@
 body {
   font-family: var(--font-sans);
   --mat-button-protected-container-height: 48px;
+  --mat-button-text-container-height: 48px;
+  --mat-button-text-horizontal-padding: 16px;
   /* background-image: url('/bg.avif');
   background-size: cover;
   background-position: center;
@@ -43,5 +45,26 @@ body {
 }
 
 .cdk-drag-preview .mdc-icon-button {
+  display: none !important;
+}
+
+.full-screen-dialog .mat-mdc-dialog-container {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-screen-dialog .mat-mdc-dialog-surface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.mat-mdc-dialog-title::before {
   display: none !important;
 }

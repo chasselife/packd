@@ -80,7 +80,11 @@ export class ChecklistListComponent implements OnInit {
 
   openNewChecklistDialog(): void {
     const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
-      width: '500px',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -152,7 +156,10 @@ export class ChecklistListComponent implements OnInit {
 
   openEditChecklistDialog(checklist: Checklist): void {
     const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
-      width: '500px',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
       data: { checklist },
     });
 

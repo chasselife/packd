@@ -1,7 +1,7 @@
 <div class="max-w-6xl mx-auto px-4 py-4">
   <div class="flex justify-between items-center mb-10">
-    <h1 class="text-2xl font-semibold text-emerald-700 font-sans flex gap-2 items-center">
-      <img class="w-12 h-12" src="logo.svg" alt="Pack for Camp" />Pack for Camp
+    <h1 class="text-2xl font-semibold text-emerald-700 font-sans flex gap-3 items-center">
+      <img class="w-10 h-10" src="logo.svg" alt="Pack for Camp" />Pack for Camp
     </h1>
     <button mat-raised-button color="primary" (click)="openNewChecklistDialog()">
       <mat-icon>add</mat-icon>
@@ -18,11 +18,7 @@
   </div>
   } @else { @if (isEditMode()) {
   <div class="mb-8 flex justify-end">
-    <button
-      mat-button
-      (click)="deactivateEditMode()"
-      class="border! border-neutral-100! text-emerald-700"
-    >
+    <button mat-button (click)="deactivateEditMode()">
       <mat-icon>close</mat-icon>
       Exit Edit Mode
     </button>
@@ -64,7 +60,7 @@
       <button
         mat-icon-button
         color="danger"
-        class="absolute! w-10! h-10! -top-4 -right-4 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
+        class="absolute! w-8! h-8! -top-3 -right-3 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
         (click)="onDeleteClick(checklist, $event)"
         aria-label="Delete checklist"
       >
@@ -72,8 +68,8 @@
       </button>
       }
 
-      <div class="mb-1">
-        <mat-icon class="text-5xl! w-12! h-12!">
+      <div class="md:mb-1">
+        <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
           {{ checklist.icon || 'checklist' }}
         </mat-icon>
       </div>
@@ -86,7 +82,7 @@
       <!-- Edit button -->
       <button
         mat-button
-        class="mt-2 pr-4!"
+        class="pr-4! bg-white/50! rounded-lg! mt-3 h-8! text-sm! md:text-base!"
         (click)="onEditClick(checklist, $event)"
         [class]="
           colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
