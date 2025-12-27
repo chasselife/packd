@@ -1,0 +1,36 @@
+<div class="max-w-2xl mx-auto my-12 p-8 bg-white rounded-lg shadow-md">
+  <h1 class="text-3xl font-semibold text-gray-800 mb-4">Seed Dummy Data</h1>
+  <p class="text-gray-600 mb-6">Click the button below to seed the database with dummy checklist data.</p>
+  
+  <div class="flex gap-3 mb-6">
+    <button 
+      [disabled]="isSeeding || isClearing" 
+      (click)="seedData()" 
+      class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-md font-medium disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+    >
+      {{ isSeeding ? 'Seeding...' : 'Seed Data' }}
+    </button>
+    <button 
+      [disabled]="isSeeding || isClearing" 
+      (click)="clearData()" 
+      class="flex-1 px-6 py-3 bg-red-600 text-white rounded-md font-medium disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-red-700 transition-colors"
+    >
+      {{ isClearing ? 'Clearing...' : 'Clear All Data' }}
+    </button>
+  </div>
+
+  @if (statusMessage) {
+    <div [class]="'mt-5 p-4 rounded-md border ' + getStatusClasses()">
+      {{ statusMessage }}
+    </div>
+  }
+  
+  @if (logMessages.length > 0) {
+    <div class="mt-5 p-4 bg-gray-50 rounded-md max-h-[300px] overflow-y-auto font-mono text-xs whitespace-pre-wrap">
+      @for (log of logMessages; track $index) {
+        <div>{{ log }}</div>
+      }
+    </div>
+  }
+</div>
+
