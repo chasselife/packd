@@ -22,7 +22,7 @@ export class DummyDataService {
   private readonly checklistTemplates: ChecklistTemplate[] = [
     {
       title: 'Camping Essentials',
-      icon: 'outdoor_garden',
+      icon: 'camping',
       items: [
         { title: 'Tent', description: 'Weatherproof tent with rainfly', icon: 'home' },
         {

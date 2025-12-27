@@ -7,13 +7,19 @@
     >
       <mat-icon class="text-2xl">arrow_back</mat-icon>
     </button>
-    <h1 class="text-4xl md:text-3xl font-semibold text-gray-800 font-sans flex gap-4 items-center">
+    <h1
+      class="text-4xl md:text-3xl font-semibold text-gray-800 font-sans flex gap-4 items-center flex-1"
+    >
       @if (checklist()) { @if (checklist()!.icon) {
       <mat-icon class="text-5xl w-12 h-12">{{ checklist()!.icon }}</mat-icon>
       }
       {{ checklist()!.title }}
       }
     </h1>
+    <button mat-raised-button color="primary" (click)="openNewItemDialog()" class="ml-auto">
+      <mat-icon>add</mat-icon>
+      New Item
+    </button>
   </div>
 
   @if (isLoading()) {
@@ -27,28 +33,30 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     @for (item of checklistItems(); track item.id) {
     <div
-      class="border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1"
+      class="border-2 rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 relative"
       [class.bg-white]="!item.isDone"
       [class.bg-emerald-50]="item.isDone"
       [class.border-gray-300]="!item.isDone"
       [class.border-emerald-500]="item.isDone"
-      (click)="toggleItemDone(item)"
     >
       <div class="flex items-start gap-3">
-        <div class="shrink-0 mt-1">
+        <div class="shrink-0 mt-1 cursor-pointer" (click)="toggleItemDone(item)">
           @if (item.isDone) {
           <mat-icon class="text-3xl text-emerald-600">check_circle</mat-icon>
           } @else {
           <mat-icon class="text-3xl text-gray-400">radio_button_unchecked</mat-icon>
           }
         </div>
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0 cursor-pointer" (click)="toggleItemDone(item)">
           <h3
             class="text-lg font-medium mb-1"
             [class.text-gray-800]="!item.isDone"
             [class.text-emerald-800]="item.isDone"
             [class.line-through]="item.isDone"
           >
+            @if (item.icon) {
+            <mat-icon class="text-xl align-middle mr-1">{{ item.icon }}</mat-icon>
+            }
             {{ item.title }}
           </h3>
           @if (item.description) {
@@ -61,6 +69,24 @@
           </p>
           }
         </div>
+      </div>
+      <div class="absolute top-2 right-2 flex gap-1">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="openEditItemDialog(item); $event.stopPropagation()"
+          aria-label="Edit item"
+        >
+          <mat-icon class="text-lg!">edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteItem(item); $event.stopPropagation()"
+          aria-label="Delete item"
+        >
+          <mat-icon class="text-lg!">delete</mat-icon>
+        </button>
       </div>
     </div>
     }
