@@ -33,7 +33,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     @for (item of checklistItems(); track item.id) {
     <div
-      class="border-2 rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 relative backdrop-blur-sm"
+      class="border rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 relative backdrop-blur-sm"
       [class.bg-white]="!item.isDone"
       [class.bg-emerald-50]="item.isDone"
       [class.border-gray-300]="!item.isDone"
@@ -61,7 +61,7 @@
           </h3>
           @if (item.description) {
           <p
-            class="text-sm m-0"
+            class="text-sm m-0 whitespace-pre-wrap"
             [class.text-gray-600]="!item.isDone"
             [class.text-emerald-700]="item.isDone"
           >
