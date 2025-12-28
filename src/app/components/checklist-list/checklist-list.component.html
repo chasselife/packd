@@ -21,8 +21,8 @@
     </p>
   </div>
   } @else { @if (isEditMode()) {
-  <div class="flex justify-end">
-    <button mat-button (click)="deactivateEditMode()">
+  <div class="flex justify-center mb-2">
+    <button mat-button (click)="deactivateEditMode()" class="exit-edit-button">
       <mat-icon>close</mat-icon>
       Exit Edit Mode
     </button>
@@ -31,7 +31,7 @@
   <div class="h-4 md:h-6"></div>
   }
   <div
-    class="flex-1 grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
+    class="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
     cdkDropList
     cdkDropListOrientation="mixed"
     (cdkDropListDropped)="onDrop($event)"

@@ -33,10 +33,10 @@ import { SeedDataService } from '../../services/seed-data.service';
           transform: rotate(0deg);
         }
         25% {
-          transform: rotate(-1deg);
+          transform: rotate(-0.75deg);
         }
         50% {
-          transform: rotate(1deg);
+          transform: rotate(0.75deg);
         }
         75% {
           transform: rotate(-0.5deg);
@@ -52,11 +52,26 @@ import { SeedDataService } from '../../services/seed-data.service';
       }
 
       .wiggle-animation:nth-child(3n + 2):not(.cdk-drag-preview) {
-        animation-delay: 0.15s;
+        animation-delay: 0.1s;
       }
 
       .wiggle-animation:nth-child(3n + 3):not(.cdk-drag-preview) {
-        animation-delay: 0.3s;
+        animation-delay: 0.2s;
+      }
+
+      @keyframes slideDownFadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .exit-edit-button {
+        animation: slideDownFadeIn 0.2s ease-out;
       }
     `,
   ],
