@@ -1,7 +1,7 @@
 <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
   <div class="flex justify-between items-center px-4 mb-4 md:mb-6">
     <h1 class="text-2xl font-semibold text-emerald-700 font-sans flex gap-3 items-center">
-      <img class="w-10 h-10" src="logo.svg" alt="Packd" />Packd
+      <img class="w-10 h-10" src="logo.svg" alt="Packd" />Packd.
     </h1>
     <button mat-raised-button color="primary" (click)="openNewChecklistDialog()">
       <mat-icon>add</mat-icon>
@@ -31,7 +31,7 @@
   <div class="h-4 md:h-6"></div>
   }
   <div
-    class="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8"
+    class="flex-1 grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
     cdkDropList
     cdkDropListOrientation="mixed"
     (cdkDropListDropped)="onDrop($event)"
@@ -42,7 +42,7 @@
     <div
       cdkDrag
       [cdkDragDisabled]="!isEditMode()"
-      class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] relative backdrop-blur-sm"
+      class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
       [class.no-hover]="isEditMode()"
       [class.wiggle-animation]="isEditMode()"
       [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass"
@@ -121,4 +121,5 @@
     }
   </div>
   }
+  <app-footer />
 </div>

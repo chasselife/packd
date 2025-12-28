@@ -1,8 +1,8 @@
-import { Component, signal, OnInit, inject, isDevMode } from '@angular/core';
+import { Component, OnInit, inject, isDevMode } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
 import { SeedDataService } from './services/seed-data.service';
 

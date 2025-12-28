@@ -9,6 +9,7 @@ import { DatabaseService } from '../../services/database.service';
 import { Checklist } from '../../models/checklist.model';
 import { NewChecklistDialogComponent } from '../new-checklist-dialog/new-checklist-dialog.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-checklist-list',
@@ -20,6 +21,7 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
     MatDialogModule,
     RouterModule,
     DragDropModule,
+    FooterComponent,
   ],
   templateUrl: './checklist-list.component.html',
   styles: [
