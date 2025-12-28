@@ -165,10 +165,8 @@ export class ChecklistListComponent implements OnInit {
       return; // Don't trigger long press in edit mode
     }
 
-    // Only prevent default on touch events to avoid scrolling during long press
-    if (event instanceof TouchEvent) {
-      event.preventDefault();
-    }
+    // Don't prevent default - allow normal scrolling to work
+    // Long press detection doesn't require preventDefault
     event.stopPropagation();
 
     this.longPressTimer = window.setTimeout(() => {

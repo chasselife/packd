@@ -265,9 +265,14 @@ export class ChecklistItemComponent {
     // Only allow swipe if horizontal movement is significantly more than vertical
     if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY * 1.5) {
       this.isDragging = true;
-      // Prevent default to allow smooth swiping
+      // Only prevent default when we've confirmed it's a horizontal swipe
+      // This allows vertical scrolling to work normally
       event.preventDefault();
       event.stopPropagation();
+    } else if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      // If vertical movement is greater, it's a scroll - don't interfere
+      this.touchStarted = false;
+      this.isDragging = false;
     }
   }
 

@@ -45,7 +45,6 @@ body {
   border-radius: 0.75rem !important;
   background: rgba(156, 163, 175, 0.15) !important;
   backdrop-filter: blur(4px);
-  min-height: 60px !important;
   display: block !important;
   visibility: visible !important;
 }
@@ -57,6 +56,10 @@ body {
   z-index: 1000 !important;
   overflow: visible;
   padding: 12px;
+}
+
+.cdk-drag-placeholder.checklist-item {
+  margin-block: .725rem;
 }
 
 .cdk-drag-preview .mdc-icon-button {
