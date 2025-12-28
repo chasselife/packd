@@ -46,6 +46,8 @@ export class ChecklistItemComponent {
   private isDragging = false;
   private touchStarted = false;
   mouseStarted = false; // Public for template access
+  private longPressTimer: ReturnType<typeof setTimeout> | null = null;
+  private longPressDuration = 500; // milliseconds
 
   constructor() {
     effect(() => {
@@ -162,6 +164,8 @@ export class ChecklistItemComponent {
     if (this.dragDropEnabled()) {
       this.swipedItemId.set(null);
     }
+    // Clear any pending long press timer
+    this.clearLongPressTimer();
   }
 
   onTouchStart(event: TouchEvent, item: ChecklistItem): void {
@@ -177,6 +181,7 @@ export class ChecklistItemComponent {
     this.touchStartY = event.touches[0].clientY;
     this.isDragging = false;
     this.touchStarted = true;
+    this.startLongPressTimer(item);
     event.stopPropagation();
   }
 
@@ -188,6 +193,11 @@ export class ChecklistItemComponent {
 
     const deltaX = event.touches[0].clientX - this.touchStartX;
     const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
+
+    // Clear long press timer if there's significant movement
+    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+      this.clearLongPressTimer();
+    }
 
     // Determine if this is a horizontal swipe (not vertical drag)
     // Only allow swipe if horizontal movement is significantly more than vertical
@@ -205,6 +215,9 @@ export class ChecklistItemComponent {
   }
 
   onTouchEnd(event: TouchEvent, item: ChecklistItem): void {
+    // Clear long press timer
+    this.clearLongPressTimer();
+
     // Don't interfere with CDK drag when drag and drop is enabled
     if (this.dragDropEnabled() || !this.touchStarted) {
       this.touchStarted = false;
@@ -257,6 +270,7 @@ export class ChecklistItemComponent {
     this.isDragging = false;
     this.mouseStarted = true;
     this.currentSwipingItem = item;
+    this.startLongPressTimer(item);
 
     // Add global mouse move and up listeners
     document.addEventListener('mousemove', this.onDocumentMouseMove);
@@ -288,6 +302,11 @@ export class ChecklistItemComponent {
     const deltaX = event.clientX - this.touchStartX;
     const deltaY = Math.abs(event.clientY - this.touchStartY);
 
+    // Clear long press timer if there's significant movement
+    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+      this.clearLongPressTimer();
+    }
+
     // Determine if this is a horizontal swipe (not vertical drag)
     // Only allow swipe if horizontal movement is significantly more than vertical
     if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY * 1.5) {
@@ -305,6 +324,9 @@ export class ChecklistItemComponent {
   }
 
   onMouseUp(event: MouseEvent, item: ChecklistItem): void {
+    // Clear long press timer
+    this.clearLongPressTimer();
+
     // Don't interfere with CDK drag when drag and drop is enabled
     if (this.dragDropEnabled() || !this.mouseStarted) {
       this.mouseStarted = false;
@@ -357,6 +379,24 @@ export class ChecklistItemComponent {
 
   isItemSwiped(item: ChecklistItem): boolean {
     return item.id !== undefined && this.swipedItemId() === item.id;
+  }
+
+  private clearLongPressTimer(): void {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+  }
+
+  private startLongPressTimer(item: ChecklistItem): void {
+    this.clearLongPressTimer();
+    this.longPressTimer = setTimeout(() => {
+      // Long press detected - mark item as swiped
+      if (item.id && !this.dragDropEnabled()) {
+        this.swipedItemId.set(item.id);
+      }
+      this.longPressTimer = null;
+    }, this.longPressDuration);
   }
 
   getColorClasses(color?: string): {
