@@ -61,7 +61,7 @@
     cdkDropList
     (cdkDropListDropped)="onItemDrop($event)"
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-4"
-    [class.gap-4]="layoutMode() === 'full'"
+    [class.gap-3]="layoutMode() === 'full'"
     [class.gap-2]="layoutMode() !== 'full'"
   >
     @for (item of checklistItems(); track item.id) {
