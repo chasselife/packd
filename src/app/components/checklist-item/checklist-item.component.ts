@@ -433,10 +433,10 @@ export class ChecklistItemComponent {
     buttonClass: string;
   } {
     const defaultColor = {
-      bgClass: 'bg-emerald-500/20',
-      borderClass: 'border-emerald-500',
-      textClass: 'text-emerald-800',
-      buttonClass: 'bg-emerald-500/30 hover:bg-emerald-500/40',
+      bgClass: 'bg-primary-500/20',
+      borderClass: 'border-primary-500',
+      textClass: 'text-primary-800',
+      buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
     };
 
     if (!color) return defaultColor;
@@ -445,11 +445,17 @@ export class ChecklistItemComponent {
       string,
       { bgClass: string; borderClass: string; textClass: string; buttonClass: string }
     > = {
+      '#49966d': {
+        bgClass: 'bg-primary-500/20',
+        borderClass: 'border-primary-500',
+        textClass: 'text-primary-800',
+        buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
+      },
       '#53b87d': {
-        bgClass: 'bg-emerald-500/20',
-        borderClass: 'border-emerald-500',
-        textClass: 'text-emerald-800',
-        buttonClass: 'bg-emerald-500/30 hover:bg-emerald-500/40',
+        bgClass: 'bg-primary-500/20',
+        borderClass: 'border-primary-500',
+        textClass: 'text-primary-800',
+        buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
       },
       '#3b82f6': {
         bgClass: 'bg-blue-500/20',

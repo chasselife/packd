@@ -41,7 +41,7 @@ export class FooterComponent {
       case 'TikTok':
         return `${baseClasses} hover:bg-black hover:text-white`;
       default:
-        return `${baseClasses} hover:bg-emerald-100 hover:text-emerald-700`;
+        return `${baseClasses} hover:bg-primary-100 hover:text-primary`;
     }
   }
 }

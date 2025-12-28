@@ -1,16 +1,14 @@
 <div class="max-w-6xl mx-auto p-4 sm:p-6 flex flex-col min-h-dvh" (click)="closeSwipe()">
-  <!-- Header with better mobile spacing -->
-  <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-2 sm:px-4 mb-4 sm:mb-6">
-    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
+    <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4 mb-4 sm:mb-6">
       <button
         (click)="goBack()"
         class="flex p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer shrink-0"
         aria-label="Go back"
       >
-        <mat-icon class="text-2xl sm:text-3xl! h-6 sm:h-7! text-emerald-700!">arrow_back</mat-icon>
+        <mat-icon class="text-2xl sm:text-3xl! h-6! sm:h-9! text-primary!">arrow_back</mat-icon>
       </button>
       <h1
-        class="text-lg sm:text-xl md:text-2xl font-semibold text-emerald-700 font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
+        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
       >
         @if (checklist()) { 
           @if (checklist()!.icon) {
@@ -30,15 +28,14 @@
         <span class="sm:hidden">Add</span>
       </button>
     </div>
-  </div>
 
   @if (!isLoading()) {
   <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
     @if (checklistItems().length > 0) {
     <button
       mat-icon-button
-      [class.bg-emerald-100!]="dragDropEnabled()"
-      [class.text-emerald-700!]="dragDropEnabled()"
+      [class.bg-primary-100!]="dragDropEnabled()"
+      [class.text-primary!]="dragDropEnabled()"
       [class.bg-gray-100!]="!dragDropEnabled()"
       [class.text-gray-500!]="!dragDropEnabled()"
       [class.opacity-70!]="!dragDropEnabled()"
@@ -58,7 +55,7 @@
         <button
           mat-icon-button
           [class.bg-white!]="layoutMode() === 'compact'"
-          [class.text-emerald-700!]="layoutMode() === 'compact'"
+          [class.text-primary!]="layoutMode() === 'compact'"
           [class.shadow-sm]="layoutMode() === 'compact'"
           [class.text-gray-600]="layoutMode() !== 'compact'"
           (click)="setLayoutMode('compact')"
@@ -71,7 +68,7 @@
         <button
           mat-icon-button
           [class.bg-white!]="layoutMode() === 'full'"
-          [class.text-emerald-700!]="layoutMode() === 'full'"
+          [class.text-primary!]="layoutMode() === 'full'"
           [class.shadow-sm]="layoutMode() === 'full'"
           [class.text-gray-600]="layoutMode() !== 'full'"
           (click)="setLayoutMode('full')"
@@ -98,6 +95,7 @@
   } @else {
   <div
     cdkDropList
+    cdkDropListOrientation="mixed"
     [cdkDropListDisabled]="!dragDropEnabled()"
     (cdkDropListDropped)="onItemDrop($event)"
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4"
@@ -108,7 +106,7 @@
     <div class="relative" [class.rounded-xl]="layoutMode() === 'full'" [class.rounded-lg]="layoutMode() !== 'full'" (click)="$event.stopPropagation()">
       <!-- Action buttons behind the card -->
       <div 
-        class="absolute right-0 top-0 bottom-0 flex items-center gap-2 px-2 bg-emerald-500 z-10 transition-opacity duration-200"
+        class="absolute bg-primary- right-0 top-0 bottom-0 flex items-center gap-2 px-2 bg-primary-500 z-10 transition-opacity duration-200"
         [class.opacity-100]="isItemSwiped(item)"
         [class.opacity-0]="!isItemSwiped(item)"
         [class.pointer-events-none]="!isItemSwiped(item)"
@@ -150,15 +148,15 @@
         [class.p-4]="layoutMode() === 'full'"
         [class.p-3]="layoutMode() === 'compact'"
         [class.rounded-xl]="layoutMode() === 'full' && !isItemSwiped(item)"
-        [class.rounded-lg]="layoutMode() !== 'full' && !isItemSwiped(item)"
         [class.rounded-tl-xl]="layoutMode() === 'full' && isItemSwiped(item)"
         [class.rounded-bl-xl]="layoutMode() === 'full' && isItemSwiped(item)"
+        [class.rounded-lg]="layoutMode() !== 'full' && !isItemSwiped(item)"
         [class.rounded-tl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
         [class.rounded-bl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
         [class.bg-white]="!item.isDone"
-        [class.bg-emerald-50/80]="item.isDone"
+        [class.bg-primary-50/80]="item.isDone"
         [class.border-gray-200]="!item.isDone"
-        [class.border-emerald-400]="item.isDone"
+        [class.border-primary-400]="item.isDone"
         [class.shadow-sm]="!item.isDone"
         [class.shadow-md]="item.isDone"
         [class.hover:shadow-md]="!item.isDone"
@@ -188,7 +186,7 @@
             (mousedown)="$event.stopPropagation()"
           >
             @if (item.isDone) {
-            <mat-icon class="text-2xl sm:text-3xl text-emerald-600!">check_circle</mat-icon>
+            <mat-icon class="text-2xl sm:text-3xl text-primary-600!">check_circle</mat-icon>
             } @else {
             <mat-icon class="text-2xl sm:text-3xl text-gray-400 group-hover:text-gray-500">radio_button_unchecked</mat-icon>
             }
@@ -199,7 +197,7 @@
               [class.text-base]="layoutMode() === 'full'"
               [class.text-sm]="layoutMode() === 'compact'"
               [class.text-gray-900]="!item.isDone"
-              [class.text-emerald-900]="item.isDone"
+              [class.text-primary-900]="item.isDone"
               [class.line-through]="item.isDone"
               [class.opacity-60]="item.isDone"
             >
@@ -212,7 +210,7 @@
             <p
               class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed"
               [class.text-gray-500]="!item.isDone"
-              [class.text-emerald-700]="item.isDone"
+              [class.text-primary]="item.isDone"
               [class.opacity-70]="item.isDone"
             >
               {{ item.description }}
@@ -228,7 +226,7 @@
             color="primary"
             (click)="openEditItemDialog(item); $event.stopPropagation()"
             aria-label="Edit item"
-            class="w-8! h-8! sm:w-10! sm:h-10!"
+            class="flex! content-center! items-center! w-8! h-8! sm:w-12! sm:h-12!"
           >
             <mat-icon class="text-lg! sm:text-xl!">edit</mat-icon>
           </button>
@@ -237,7 +235,7 @@
             color="warn"
             (click)="deleteItem(item); $event.stopPropagation()"
             aria-label="Delete item"
-            class="w-8! h-8! sm:w-10! sm:h-10!"
+            class="flex! content-center! items-center! w-8! h-8! sm:w-12! sm:h-12!"
           >
             <mat-icon class="text-lg! sm:text-xl!">delete</mat-icon>
           </button>

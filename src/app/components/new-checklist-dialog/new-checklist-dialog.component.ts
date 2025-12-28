@@ -73,9 +73,9 @@ export class NewChecklistDialogComponent {
     {
       value: '#53b87d',
       label: 'Emerald',
-      bgClass: 'bg-emerald-500/20',
-      borderClass: 'border-emerald-700',
-      textClass: 'text-emerald-700',
+      bgClass: 'bg-primary-500/20',
+      borderClass: 'border-primary',
+      textClass: 'text-primary',
     },
     {
       value: '#3b82f6',

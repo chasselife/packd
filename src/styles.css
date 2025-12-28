@@ -5,6 +5,20 @@
 @theme {
   --font-sans: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     sans-serif;
+
+  /* Primary color palette based on #49966D */
+  --color-primary: #49966d;
+  --color-primary-50: #e8f3ec;
+  --color-primary-100: #c5e0d0;
+  --color-primary-200: #9eccb1;
+  --color-primary-300: #77b892;
+  --color-primary-400: #5aa87a;
+  --color-primary-500: #49966d;
+  --color-primary-600: #428862;
+  --color-primary-700: #387755;
+  --color-primary-800: #2e6648;
+  --color-primary-900: #1f4a33;
+  --color-primary-950: #0f2519;
 }
 
 * {

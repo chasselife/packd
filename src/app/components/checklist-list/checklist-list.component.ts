@@ -375,18 +375,18 @@ export class ChecklistListComponent implements OnInit {
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
     const defaultColor = {
-      bgClass: 'bg-emerald-500/20',
-      borderClass: 'border-emerald-700',
-      textClass: 'text-emerald-700',
+      bgClass: 'bg-primary-500/20',
+      borderClass: 'border-primary',
+      textClass: 'text-primary',
     };
 
     if (!color) return defaultColor;
 
     const colorMap: Record<string, { bgClass: string; borderClass: string; textClass: string }> = {
       '#53b87d': {
-        bgClass: 'bg-emerald-500/20',
-        borderClass: 'border-emerald-700',
-        textClass: 'text-emerald-700',
+        bgClass: 'bg-primary-500/20',
+        borderClass: 'border-primary',
+        textClass: 'text-primary',
       },
       '#3b82f6': {
         bgClass: 'bg-blue-500/20',
