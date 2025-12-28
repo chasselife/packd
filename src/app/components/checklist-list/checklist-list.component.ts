@@ -91,6 +91,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   private editModeJustActivated = false;
   private routerSubscription?: Subscription;
 
+  // Touch tracking for mobile scroll detection
+  private touchStartX = 0;
+  private touchStartY = 0;
+  private touchMoved = false;
+
   async ngOnInit(): Promise<void> {
     await this.seedDataService.seedInitialData();
     await this.loadChecklists();
@@ -160,6 +165,13 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       return; // Don't trigger long press in edit mode
     }
 
+    // Track touch start position for mobile scroll detection
+    if (event instanceof TouchEvent && event.touches && event.touches.length > 0) {
+      this.touchStartX = event.touches[0].clientX;
+      this.touchStartY = event.touches[0].clientY;
+      this.touchMoved = false;
+    }
+
     // Don't prevent default - allow normal scrolling to work
     // Long press detection doesn't require preventDefault
     event.stopPropagation();
@@ -170,6 +182,27 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       this.editModeJustActivated = true;
       this.longPressTimer = null;
     }, this.LONG_PRESS_DURATION);
+  }
+
+  onTileTouchMove(event: TouchEvent): void {
+    if (this.isEditMode()) {
+      return;
+    }
+
+    if (!event.touches || event.touches.length === 0) return;
+
+    const deltaX = Math.abs(event.touches[0].clientX - this.touchStartX);
+    const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
+
+    // If movement is significant (more than 10px), mark as moved (scrolling)
+    if (deltaX > 10 || deltaY > 10) {
+      this.touchMoved = true;
+      // Clear long press timer if scrolling
+      if (this.longPressTimer !== null) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+    }
   }
 
   onTileMouseUp(event: MouseEvent | TouchEvent): void {
@@ -183,6 +216,27 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     }, this.LONG_PRESS_DURATION);
     // Stop propagation to prevent the event from triggering container click
     // which would immediately deactivate edit mode after long press
+    event.stopPropagation();
+  }
+
+  onTileTouchEnd(checklist: Checklist, event: TouchEvent): void {
+    // Clear long press timer
+    if (this.longPressTimer !== null) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+
+    // Only navigate if touch didn't move (was a tap, not a scroll)
+    if (!this.touchMoved && !this.isEditMode()) {
+      this.onChecklistClick(checklist);
+    }
+
+    // Reset touch tracking
+    this.touchMoved = false;
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+
+    // Stop propagation
     event.stopPropagation();
   }
 

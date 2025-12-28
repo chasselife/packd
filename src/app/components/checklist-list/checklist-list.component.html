@@ -53,7 +53,8 @@
       (mouseup)="onTileMouseUp($event)"
       (mouseleave)="onTileMouseLeave()"
       (touchstart)="onTileMouseDown(checklist, $event)"
-      (touchend)="!isEditMode() && onChecklistClick(checklist); onTileMouseUp($event)"
+      (touchmove)="onTileTouchMove($event)"
+      (touchend)="onTileTouchEnd(checklist, $event)"
       (touchcancel)="onTileMouseLeave()"
     >
       @if (isEditMode()) {
