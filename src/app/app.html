@@ -1,3 +1,5 @@
 <div class="flex flex-col min-h-screen">
-  <router-outlet />
+  <div [@routeAnimations]="routeAnimationState" style="position: relative; width: 100%">
+    <router-outlet />
+  </div>
 </div>

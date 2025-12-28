@@ -1,0 +1,6 @@
+/* Route animation container */
+:host {
+  display: block;
+  width: 100%;
+}
+
