@@ -242,12 +242,6 @@ export class ChecklistItemComponent {
       this.touchStarted = false;
       return;
     }
-    // Don't interfere with CDK drag handle
-    const target = event.target as HTMLElement;
-    if (target.closest('.cdk-drag-handle') || target.hasAttribute('cdkDragHandle')) {
-      this.touchStarted = false;
-      return;
-    }
 
     if (!event.touches || event.touches.length === 0) return;
 
@@ -318,13 +312,8 @@ export class ChecklistItemComponent {
       this.mouseStarted = false;
       return;
     }
-    // Don't interfere with CDK drag handle
-    const target = event.target as HTMLElement;
-    if (target.closest('.cdk-drag-handle') || target.hasAttribute('cdkDragHandle')) {
-      this.mouseStarted = false;
-      return;
-    }
     // Don't start if clicking on buttons or interactive elements
+    const target = event.target as HTMLElement;
     if (target.closest('button') || target.closest('mat-icon-button')) {
       this.mouseStarted = false;
       return;

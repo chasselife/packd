@@ -41,6 +41,7 @@
       [class.text-emerald-700!]="dragDropEnabled()"
       [class.bg-gray-100!]="!dragDropEnabled()"
       [class.text-gray-500!]="!dragDropEnabled()"
+      [class.opacity-70!]="!dragDropEnabled()"
       (click)="toggleDragDrop()"
       aria-label="Toggle drag and drop"
       [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
@@ -139,6 +140,7 @@
       <div
         cdkDrag
         [cdkDragDisabled]="!dragDropEnabled()"
+        cdkDragHandle
         class="flex justify-between items-center border  relative group bg-white overflow-hidden"
         [class.cursor-move]="dragDropEnabled()"
         [class.cursor-default]="!dragDropEnabled()"
@@ -170,11 +172,10 @@
         (click)="!isItemSwiped(item) && !mouseStarted && toggleItemDone(item)"
       >
         <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
-          <!-- Drag handle -->
+          <!-- Drag handle visual indicator -->
           @if (dragDropEnabled()) {
           <div
-            cdkDragHandle
-            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors"
+            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors pointer-events-none"
             aria-label="Drag handle"
           >
             <mat-icon class="text-xl sm:text-2xl">drag_indicator</mat-icon>
