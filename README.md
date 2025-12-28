@@ -54,6 +54,40 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Deployment to GitHub Pages
+
+This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
+
+### Setup Instructions
+
+1. **Enable GitHub Pages in your repository:**
+   - Go to your repository on GitHub
+   - Navigate to Settings → Pages
+   - Under "Source", select "GitHub Actions"
+
+2. **Push to trigger deployment:**
+   - The workflow will automatically run when you push to the `main` or `master` branch
+   - You can also manually trigger it from the Actions tab using "workflow_dispatch"
+
+3. **Your site will be available at:**
+   - `https://[your-username].github.io/packd/`
+
+### Manual Deployment
+
+If you want to deploy manually, you can use:
+
+```bash
+pnpm run deploy
+```
+
+This will build the project and prepare the necessary files (404.html and .nojekyll) for GitHub Pages.
+
+### Important Notes
+
+- The project is configured with `baseHref: "/packd/"` for GitHub Pages subdirectory deployment
+- A `404.html` file is automatically created to support Angular routing on GitHub Pages
+- A `.nojekyll` file is created to prevent Jekyll from processing the site
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
