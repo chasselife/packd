@@ -5,7 +5,9 @@
   {{ isEditMode ? 'Edit Item' : 'Create New Item' }}
 </h2>
 
-<mat-dialog-content class="max-h-full! flex-1 flex flex-col content-center">
+<mat-dialog-content
+  class="max-h-[unset]! min-h-[calc(100dvh-150px)]! flex-1 flex flex-col content-center"
+>
   <form [formGroup]="form" class="flex flex-col gap-4 w-full">
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
@@ -62,5 +64,3 @@
     </button>
   </div>
 </mat-dialog-actions>
-
-
