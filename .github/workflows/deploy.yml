@@ -53,6 +53,26 @@ jobs:
           mkdir -p dist/packd-deploy/packd
           cp -r dist/packd/browser/* dist/packd-deploy/packd/
 
+      - name: Create root redirect
+        run: |
+          cat > dist/packd-deploy/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Redirecting...</title>
+              <meta http-equiv="refresh" content="0; url=/packd/">
+              <link rel="canonical" href="/packd/">
+              <script>
+                window.location.href = "/packd/";
+              </script>
+            </head>
+            <body>
+              <p>If you are not redirected, <a href="/packd/">click here</a>.</p>
+            </body>
+          </html>
+          EOF
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
