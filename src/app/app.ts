@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, isDevMode } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, isDevMode } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
@@ -16,9 +16,9 @@ export class App implements OnInit {
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
   private seedDataService = inject(SeedDataService);
+  cdr = inject(ChangeDetectorRef);
 
-  ngOnInit(): void {
-    this.seedDataService.seedInitialData();
+  async ngOnInit() {
     if (!isDevMode() && this.swUpdate.isEnabled) {
       // Check for updates
       this.swUpdate.versionUpdates
@@ -27,6 +27,8 @@ export class App implements OnInit {
           this.showUpdateDialog();
         });
     }
+    await this.seedDataService.seedInitialData();
+    this.cdr.detectChanges();
   }
 
   private showUpdateDialog(): void {
