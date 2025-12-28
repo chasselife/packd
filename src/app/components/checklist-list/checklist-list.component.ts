@@ -10,6 +10,7 @@ import { Checklist } from '../../models/checklist.model';
 import { NewChecklistDialogComponent } from '../new-checklist-dialog/new-checklist-dialog.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { FooterComponent } from '../footer/footer.component';
+import { SeedDataService } from '../../services/seed-data.service';
 
 @Component({
   selector: 'app-checklist-list',
@@ -64,6 +65,7 @@ export class ChecklistListComponent implements OnInit {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private seedDataService = inject(SeedDataService);
 
   checklists = signal<Checklist[]>([]);
   isLoading = signal(true);
@@ -74,6 +76,7 @@ export class ChecklistListComponent implements OnInit {
   private editModeJustActivated = false;
 
   async ngOnInit(): Promise<void> {
+    await this.seedDataService.seedInitialData();
     await this.loadChecklists();
   }
 

@@ -15,8 +15,6 @@ import { SeedDataService } from './services/seed-data.service';
 export class App implements OnInit {
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
-  private seedDataService = inject(SeedDataService);
-  cdr = inject(ChangeDetectorRef);
 
   async ngOnInit() {
     if (!isDevMode() && this.swUpdate.isEnabled) {
@@ -27,8 +25,6 @@ export class App implements OnInit {
           this.showUpdateDialog();
         });
     }
-    await this.seedDataService.seedInitialData();
-    this.cdr.detectChanges();
   }
 
   private showUpdateDialog(): void {
