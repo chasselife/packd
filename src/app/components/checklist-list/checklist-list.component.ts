@@ -1,13 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist } from '../../models/checklist.model';
-import { NewChecklistDialogComponent } from '../new-checklist-dialog/new-checklist-dialog.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { FooterComponent } from '../footer/footer.component';
 import { SeedDataService } from '../../services/seed-data.service';
@@ -76,7 +76,7 @@ import { SeedDataService } from '../../services/seed-data.service';
     `,
   ],
 })
-export class ChecklistListComponent implements OnInit {
+export class ChecklistListComponent implements OnInit, OnDestroy {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -89,10 +89,27 @@ export class ChecklistListComponent implements OnInit {
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
   private editModeJustActivated = false;
+  private routerSubscription?: Subscription;
 
   async ngOnInit(): Promise<void> {
     await this.seedDataService.seedInitialData();
     await this.loadChecklists();
+
+    // Reload checklists when navigating back to this page
+    this.routerSubscription = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        // Only reload if we're on the root path
+        if (event.urlAfterRedirects === '/' || event.urlAfterRedirects === '') {
+          this.loadChecklists();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   async loadChecklists(): Promise<void> {
@@ -135,29 +152,7 @@ export class ChecklistListComponent implements OnInit {
   }
 
   openNewChecklistDialog(): void {
-    const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'full-screen-dialog',
-    });
-
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (result) {
-        try {
-          await this.databaseService.createChecklist({
-            title: result.title,
-            icon: result.icon,
-            color: result.color,
-          });
-          // Reload checklists to show the new one
-          await this.loadChecklists();
-        } catch (error) {
-          console.error('Error creating checklist:', error);
-        }
-      }
-    });
+    this.router.navigate(['/checklist/new']);
   }
 
   onTileMouseDown(checklist: Checklist, event: MouseEvent | TouchEvent): void {
@@ -228,29 +223,9 @@ export class ChecklistListComponent implements OnInit {
   }
 
   openEditChecklistDialog(checklist: Checklist): void {
-    const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      data: { checklist },
-    });
-
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && checklist.id) {
-        try {
-          await this.databaseService.updateChecklist(checklist.id, {
-            title: result.title,
-            icon: result.icon,
-            color: result.color,
-          });
-          // Reload checklists to show the updated one
-          await this.loadChecklists();
-        } catch (error) {
-          console.error('Error updating checklist:', error);
-        }
-      }
-    });
+    if (checklist.id) {
+      this.router.navigate(['/checklist', checklist.id, 'edit']);
+    }
   }
 
   openDeleteChecklistDialog(checklist: Checklist): void {
@@ -278,55 +253,11 @@ export class ChecklistListComponent implements OnInit {
     });
   }
 
-  async openDuplicateChecklistDialog(checklist: Checklist): Promise<void> {
-    if (!checklist.id) return;
-
-    try {
-      // Get all items for the checklist
-      const items = await this.databaseService.getChecklistItems(checklist.id);
-
-      // Open the dialog in duplicate mode
-      const dialogRef = this.dialog.open(NewChecklistDialogComponent, {
-        width: '100vw',
-        height: '100vh',
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        data: { checklist, isDuplicate: true, items },
+  openDuplicateChecklistDialog(checklist: Checklist): void {
+    if (checklist.id) {
+      this.router.navigate(['/checklist', checklist.id, 'edit'], {
+        queryParams: { duplicate: 'true' },
       });
-
-      dialogRef.afterClosed().subscribe(async (result) => {
-        if (result) {
-          try {
-            // Create the duplicated checklist
-            const newChecklistId = await this.databaseService.createChecklist({
-              title: result.title,
-              icon: result.icon,
-              color: result.color,
-            });
-
-            // Duplicate all items
-            if (items.length > 0) {
-              for (const item of items) {
-                await this.databaseService.createChecklistItem({
-                  checklistId: newChecklistId,
-                  title: item.title,
-                  description: item.description || '',
-                  icon: item.icon || '',
-                  isDone: false, // Reset isDone for duplicated items
-                  sortOrder: item.sortOrder,
-                });
-              }
-            }
-
-            // Reload checklists to show the new one
-            await this.loadChecklists();
-          } catch (error) {
-            console.error('Error duplicating checklist:', error);
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Error loading checklist items for duplication:', error);
     }
   }
 

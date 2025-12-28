@@ -1,13 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Checklist } from '../../models/checklist.model';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-new-checklist-dialog',
@@ -15,7 +16,7 @@ import { Checklist } from '../../models/checklist.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatDialogModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -24,17 +25,26 @@ import { Checklist } from '../../models/checklist.model';
   ],
   templateUrl: './new-checklist-dialog.component.html',
 })
-export class NewChecklistDialogComponent {
+export class NewChecklistDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
-  public dialogRef = inject(MatDialogRef<NewChecklistDialogComponent>);
-  public dialogData = inject<{ checklist?: Checklist; isDuplicate?: boolean; items?: any[] }>(
-    MAT_DIALOG_DATA,
-    { optional: true }
-  );
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private databaseService = inject(DatabaseService);
 
   form: FormGroup;
   isEditMode = false;
   isDuplicateMode = false;
+  checklistId: number | null = null;
+
+  constructor() {
+    // Initialize form with default values to prevent template errors
+    // Using default color '#53b87d' (Emerald) - first color in colorOptions
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(1)]],
+      icon: ['checklist', Validators.required],
+      color: ['#53b87d', Validators.required],
+    });
+  }
 
   // Popular Material Icons for checklists
   icons = [
@@ -142,40 +152,74 @@ export class NewChecklistDialogComponent {
     },
   ];
 
-  constructor() {
-    const checklist = this.dialogData?.checklist;
-    this.isDuplicateMode = !!this.dialogData?.isDuplicate;
-    this.isEditMode = !!checklist && !this.isDuplicateMode;
+  async ngOnInit(): Promise<void> {
+    const checklistId = this.route.snapshot.paramMap.get('id');
+    const isDuplicate = this.route.snapshot.queryParamMap.get('duplicate') === 'true';
 
-    // Automatically append "Copy" to the title in duplicate mode
-    const title =
-      this.isDuplicateMode && checklist?.title ? `${checklist.title} Copy` : checklist?.title || '';
+    this.isDuplicateMode = isDuplicate;
 
-    this.form = this.fb.group({
-      title: [title, [Validators.required, Validators.minLength(1)]],
-      icon: [checklist?.icon || 'checklist', Validators.required],
-      color: [checklist?.color || this.colorOptions[0].value, Validators.required],
-    });
+    if (checklistId) {
+      this.checklistId = Number(checklistId);
+      try {
+        const checklist = await this.databaseService.getChecklist(this.checklistId);
+        if (checklist) {
+          this.isEditMode = !isDuplicate;
+
+          // Automatically append "Copy" to the title in duplicate mode
+          const title =
+            isDuplicate && checklist.title ? `${checklist.title} Copy` : checklist.title || '';
+
+          // Update existing form with checklist data
+          this.form.patchValue({
+            title: title,
+            icon: checklist.icon || 'checklist',
+            color: checklist.color || this.colorOptions[0].value,
+          });
+        } else {
+          // Checklist not found, redirect back
+          this.router.navigate(['/']);
+        }
+      } catch (error) {
+        console.error('Error loading checklist:', error);
+        this.router.navigate(['/']);
+      }
+    }
+    // For new checklist mode, form is already initialized with default values in constructor
   }
 
   onCancel(): void {
-    this.form.reset({
-      title: '',
-      icon: 'checklist',
-      color: this.colorOptions[0].value,
-    });
-    this.dialogRef.close();
+    this.router.navigate(['/']);
   }
 
-  onCreate(): void {
+  async onCreate(): Promise<void> {
     if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+      try {
+        const formValue = this.form.value;
+        await this.databaseService.createChecklist({
+          title: formValue.title,
+          icon: formValue.icon,
+          color: formValue.color,
+        });
+        this.router.navigate(['/']);
+      } catch (error) {
+        console.error('Error creating checklist:', error);
+      }
     }
   }
 
-  onSave(): void {
-    if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+  async onSave(): Promise<void> {
+    if (this.form.valid && this.checklistId) {
+      try {
+        const formValue = this.form.value;
+        await this.databaseService.updateChecklist(this.checklistId, {
+          title: formValue.title,
+          icon: formValue.icon,
+          color: formValue.color,
+        });
+        this.router.navigate(['/']);
+      } catch (error) {
+        console.error('Error updating checklist:', error);
+      }
     }
   }
 
@@ -189,5 +233,38 @@ export class NewChecklistDialogComponent {
     | undefined {
     const selectedValue = this.form.get('color')?.value;
     return this.colorOptions.find((color) => color.value === selectedValue);
+  }
+
+  async onDuplicate(): Promise<void> {
+    if (this.form.valid && this.checklistId) {
+      try {
+        const formValue = this.form.value;
+        // Create the duplicated checklist
+        const newChecklistId = await this.databaseService.createChecklist({
+          title: formValue.title,
+          icon: formValue.icon,
+          color: formValue.color,
+        });
+
+        // Get items from the original checklist and duplicate them
+        const items = await this.databaseService.getChecklistItems(this.checklistId);
+        if (items.length > 0) {
+          for (const item of items) {
+            await this.databaseService.createChecklistItem({
+              checklistId: newChecklistId,
+              title: item.title,
+              description: item.description || '',
+              icon: item.icon || '',
+              isDone: false, // Reset isDone for duplicated items
+              sortOrder: item.sortOrder,
+            });
+          }
+        }
+
+        this.router.navigate(['/']);
+      } catch (error) {
+        console.error('Error duplicating checklist:', error);
+      }
+    }
   }
 }

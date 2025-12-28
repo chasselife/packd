@@ -1,168 +1,180 @@
-<div class="bg-linear-to-br from-primary-50/50 to-primary-100/30 rounded-t-lg">
-  <h2
-    mat-dialog-title
-    class="before:hidden! text-2xl! font-bold! text-center py-6! px-6! text-primary-800 flex! items-center! justify-center! gap-3"
-  >
-    @if (isDuplicateMode) {
-    <mat-icon class="text-primary-600">content_copy</mat-icon>
-    <span>Duplicate {{ dialogData?.checklist?.title || 'Checklist' }}</span>
-    } @else if (isEditMode) {
-    <mat-icon class="text-primary-600">edit</mat-icon>
-    <span>Edit Checklist</span>
-    } @else {
-    <mat-icon class="text-primary-600">add_circle</mat-icon>
-    <span>Add Checklist</span>
-    }
-  </h2>
-</div>
-
-<mat-dialog-content class="flex-1 min-h-0 max-h-[unset]! overflow-y-auto px-6 py-6! bg-white">
-  <form [formGroup]="form" class="flex flex-col gap-6 w-full">
-    <!-- Title Field -->
-    <div class="space-y-2">
-      <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <mat-icon class="text-base! text-primary-600">title</mat-icon>
-        Checklist Title
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <input
-          matInput
-          formControlName="title"
-          placeholder="Enter a descriptive title for your checklist"
-          class="text-base"
-        />
-        @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
-        <mat-error>Title is required</mat-error>
-        }
-      </mat-form-field>
-    </div>
-
-    <!-- Icon and Color Selection in Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Icon Field -->
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon class="text-base! text-primary-600">palette</mat-icon>
-          Icon
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="icon">
-            <mat-select-trigger>
-              @if (getSelectedIcon(); as selectedIcon) {
-              <div class="flex items-center gap-3 py-1">
-                <mat-icon class="text-primary-600">{{ selectedIcon.value }}</mat-icon>
-                <span class="font-medium">{{ selectedIcon.label }}</span>
-              </div>
-              }
-            </mat-select-trigger>
-            @for (icon of icons; track icon.value) {
-            <mat-option [value]="icon.value">
-              <div class="flex items-center gap-3 py-1">
-                <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
-                <span>{{ icon.label }}</span>
-              </div>
-            </mat-option>
-            }
-          </mat-select>
-          @if (form.get('icon')?.hasError('required') && form.get('icon')?.touched) {
-          <mat-error>Icon is required</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Color Field -->
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon class="text-base! text-primary-600">color_lens</mat-icon>
-          Color Theme
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="color">
-            <mat-select-trigger>
-              @if (getSelectedColor(); as selectedColor) {
-              <div class="flex items-center gap-3 py-1">
-                <div
-                  class="w-8 h-8 rounded-lg border-2 shadow-sm"
-                  [style.background-color]="selectedColor.value"
-                  [style.border-color]="selectedColor.value"
-                ></div>
-                <span class="font-medium">{{ selectedColor.label }}</span>
-              </div>
-              }
-            </mat-select-trigger>
-            @for (color of colorOptions; track color.value) {
-            <mat-option [value]="color.value">
-              <div class="flex items-center gap-3 py-1">
-                <div
-                  class="w-8 h-8 rounded-lg border-2 shadow-sm"
-                  [style.background-color]="color.value"
-                  [style.border-color]="color.value"
-                ></div>
-                <span>{{ color.label }}</span>
-              </div>
-            </mat-option>
-            }
-          </mat-select>
-          @if (form.get('color')?.hasError('required') && form.get('color')?.touched) {
-          <mat-error>Color is required</mat-error>
-          }
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- Preview Section -->
-    @if (form.get('title')?.value || form.get('icon')?.value || form.get('color')?.value) {
-    <div class="mt-4 p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
-      <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
-      @let colorClasses = getSelectedColor(); @let defaultColorClasses = { bgClass:
-      'bg-primary-500/20', borderClass: 'border-primary', textClass: 'text-primary' }; @let
-      previewColorClasses = colorClasses || defaultColorClasses;
-      <div
-        class="max-w-36 rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
-        [class]="
-          previewColorClasses.bgClass +
-          ' ' +
-          previewColorClasses.borderClass +
-          ' ' +
-          previewColorClasses.textClass
-        "
-      >
-        <div class="md:mb-1">
-          <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-            {{ getSelectedIcon()?.value || 'checklist' }}
-          </mat-icon>
-        </div>
-        <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-          {{ form.get('title')?.value || 'Your Checklist Title' }}
-        </div>
-      </div>
-    </div>
-    }
-  </form>
-</mat-dialog-content>
-
-<mat-dialog-actions
-  align="end"
-  class="m-0! px-6! py-4! min-h-auto! bg-gray-50 border-t border-gray-200"
->
-  <div class="flex items-center gap-3 w-full justify-end">
-    <button
-      mat-button
-      (click)="onCancel()"
-      class="px-6! py-2! font-medium text-gray-600 hover:bg-gray-100"
-    >
-      <mat-icon class="text-lg!">close</mat-icon>
-      <span>Cancel</span>
+<div class="max-w-4xl mx-auto px-4 py-6 flex flex-col min-h-dvh">
+  <div class="flex items-center gap-3 mb-6">
+    <button mat-button (click)="onCancel()" class="shrink-0" aria-label="Go back">
+      <mat-icon class="text-2xl! sm:text-3xl! h-6! sm:h-9! text-primary!">arrow_back</mat-icon>
     </button>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="isEditMode ? onSave() : onCreate()"
-      [disabled]="!form.valid"
-      class="px-6! py-2! font-semibold shadow-md hover:shadow-lg transition-shadow"
-    >
-      <mat-icon class="text-lg!">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
-      <span>{{ isEditMode ? 'Save Changes' : 'Create Checklist' }}</span>
-    </button>
+    <h2 class="text-2xl font-bold text-primary flex items-center gap-3 flex-1">
+      @if (isDuplicateMode) {
+      <mat-icon class="text-primary">content_copy</mat-icon>
+      <span>Duplicate Checklist</span>
+      } @else if (isEditMode) {
+      <mat-icon class="text-primary">edit</mat-icon>
+      <span>Edit Checklist</span>
+      } @else {
+      <mat-icon class="text-primary">add_circle</mat-icon>
+      <span>Add Checklist</span>
+      }
+    </h2>
   </div>
-</mat-dialog-actions>
+
+  <div class="flex-1 overflow-y-auto px-6 py-6 bg-white rounded-lg shadow-sm">
+    <form [formGroup]="form" class="flex flex-col gap-6 w-full">
+      <!-- Title Field -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <mat-icon class="text-base! text-primary-600">title</mat-icon>
+          Checklist Title
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            formControlName="title"
+            placeholder="Enter a descriptive title for your checklist"
+            class="text-base"
+          />
+          @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+          <mat-error>Title is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Icon and Color Selection in Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Icon Field -->
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <mat-icon class="text-base! text-primary-600">palette</mat-icon>
+            Icon
+          </label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select formControlName="icon">
+              <mat-select-trigger>
+                @if (getSelectedIcon(); as selectedIcon) {
+                <div class="flex items-center gap-3 py-1">
+                  <mat-icon class="text-primary-600">{{ selectedIcon.value }}</mat-icon>
+                  <span class="font-medium">{{ selectedIcon.label }}</span>
+                </div>
+                }
+              </mat-select-trigger>
+              @for (icon of icons; track icon.value) {
+              <mat-option [value]="icon.value">
+                <div class="flex items-center gap-3 py-1">
+                  <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
+                  <span>{{ icon.label }}</span>
+                </div>
+              </mat-option>
+              }
+            </mat-select>
+            @if (form.get('icon')?.hasError('required') && form.get('icon')?.touched) {
+            <mat-error>Icon is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Color Field -->
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <mat-icon class="text-base! text-primary-600">color_lens</mat-icon>
+            Color Theme
+          </label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select formControlName="color">
+              <mat-select-trigger>
+                @if (getSelectedColor(); as selectedColor) {
+                <div class="flex items-center gap-3 py-1">
+                  <div
+                    class="w-8 h-8 rounded-lg border-2 shadow-sm"
+                    [style.background-color]="selectedColor.value"
+                    [style.border-color]="selectedColor.value"
+                  ></div>
+                  <span class="font-medium">{{ selectedColor.label }}</span>
+                </div>
+                }
+              </mat-select-trigger>
+              @for (color of colorOptions; track color.value) {
+              <mat-option [value]="color.value">
+                <div class="flex items-center gap-3 py-1">
+                  <div
+                    class="w-8 h-8 rounded-lg border-2 shadow-sm"
+                    [style.background-color]="color.value"
+                    [style.border-color]="color.value"
+                  ></div>
+                  <span>{{ color.label }}</span>
+                </div>
+              </mat-option>
+              }
+            </mat-select>
+            @if (form.get('color')?.hasError('required') && form.get('color')?.touched) {
+            <mat-error>Color is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Preview Section -->
+      @if (form.get('title')?.value || form.get('icon')?.value || form.get('color')?.value) {
+      <div class="mt-4 p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+        <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
+        @let colorClasses = getSelectedColor(); @let defaultColorClasses = { bgClass:
+        'bg-primary-500/20', borderClass: 'border-primary', textClass: 'text-primary' }; @let
+        previewColorClasses = colorClasses || defaultColorClasses;
+        <div
+          class="max-w-36 rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
+          [class]="
+            previewColorClasses.bgClass +
+            ' ' +
+            previewColorClasses.borderClass +
+            ' ' +
+            previewColorClasses.textClass
+          "
+        >
+          <div class="md:mb-1">
+            <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
+              {{ getSelectedIcon()?.value || 'checklist' }}
+            </mat-icon>
+          </div>
+          <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
+            {{ form.get('title')?.value || 'Your Checklist Title' }}
+          </div>
+        </div>
+      </div>
+      }
+    </form>
+  </div>
+
+  <div class="mt-6 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+    <div class="flex items-center gap-3 w-full justify-end">
+      <button
+        mat-button
+        (click)="onCancel()"
+        class="px-6 py-2 font-medium text-gray-600 hover:bg-gray-100"
+      >
+        <mat-icon class="text-lg">close</mat-icon>
+        <span>Cancel</span>
+      </button>
+      @if (isDuplicateMode) {
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onDuplicate()"
+        [disabled]="!form.valid"
+        class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
+      >
+        <mat-icon class="text-lg">content_copy</mat-icon>
+        <span>Duplicate Checklist</span>
+      </button>
+      } @else {
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="isEditMode ? onSave() : onCreate()"
+        [disabled]="!form.valid"
+        class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
+      >
+        <mat-icon class="text-lg">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ isEditMode ? 'Save Changes' : 'Create Checklist' }}</span>
+      </button>
+      }
+    </div>
+  </div>
+</div>

@@ -1,13 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ChecklistItem } from '../../models/checklist.model';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-new-checklist-item-dialog',
@@ -15,7 +16,7 @@ import { ChecklistItem } from '../../models/checklist.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatDialogModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -24,13 +25,25 @@ import { ChecklistItem } from '../../models/checklist.model';
   ],
   templateUrl: './new-checklist-item-dialog.component.html',
 })
-export class NewChecklistItemDialogComponent {
+export class NewChecklistItemDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
-  public dialogRef = inject(MatDialogRef<NewChecklistItemDialogComponent>);
-  public data = inject<{ item?: ChecklistItem }>(MAT_DIALOG_DATA, { optional: true });
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private databaseService = inject(DatabaseService);
 
   form: FormGroup;
   isEditMode = false;
+  checklistId: number | null = null;
+  itemId: number | null = null;
+
+  constructor() {
+    // Initialize form with default values to prevent template errors
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(1)]],
+      description: [''],
+      icon: [''],
+    });
+  }
 
   // Popular Material Icons for checklist items
   icons = [
@@ -118,24 +131,84 @@ export class NewChecklistItemDialogComponent {
     { value: 'build', label: 'Build' },
   ];
 
-  constructor() {
-    const item = this.data?.item;
-    this.isEditMode = !!item;
+  async ngOnInit(): Promise<void> {
+    const checklistIdParam = this.route.snapshot.paramMap.get('checklistId');
+    const itemIdParam = this.route.snapshot.paramMap.get('itemId');
 
-    this.form = this.fb.group({
-      title: [item?.title || '', [Validators.required, Validators.minLength(1)]],
-      description: [item?.description || ''],
-      icon: [item?.icon || ''],
-    });
+    if (!checklistIdParam) {
+      // No checklist ID, redirect back
+      this.router.navigate(['/']);
+      return;
+    }
+
+    this.checklistId = Number(checklistIdParam);
+
+    if (itemIdParam) {
+      // Edit mode
+      this.itemId = Number(itemIdParam);
+      this.isEditMode = true;
+      try {
+        const items = await this.databaseService.getChecklistItems(this.checklistId);
+        const item = items.find((i) => i.id === this.itemId);
+        if (item) {
+          // Update existing form with item data
+          this.form.patchValue({
+            title: item.title || '',
+            description: item.description || '',
+            icon: item.icon || '',
+          });
+        } else {
+          // Item not found, redirect back
+          this.router.navigate(['/checklist', this.checklistId]);
+        }
+      } catch (error) {
+        console.error('Error loading item:', error);
+        this.router.navigate(['/checklist', this.checklistId]);
+      }
+    }
+    // For new item mode, form is already initialized with default values in constructor
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    if (this.checklistId) {
+      this.router.navigate(['/checklist', this.checklistId]);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
-  onSave(): void {
-    if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+  async onSave(): Promise<void> {
+    if (this.form.valid && this.checklistId) {
+      try {
+        const formValue = this.form.value;
+
+        if (this.isEditMode && this.itemId) {
+          // Update existing item
+          await this.databaseService.updateChecklistItem(this.itemId, {
+            title: formValue.title,
+            description: formValue.description || '',
+            icon: formValue.icon || '',
+          });
+        } else {
+          // Create new item
+          const currentItems = await this.databaseService.getChecklistItems(this.checklistId);
+          const maxSortOrder =
+            currentItems.length > 0 ? Math.max(...currentItems.map((item) => item.sortOrder)) : -1;
+
+          await this.databaseService.createChecklistItem({
+            checklistId: this.checklistId,
+            title: formValue.title,
+            description: formValue.description || '',
+            icon: formValue.icon || '',
+            isDone: false,
+            sortOrder: maxSortOrder + 1,
+          });
+        }
+
+        this.router.navigate(['/checklist', this.checklistId]);
+      } catch (error) {
+        console.error('Error saving item:', error);
+      }
     }
   }
 

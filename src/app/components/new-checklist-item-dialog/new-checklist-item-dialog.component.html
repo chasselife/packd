@@ -1,149 +1,150 @@
-<div class="bg-linear-to-br from-primary-50/50 to-primary-100/30 rounded-t-lg">
-  <h2
-    mat-dialog-title
-    class="before:hidden! text-2xl! font-bold! text-center py-6! px-6! text-primary-800 flex! items-center! justify-center! gap-3"
-  >
-    @if (isEditMode) {
-    <mat-icon class="text-primary-600">edit</mat-icon>
-    <span>Edit Item</span>
-    } @else {
-    <mat-icon class="text-primary-600">add_circle</mat-icon>
-    <span>Add Item</span>
-    }
-  </h2>
-</div>
+<div class="max-w-4xl mx-auto px-4 py-6 flex flex-col min-h-dvh">
+  <div class="flex items-center gap-3 mb-6">
+    <button mat-button (click)="onCancel()" class="shrink-0" aria-label="Go back">
+      <mat-icon class="text-2xl! sm:text-3xl! h-6! sm:h-9! text-primary!">arrow_back</mat-icon>
+    </button>
+    <h2 class="text-2xl font-bold text-primary flex items-center gap-3 flex-1">
+      @if (isEditMode) {
+      <mat-icon class="text-primary">edit</mat-icon>
+      <span>Edit Item</span>
+      } @else {
+      <mat-icon class="text-primary">add_circle</mat-icon>
+      <span>Add Item</span>
+      }
+    </h2>
+  </div>
 
-<mat-dialog-content class="flex-1 min-h-0 max-h-[unset]! overflow-y-auto px-6 py-6! bg-white">
-  <form [formGroup]="form" class="flex flex-col gap-6 w-full">
-    <!-- Title Field -->
-    <div class="space-y-2">
-      <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <mat-icon class="text-base! text-primary-600">title</mat-icon>
-        Item Title
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <input
-          matInput
-          formControlName="title"
-          placeholder="What needs to be done?"
-          class="text-base"
-        />
-        @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
-        <mat-error>Title is required</mat-error>
-        }
-      </mat-form-field>
-    </div>
-
-    <!-- Description Field -->
-    <div class="space-y-2">
-      <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <mat-icon class="text-base! text-primary-600">description</mat-icon>
-        Description
-        <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <textarea
-          matInput
-          formControlName="description"
-          placeholder="Add any additional details or notes..."
-          rows="4"
-          class="resize-none"
-        ></textarea>
-      </mat-form-field>
-    </div>
-
-    <!-- Icon Field -->
-    <div class="space-y-2">
-      <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <mat-icon class="text-base! text-primary-600">palette</mat-icon>
-        Icon
-        <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-select formControlName="icon">
-          <mat-select-trigger>
-            @if (getSelectedIcon(); as selectedIcon) {
-            <div class="flex items-center gap-3 py-1">
-              <mat-icon class="text-primary-600">{{ selectedIcon.value }}</mat-icon>
-              <span class="font-medium">{{ selectedIcon.label }}</span>
-            </div>
-            } @else {
-            <span class="text-gray-400">None</span>
-            }
-          </mat-select-trigger>
-          @for (icon of icons; track icon.value) {
-          <mat-option [value]="icon.value">
-            <div class="flex items-center gap-3 py-1">
-              @if (icon.value) {
-              <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
-              } @else {
-              <div class="w-6"></div>
-              }
-              <span>{{ icon.label }}</span>
-            </div>
-          </mat-option>
+  <div class="flex-1 overflow-y-auto px-6 py-6 bg-white rounded-lg shadow-sm">
+    <form [formGroup]="form" class="flex flex-col gap-6 w-full">
+      <!-- Title Field -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <mat-icon class="text-base! text-primary-600">title</mat-icon>
+          Item Title
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            formControlName="title"
+            placeholder="What needs to be done?"
+            class="text-base"
+          />
+          @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+          <mat-error>Title is required</mat-error>
           }
-        </mat-select>
-      </mat-form-field>
-    </div>
+        </mat-form-field>
+      </div>
 
-    <!-- Preview Section -->
-    @if (form.get('title')?.value || form.get('icon')?.value) {
-    <div class="mt-4 p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
-      <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
-      <div
-        class="flex justify-between items-center border border-gray-200 bg-white rounded-xl p-4 shadow-sm"
-      >
-        <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
-          <div class="shrink-0 cursor-pointer">
-            <mat-icon class="text-2xl sm:text-3xl text-gray-400">radio_button_unchecked</mat-icon>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center text-base text-gray-900">
+      <!-- Description Field -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <mat-icon class="text-base! text-primary-600">description</mat-icon>
+          Description
+          <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <textarea
+            matInput
+            formControlName="description"
+            placeholder="Add any additional details or notes..."
+            rows="4"
+            class="resize-none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Icon Field -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <mat-icon class="text-base! text-primary-600">palette</mat-icon>
+          Icon
+          <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="icon">
+            <mat-select-trigger>
               @if (getSelectedIcon(); as selectedIcon) {
-              <mat-icon class="align-middle shrink-0 text-lg sm:text-xl">{{
-                selectedIcon.value
-              }}</mat-icon>
+              <div class="flex items-center gap-3 py-1">
+                <mat-icon class="text-primary-600">{{ selectedIcon.value }}</mat-icon>
+                <span class="font-medium">{{ selectedIcon.label }}</span>
+              </div>
+              } @else {
+              <span class="text-gray-400">None</span>
               }
-              <span class="truncate">{{ form.get('title')?.value || 'Item Title' }}</span>
-            </h3>
-            @if (form.get('description')?.value) {
-            <p
-              class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed line-clamp-2"
-            >
-              {{ form.get('description')?.value }}
-            </p>
+            </mat-select-trigger>
+            @for (icon of icons; track icon.value) {
+            <mat-option [value]="icon.value">
+              <div class="flex items-center gap-3 py-1">
+                @if (icon.value) {
+                <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
+                } @else {
+                <div class="w-6"></div>
+                }
+                <span>{{ icon.label }}</span>
+              </div>
+            </mat-option>
             }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Preview Section -->
+      @if (form.get('title')?.value || form.get('icon')?.value) {
+      <div class="mt-4 p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+        <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
+        <div
+          class="flex justify-between items-center border border-gray-200 bg-white rounded-xl p-4 shadow-sm"
+        >
+          <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
+            <div class="shrink-0 cursor-pointer">
+              <mat-icon class="text-2xl sm:text-3xl text-gray-400">radio_button_unchecked</mat-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3
+                class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center text-base text-gray-900"
+              >
+                @if (getSelectedIcon(); as selectedIcon) {
+                <mat-icon class="align-middle shrink-0 text-lg sm:text-xl">{{
+                  selectedIcon.value
+                }}</mat-icon>
+                }
+                <span class="truncate">{{ form.get('title')?.value || 'Item Title' }}</span>
+              </h3>
+              @if (form.get('description')?.value) {
+              <p
+                class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed line-clamp-2"
+              >
+                {{ form.get('description')?.value }}
+              </p>
+              }
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    }
-  </form>
-</mat-dialog-content>
-
-<mat-dialog-actions
-  align="end"
-  class="m-0! px-6! py-4! min-h-auto! bg-gray-50 border-t border-gray-200"
->
-  <div class="flex gap-3 items-center w-full justify-end">
-    <button
-      mat-button
-      (click)="onCancel()"
-      class="px-6! py-2! font-medium text-gray-600 hover:bg-gray-100"
-    >
-      <mat-icon class="text-lg!">close</mat-icon>
-      <span>Cancel</span>
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="onSave()"
-      [disabled]="!form.valid"
-      class="px-6! py-2! font-semibold shadow-md hover:shadow-lg transition-shadow"
-    >
-      <mat-icon class="text-lg!">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
-      <span>{{ isEditMode ? 'Save Changes' : 'Create Item' }}</span>
-    </button>
+      }
+    </form>
   </div>
-</mat-dialog-actions>
+
+  <div class="mt-6 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+    <div class="flex gap-3 items-center w-full justify-end">
+      <button
+        mat-button
+        (click)="onCancel()"
+        class="px-6 py-2 font-medium text-gray-600 hover:bg-gray-100"
+      >
+        <mat-icon class="text-lg">close</mat-icon>
+        <span>Cancel</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSave()"
+        [disabled]="!form.valid"
+        class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
+      >
+        <mat-icon class="text-lg">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ isEditMode ? 'Save Changes' : 'Create Item' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
-import { NewChecklistItemDialogComponent } from '../new-checklist-item-dialog/new-checklist-item-dialog.component';
 
 @Component({
   selector: 'app-checklist-item',
@@ -94,87 +93,16 @@ export class ChecklistItemComponent {
   }
 
   openNewItemDialog(): void {
-    const dialogRef = this.dialog.open(NewChecklistItemDialogComponent, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'full-screen-dialog',
-      data: {},
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.createItem(result);
-      }
-    });
-  }
-
-  openEditItemDialog(item: ChecklistItem): void {
-    const dialogRef = this.dialog.open(NewChecklistItemDialogComponent, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'full-screen-dialog',
-      data: { item },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result && item.id) {
-        this.updateItem(item.id, result);
-      }
-    });
-  }
-
-  async createItem(formData: {
-    title: string;
-    description?: string;
-    icon?: string;
-  }): Promise<void> {
-    const checklistId = Number(this.id());
-    if (!checklistId) return;
-
-    try {
-      // Get current items to determine sort order
-      const currentItems = this.checklistItems();
-      const maxSortOrder =
-        currentItems.length > 0 ? Math.max(...currentItems.map((item) => item.sortOrder)) : -1;
-
-      await this.databaseService.createChecklistItem({
-        checklistId,
-        title: formData.title,
-        description: formData.description || '',
-        icon: formData.icon || '',
-        isDone: false,
-        sortOrder: maxSortOrder + 1,
-      });
-
-      // Reload items
-      await this.loadChecklistAndItems(checklistId);
-    } catch (error) {
-      console.error('Error creating item:', error);
+    const checklistId = this.id();
+    if (checklistId) {
+      this.router.navigate(['/checklist', checklistId, 'item', 'new']);
     }
   }
 
-  async updateItem(
-    itemId: number,
-    formData: { title: string; description?: string; icon?: string }
-  ): Promise<void> {
-    try {
-      await this.databaseService.updateChecklistItem(itemId, {
-        title: formData.title,
-        description: formData.description || '',
-        icon: formData.icon || '',
-      });
-
-      // Reload items
-      const checklistId = Number(this.id());
-      if (checklistId) {
-        await this.loadChecklistAndItems(checklistId);
-      }
-    } catch (error) {
-      console.error('Error updating item:', error);
+  openEditItemDialog(item: ChecklistItem): void {
+    const checklistId = this.id();
+    if (checklistId && item.id) {
+      this.router.navigate(['/checklist', checklistId, 'item', item.id, 'edit']);
     }
   }
 
