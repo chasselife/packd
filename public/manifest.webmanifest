@@ -1,6 +1,6 @@
 {
-  "name": "pack-for-camp",
-  "short_name": "pack-for-camp",
+  "name": "Packd",
+  "short_name": "Packd",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

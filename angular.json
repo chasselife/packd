@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "pack-for-camp": {
+    "packd": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "pack-for-camp:build:production"
+              "buildTarget": "packd:build:production"
             },
             "development": {
-              "buildTarget": "pack-for-camp:build:development"
+              "buildTarget": "packd:build:development"
             }
           },
           "defaultConfiguration": "development"

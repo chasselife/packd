@@ -12,7 +12,6 @@ import { UpdateAvailableDialogComponent } from './components/update-available-di
   styleUrl: './app.css',
 })
 export class App implements OnInit {
-  protected readonly title = signal('pack-for-camp');
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
 
