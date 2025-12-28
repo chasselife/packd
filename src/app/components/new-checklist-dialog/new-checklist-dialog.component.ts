@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,6 +30,7 @@ export class NewChecklistDialogComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private databaseService = inject(DatabaseService);
+  private location = inject(Location);
 
   form: FormGroup;
   isEditMode = false;
@@ -188,7 +189,11 @@ export class NewChecklistDialogComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/']);
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   async onCreate(): Promise<void> {

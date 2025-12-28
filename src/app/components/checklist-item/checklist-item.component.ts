@@ -1,5 +1,5 @@
 import { Component, inject, input, effect, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -30,6 +30,7 @@ export class ChecklistItemComponent {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private location = inject(Location);
 
   id = input.required<string>();
 
@@ -91,7 +92,11 @@ export class ChecklistItemComponent {
   }
 
   goBack(): void {
-    this.router.navigate(['/']);
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   openNewItemDialog(): void {
