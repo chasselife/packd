@@ -1,5 +1,13 @@
-<footer class="w-full bg-white">
-  <div class="max-w-6xl mx-auto px-4 mt-16 flex flex-row justify-center items-center gap-4">
+<footer class="w-full bg-white max-w-6xl mx-auto px-4 pb-4 mt-16">
+  <!-- <div class="text-gray-600 text-center text-md mb-2">Created by Chasse Life</div> -->
+  <div class="flex flex-row justify-center items-center gap-4">
+    <div class="flex items-center justify-center">
+      <img
+        src="chasselife-logo.svg"
+        alt="Chasse Life"
+        class="h-14 w-auto grayscale hover:grayscale-0"
+      />
+    </div>
     <div class="flex items-center justify-center gap-4">
       @for (link of socialLinks; track link.name) {
       <a
@@ -56,13 +64,6 @@
         }
       </a>
       }
-    </div>
-    <div class="flex items-center justify-center">
-      <img
-        src="chasselife-logo.svg"
-        alt="Chasse Life"
-        class="h-16 w-auto grayscale hover:grayscale-0"
-      />
     </div>
   </div>
 </footer>
