@@ -115,6 +115,7 @@ export class NewChecklistItemDialogComponent {
     { value: 'warning', label: 'Warning' },
     { value: 'charging_station', label: 'Charging Station' },
     { value: 'navigation', label: 'Navigation' },
+    { value: 'build', label: 'Build' },
   ];
 
   constructor() {

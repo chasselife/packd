@@ -38,6 +38,13 @@ export class ChecklistItemComponent {
   checklistItems = signal<ChecklistItem[]>([]);
   isLoading = signal(true);
   layoutMode = signal<'compact' | 'full'>('full');
+  swipedItemId = signal<number | null>(null);
+  dragDropEnabled = signal(false);
+
+  // Swipe gesture tracking
+  private touchStartX = 0;
+  private touchStartY = 0;
+  private isDragging = false;
 
   constructor() {
     effect(() => {
@@ -217,6 +224,79 @@ export class ChecklistItemComponent {
 
   setLayoutMode(mode: 'compact' | 'full'): void {
     this.layoutMode.set(mode);
+  }
+
+  toggleDragDrop(): void {
+    this.dragDropEnabled.update((enabled) => !enabled);
+    // Close any swiped items when toggling drag drop
+    if (this.dragDropEnabled()) {
+      this.swipedItemId.set(null);
+    }
+  }
+
+  onTouchStart(event: TouchEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled()) return;
+    if (this.layoutMode() !== 'full') return;
+    // Don't interfere with CDK drag handle
+    const target = event.target as HTMLElement;
+    if (target.closest('.cdk-drag-handle') || target.hasAttribute('cdkDragHandle')) {
+      return;
+    }
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+    this.isDragging = false;
+  }
+
+  onTouchMove(event: TouchEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled()) return;
+    if (this.layoutMode() !== 'full') return;
+    const deltaX = event.touches[0].clientX - this.touchStartX;
+    const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
+
+    // Determine if this is a horizontal swipe (not vertical drag)
+    // Only allow swipe if horizontal movement is significantly more than vertical
+    if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY * 1.5) {
+      this.isDragging = true;
+      // Only prevent default if we're definitely swiping (not dragging)
+      if (Math.abs(deltaX) > 20) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  onTouchEnd(event: TouchEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled()) return;
+    if (this.layoutMode() !== 'full') return;
+    if (!this.isDragging) return;
+
+    const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+    const threshold = 80; // Minimum swipe distance
+
+    if (deltaX < -threshold) {
+      // Swiped left - reveal buttons
+      if (item.id) {
+        this.swipedItemId.set(item.id);
+      }
+    } else if (deltaX > threshold) {
+      // Swiped right - hide buttons
+      this.swipedItemId.set(null);
+    } else {
+      // Didn't swipe far enough - snap back
+      this.swipedItemId.set(null);
+    }
+
+    this.isDragging = false;
+  }
+
+  closeSwipe(): void {
+    this.swipedItemId.set(null);
+  }
+
+  isItemSwiped(item: ChecklistItem): boolean {
+    return item.id !== undefined && this.swipedItemId() === item.id;
   }
 
   getColorClasses(color?: string): {

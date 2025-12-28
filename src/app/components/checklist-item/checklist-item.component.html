@@ -1,51 +1,89 @@
-<div class="max-w-6xl mx-auto p-4 flex flex-col min-h-dvh">
-  <div class="flex items-center gap-2 px-4">
-    <button
-      (click)="goBack()"
-      class="p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-      aria-label="Go back"
-    >
-      <mat-icon class="text-3xl! h-7! text-emerald-700!">arrow_back</mat-icon>
-    </button>
-    <h1
-      class="text-xl md:text-2xl font-semibold text-emerald-700 font-sans flex gap-3 items-center flex-1"
-    >
-      @if (checklist()) { @if (checklist()!.icon) {
-      <mat-icon class="text-5xl w-12 h-12">{{ checklist()!.icon }}</mat-icon>
-      }
-      {{ checklist()!.title }}
-      }
-    </h1>
-    <button mat-raised-button color="primary" (click)="openNewItemDialog()" class="ml-auto">
-      <mat-icon>add</mat-icon>
-      Add <span class="hidden sm:inline"> Item</span>
-    </button>
+<div class="max-w-6xl mx-auto p-4 sm:p-6 flex flex-col min-h-dvh" (click)="closeSwipe()">
+  <!-- Header with better mobile spacing -->
+  <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-2 sm:px-4 mb-4 sm:mb-6">
+    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
+      <button
+        (click)="goBack()"
+        class="flex p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer shrink-0"
+        aria-label="Go back"
+      >
+        <mat-icon class="text-2xl sm:text-3xl! h-6 sm:h-7! text-emerald-700!">arrow_back</mat-icon>
+      </button>
+      <h1
+        class="text-lg sm:text-xl md:text-2xl font-semibold text-emerald-700 font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
+      >
+        @if (checklist()) { 
+          @if (checklist()!.icon) {
+            <mat-icon class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0">{{ checklist()!.icon }}</mat-icon>
+          }
+          <span class="truncate">{{ checklist()!.title }}</span>
+        }
+      </h1>
+            <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openNewItemDialog()" 
+        class="shrink-0"
+      >
+        <mat-icon>add</mat-icon>
+        <span class="hidden sm:inline">Add Item</span>
+        <span class="sm:hidden">Add</span>
+      </button>
+    </div>
   </div>
 
-  @if (!isLoading() && checklistItems().length > 0) {
-  <div class="mt-4mb-6 flex justify-end px-4 py-4">
+  @if (!isLoading()) {
+  <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
+    @if (checklistItems().length > 0) {
     <button
       mat-icon-button
-      [class.bg-gray-100!]="layoutMode() === 'compact'"
-      [class.text-emerald-700!]="layoutMode() === 'compact'"
-      [class.opacity-50]="layoutMode() !== 'compact'"
-      (click)="setLayoutMode('compact')"
-      aria-label="Compact view"
-      title="Compact view"
+      [class.bg-emerald-100!]="dragDropEnabled()"
+      [class.text-emerald-700!]="dragDropEnabled()"
+      [class.bg-gray-100!]="!dragDropEnabled()"
+      [class.text-gray-500!]="!dragDropEnabled()"
+      (click)="toggleDragDrop()"
+      aria-label="Toggle drag and drop"
+      [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
+      class="transition-all rounded-lg"
     >
-      <mat-icon>view_stream</mat-icon>
+      <mat-icon>drag_indicator</mat-icon>
     </button>
-    <button
-      mat-icon-button
-      [class.bg-gray-100!]="layoutMode() === 'full'"
-      [class.text-emerald-700!]="layoutMode() === 'full'"
-      [class.opacity-50]="layoutMode() !== 'full'"
-      (click)="setLayoutMode('full')"
-      aria-label="Full view"
-      title="Full view"
-    >
-      <mat-icon>view_agenda</mat-icon>
-    </button>
+    } @else {
+    <div></div>
+    }
+    <div class="flex items-center gap-2">
+      @if (checklistItems().length > 0) {
+      <div class="flex gap-1 bg-gray-100 rounded-4xl p-1 border border-gray-200">
+        <button
+          mat-icon-button
+          [class.bg-white!]="layoutMode() === 'compact'"
+          [class.text-emerald-700!]="layoutMode() === 'compact'"
+          [class.shadow-sm]="layoutMode() === 'compact'"
+          [class.text-gray-600]="layoutMode() !== 'compact'"
+          (click)="setLayoutMode('compact')"
+          aria-label="Compact view"
+          title="Compact view"
+          class="transition-all"
+        >
+          <mat-icon>view_stream</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          [class.bg-white!]="layoutMode() === 'full'"
+          [class.text-emerald-700!]="layoutMode() === 'full'"
+          [class.shadow-sm]="layoutMode() === 'full'"
+          [class.text-gray-600]="layoutMode() !== 'full'"
+          (click)="setLayoutMode('full')"
+          aria-label="Full view"
+          title="Full view"
+          class="transition-all"
+        >
+          <mat-icon>view_agenda</mat-icon>
+        </button>
+      </div>
+      }
+
+    </div>
   </div>
   } @if (isLoading()) {
   <div class="text-center py-4 text-gray-600 text-lg flex-1 flex flex-col justify-center">
@@ -59,81 +97,151 @@
   } @else {
   <div
     cdkDropList
+    [cdkDropListDisabled]="!dragDropEnabled()"
     (cdkDropListDropped)="onItemDrop($event)"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-4"
-    [class.gap-3]="layoutMode() === 'full'"
-    [class.gap-2]="layoutMode() !== 'full'"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4"
+    [class.gap-4]="layoutMode() === 'full'"
+    [class.gap-3]="layoutMode() !== 'full'"
   >
     @for (item of checklistItems(); track item.id) {
-    <div
-      cdkDrag
-      class="flex justify-between items-center border transition-colors duration-300 relative backdrop-blur-sm cursor-move"
-      [class.p-4]="layoutMode() === 'full'"
-      [class.p-3]="layoutMode() === 'compact'"
-      [class.rounded-xl]="layoutMode() === 'full'"
-      [class.rounded-lg]="layoutMode() !== 'full'"
-      [class.bg-white]="!item.isDone"
-      [class.bg-emerald-50]="item.isDone"
-      [class.border-gray-300]="!item.isDone"
-      [class.border-emerald-500]="item.isDone"
-    >
-      <div class="flex-1 flex items-center gap-3">
-        <div
-          class="shrink-0 cursor-pointer"
-          (click)="toggleItemDone(item)"
-          (mousedown)="$event.stopPropagation()"
-        >
-          @if (item.isDone) {
-          <mat-icon class="text-3xl text-emerald-600!">check_circle</mat-icon>
-          } @else {
-          <mat-icon class="text-3xl text-gray-400">radio_button_unchecked</mat-icon>
-          }
-        </div>
-        <div class="flex-1 min-w-0 cursor-pointer" (click)="toggleItemDone(item)">
-          <h3
-            class="font-medium mb-1 flex gap-1 items-center"
-            [class.text-lg]="layoutMode() === 'full'"
-            [class.text-base]="layoutMode() === 'compact'"
-            [class.text-gray-800]="!item.isDone"
-            [class.text-emerald-800]="item.isDone"
-            [class.line-through]="item.isDone"
-          >
-            @if (item.icon) {
-            <mat-icon class="align-middle mr-1 text-xl">{{ item.icon }}</mat-icon>
-            }
-            {{ item.title }}
-          </h3>
-          @if (item.description && layoutMode() === 'full') {
-          <p
-            class="text-sm m-0 whitespace-pre-wrap"
-            [class.text-gray-600]="!item.isDone"
-            [class.text-emerald-700]="item.isDone"
-          >
-            {{ item.description }}
-          </p>
-          }
-        </div>
-      </div>
+    <div class="relative" [class.rounded-xl]="layoutMode() === 'full'" [class.rounded-lg]="layoutMode() !== 'full'" (click)="$event.stopPropagation()">
+      <!-- Action buttons behind the card -->
       @if (layoutMode() === 'full') {
-      <div class="flex gap-1">
+      <div 
+        class="absolute right-0 top-0 bottom-0 flex items-center gap-2 px-2 bg-emerald-500 z-10 transition-opacity duration-200"
+        [class.opacity-100]="isItemSwiped(item)"
+        [class.opacity-0]="!isItemSwiped(item)"
+        [class.pointer-events-none]="!isItemSwiped(item)"
+        [class.pointer-events-auto]="isItemSwiped(item)"
+        [class.rounded-tr-xl]="layoutMode() === 'full' && isItemSwiped(item)"
+        [class.rounded-br-xl]="layoutMode() === 'full' && isItemSwiped(item)"
+        [class.rounded-tr-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
+        [class.rounded-br-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
+      >
         <button
           mat-icon-button
-          color="primary"
-          (click)="openEditItemDialog(item); $event.stopPropagation()"
+          (click)="openEditItemDialog(item); closeSwipe(); $event.stopPropagation()"
           aria-label="Edit item"
+          class="w-12! h-12! text-white! hover:bg-white/20!"
         >
-          <mat-icon>edit</mat-icon>
+          <mat-icon class="text-2xl!">edit</mat-icon>
         </button>
         <button
           mat-icon-button
-          color="warn"
-          (click)="deleteItem(item); $event.stopPropagation()"
+          (click)="deleteItem(item); closeSwipe(); $event.stopPropagation()"
           aria-label="Delete item"
+          class="w-12! h-12! text-white! hover:bg-white/20!"
         >
-          <mat-icon>delete</mat-icon>
+          <mat-icon class="text-2xl!">delete</mat-icon>
         </button>
       </div>
       }
+      
+      <!-- Card content -->
+      <div
+        cdkDrag
+        [cdkDragDisabled]="!dragDropEnabled()"
+        class="flex justify-between items-center border  relative group bg-white overflow-hidden"
+        [class.cursor-move]="dragDropEnabled()"
+        [class.cursor-default]="!dragDropEnabled()"
+        [class.transition-all]="!dragDropEnabled()"
+        [class.duration-300]="!dragDropEnabled()"
+        [class.p-4]="layoutMode() === 'full'"
+        [class.p-3]="layoutMode() === 'compact'"
+        [class.rounded-xl]="layoutMode() === 'full' && !isItemSwiped(item)"
+        [class.rounded-lg]="layoutMode() !== 'full' && !isItemSwiped(item)"
+        [class.rounded-tl-xl]="layoutMode() === 'full' && isItemSwiped(item)"
+        [class.rounded-bl-xl]="layoutMode() === 'full' && isItemSwiped(item)"
+        [class.rounded-tl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
+        [class.rounded-bl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
+        [class.bg-white]="!item.isDone"
+        [class.bg-emerald-50/80]="item.isDone"
+        [class.border-gray-200]="!item.isDone"
+        [class.border-emerald-400]="item.isDone"
+        [class.shadow-sm]="!item.isDone"
+        [class.shadow-md]="item.isDone"
+        [class.hover:shadow-md]="!item.isDone"
+        [class.hover:border-gray-300]="!item.isDone"
+        [style.transform]="isItemSwiped(item) && !dragDropEnabled() ? 'translateX(-120px)' : 'translateX(0)'"
+        (touchstart)="!dragDropEnabled() && onTouchStart($event, item)"
+        (touchmove)="!dragDropEnabled() && onTouchMove($event, item)"
+        (touchend)="!dragDropEnabled() && onTouchEnd($event, item)"
+        (click)="!isItemSwiped(item) && toggleItemDone(item)"
+      >
+        <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
+          <!-- Drag handle -->
+          @if (dragDropEnabled()) {
+          <div
+            cdkDragHandle
+            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Drag handle"
+          >
+            <mat-icon class="text-xl sm:text-2xl">drag_indicator</mat-icon>
+          </div>
+          }
+          <div
+            class="shrink-0 cursor-pointer  active:scale-95"
+            [class.transition-transform]="!dragDropEnabled()"
+            (click)="toggleItemDone(item); $event.stopPropagation()"
+            (mousedown)="$event.stopPropagation()"
+          >
+            @if (item.isDone) {
+            <mat-icon class="text-2xl sm:text-3xl text-emerald-600!">check_circle</mat-icon>
+            } @else {
+            <mat-icon class="text-2xl sm:text-3xl text-gray-400 group-hover:text-gray-500">radio_button_unchecked</mat-icon>
+            }
+          </div>
+          <div class="flex-1 min-w-0 cursor-pointer" (click)="toggleItemDone(item); $event.stopPropagation()">
+            <h3
+              class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center"
+              [class.text-base]="layoutMode() === 'full'"
+              [class.text-sm]="layoutMode() === 'compact'"
+              [class.text-gray-900]="!item.isDone"
+              [class.text-emerald-900]="item.isDone"
+              [class.line-through]="item.isDone"
+              [class.opacity-60]="item.isDone"
+            >
+              @if (item.icon) {
+              <mat-icon class="align-middle shrink-0 text-lg sm:text-xl">{{ item.icon }}</mat-icon>
+              }
+              <span class="truncate">{{ item.title }}</span>
+            </h3>
+            @if (item.description && layoutMode() === 'full') {
+            <p
+              class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed"
+              [class.text-gray-500]="!item.isDone"
+              [class.text-emerald-700]="item.isDone"
+              [class.opacity-70]="item.isDone"
+            >
+              {{ item.description }}
+            </p>
+            }
+          </div>
+        </div>
+        <!-- Desktop hover buttons -->
+        @if (layoutMode() === 'full') {
+        <div class="hidden sm:flex gap-0.5 sm:gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="openEditItemDialog(item); $event.stopPropagation()"
+            aria-label="Edit item"
+            class="w-8! h-8! sm:w-10! sm:h-10!"
+          >
+            <mat-icon class="text-lg! sm:text-xl!">edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteItem(item); $event.stopPropagation()"
+            aria-label="Delete item"
+            class="w-8! h-8! sm:w-10! sm:h-10!"
+          >
+            <mat-icon class="text-lg! sm:text-xl!">delete</mat-icon>
+          </button>
+        </div>
+        }
+      </div>
     </div>
     }
   </div>
