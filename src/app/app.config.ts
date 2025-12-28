@@ -11,6 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
 
 function initializeIconRegistry(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
   return () => {
@@ -18,6 +19,13 @@ function initializeIconRegistry(iconRegistry: MatIconRegistry, sanitizer: DomSan
     iconRegistry.registerFontClassAlias('outlined', 'material-symbols-outlined');
     // Optionally, you can also set it as the default font set
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+  };
+}
+
+function initializeGoogleAnalytics(gaService: GoogleAnalyticsService) {
+  return () => {
+    // Replace 'G-XXXXXXXXXX' with your actual Google Analytics Measurement ID
+    gaService.initialize('G-W1YQR0CBHS');
   };
 }
 
@@ -34,6 +42,12 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeIconRegistry,
       deps: [MatIconRegistry, DomSanitizer],
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeGoogleAnalytics,
+      deps: [GoogleAnalyticsService],
       multi: true,
     },
   ],
