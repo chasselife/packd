@@ -81,7 +81,7 @@ export class NewChecklistItemDialogComponent {
     { value: 'home', label: 'Home' },
     { value: 'work', label: 'Work' },
     { value: 'school', label: 'School' },
-    // Icons from dummy-data.service.ts
+    // Icons from seed-data.service.ts
     { value: 'airline_seat_flat', label: 'Airline Seat Flat' },
     { value: 'local_fire_department', label: 'Fire Department' },
     { value: 'light_mode', label: 'Light Mode' },

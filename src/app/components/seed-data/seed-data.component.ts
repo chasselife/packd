@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DummyDataService } from '../../services/dummy-data.service';
+import { SeedDataService } from '../../services/seed-data.service';
 
 @Component({
   selector: 'app-seed-data',
@@ -9,7 +9,7 @@ import { DummyDataService } from '../../services/dummy-data.service';
   templateUrl: './seed-data.component.html',
 })
 export class SeedDataComponent {
-  private dummyDataService = inject(DummyDataService);
+  private seedDataService = inject(SeedDataService);
   private cdr = inject(ChangeDetectorRef);
 
   isSeeding = false;
@@ -29,7 +29,7 @@ export class SeedDataComponent {
       this.addLog('Initializing services...');
       this.addLog('Starting to seed dummy data...');
 
-      await this.dummyDataService.seedDummyData();
+      await this.seedDataService.seedInitialData();
 
       this.addLog('✅ Dummy data seeded successfully!');
       this.statusMessage =
@@ -67,7 +67,7 @@ export class SeedDataComponent {
     try {
       this.addLog('Starting to clear all checklist data...');
 
-      await this.dummyDataService.clearAllData();
+      await this.seedDataService.clearAllData();
 
       this.addLog('✅ All checklist data cleared successfully!');
       this.statusMessage = '✅ All data cleared successfully!';

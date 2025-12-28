@@ -58,7 +58,7 @@ export class NewChecklistDialogComponent {
     { value: 'book', label: 'Books' },
     { value: 'local_movies', label: 'Movies' },
     { value: 'videogame_asset', label: 'Games' },
-    // Icons from dummy-data.service.ts
+    // Icons from seed-data.service.ts
     { value: 'outdoor_garden', label: 'Outdoor Garden' },
     { value: 'checkroom', label: 'Checkroom' },
     { value: 'medical_services', label: 'Medical Services' },

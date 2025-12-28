@@ -229,7 +229,7 @@ export class SeedDataService {
     return shuffled.slice(0, count);
   }
 
-  async seedDummyData(): Promise<void> {
+  async seedInitialData(): Promise<void> {
     // Check if data already exists
     const existingChecklists = await this.databaseService.getAllChecklists();
     if (existingChecklists.length > 0) {

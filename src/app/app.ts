@@ -4,6 +4,7 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
+import { SeedDataService } from './services/seed-data.service';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,10 @@ import { UpdateAvailableDialogComponent } from './components/update-available-di
 export class App implements OnInit {
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
+  private seedDataService = inject(SeedDataService);
 
   ngOnInit(): void {
+    this.seedDataService.seedInitialData();
     if (!isDevMode() && this.swUpdate.isEnabled) {
       // Check for updates
       this.swUpdate.versionUpdates
