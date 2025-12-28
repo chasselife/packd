@@ -25,14 +25,18 @@ import { SeedDataService } from './services/seed-data.service';
       // Forward navigation: slide from right to left (list -> detail)
       transition('list => detail', [
         style({ position: 'relative' }),
-        query(':enter, :leave', [
-          style({
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-          }),
-        ]),
+        query(
+          ':enter, :leave',
+          [
+            style({
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+            }),
+          ],
+          { optional: true }
+        ),
         query(':enter', [style({ transform: 'translateX(100%)' })], { optional: true }),
         query(':leave', animateChild(), { optional: true }),
         group([
@@ -48,14 +52,18 @@ import { SeedDataService } from './services/seed-data.service';
       // Backward navigation: slide from left to right (detail -> list)
       transition('detail => list', [
         style({ position: 'relative' }),
-        query(':enter, :leave', [
-          style({
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-          }),
-        ]),
+        query(
+          ':enter, :leave',
+          [
+            style({
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+            }),
+          ],
+          { optional: true }
+        ),
         query(':enter', [style({ transform: 'translateX(-100%)' })], { optional: true }),
         query(':leave', animateChild(), { optional: true }),
         group([
@@ -71,14 +79,18 @@ import { SeedDataService } from './services/seed-data.service';
       // Default transition for other routes
       transition('* <=> *', [
         style({ position: 'relative' }),
-        query(':enter, :leave', [
-          style({
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-          }),
-        ]),
+        query(
+          ':enter, :leave',
+          [
+            style({
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+            }),
+          ],
+          { optional: true }
+        ),
         query(':enter', [style({ transform: 'translateX(100%)' })], { optional: true }),
         query(':leave', animateChild(), { optional: true }),
         group([

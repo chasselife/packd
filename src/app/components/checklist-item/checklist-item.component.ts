@@ -45,6 +45,8 @@ export class ChecklistItemComponent {
   private touchStartX = 0;
   private touchStartY = 0;
   private isDragging = false;
+  private touchStarted = false;
+  mouseStarted = false; // Public for template access
 
   constructor() {
     effect(() => {
@@ -236,22 +238,32 @@ export class ChecklistItemComponent {
 
   onTouchStart(event: TouchEvent, item: ChecklistItem): void {
     // Don't interfere with CDK drag when drag and drop is enabled
-    if (this.dragDropEnabled()) return;
-    if (this.layoutMode() !== 'full') return;
+    if (this.dragDropEnabled()) {
+      this.touchStarted = false;
+      return;
+    }
     // Don't interfere with CDK drag handle
     const target = event.target as HTMLElement;
     if (target.closest('.cdk-drag-handle') || target.hasAttribute('cdkDragHandle')) {
+      this.touchStarted = false;
       return;
     }
+
+    if (!event.touches || event.touches.length === 0) return;
+
     this.touchStartX = event.touches[0].clientX;
     this.touchStartY = event.touches[0].clientY;
     this.isDragging = false;
+    this.touchStarted = true;
+    event.stopPropagation();
   }
 
   onTouchMove(event: TouchEvent, item: ChecklistItem): void {
     // Don't interfere with CDK drag when drag and drop is enabled
-    if (this.dragDropEnabled()) return;
-    if (this.layoutMode() !== 'full') return;
+    if (this.dragDropEnabled() || !this.touchStarted) return;
+
+    if (!event.touches || event.touches.length === 0) return;
+
     const deltaX = event.touches[0].clientX - this.touchStartX;
     const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
 
@@ -259,36 +271,162 @@ export class ChecklistItemComponent {
     // Only allow swipe if horizontal movement is significantly more than vertical
     if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY * 1.5) {
       this.isDragging = true;
-      // Only prevent default if we're definitely swiping (not dragging)
-      if (Math.abs(deltaX) > 20) {
-        event.preventDefault();
-      }
+      // Prevent default to allow smooth swiping
+      event.preventDefault();
+      event.stopPropagation();
     }
   }
 
   onTouchEnd(event: TouchEvent, item: ChecklistItem): void {
     // Don't interfere with CDK drag when drag and drop is enabled
-    if (this.dragDropEnabled()) return;
-    if (this.layoutMode() !== 'full') return;
-    if (!this.isDragging) return;
+    if (this.dragDropEnabled() || !this.touchStarted) {
+      this.touchStarted = false;
+      this.isDragging = false;
+      return;
+    }
+
+    if (!event.changedTouches || event.changedTouches.length === 0) {
+      this.touchStarted = false;
+      this.isDragging = false;
+      return;
+    }
 
     const deltaX = event.changedTouches[0].clientX - this.touchStartX;
     const threshold = 80; // Minimum swipe distance
 
-    if (deltaX < -threshold) {
+    if (this.isDragging && deltaX < -threshold) {
       // Swiped left - reveal buttons
       if (item.id) {
         this.swipedItemId.set(item.id);
       }
-    } else if (deltaX > threshold) {
+    } else if (this.isDragging && deltaX > threshold) {
       // Swiped right - hide buttons
       this.swipedItemId.set(null);
-    } else {
+    } else if (this.isDragging) {
       // Didn't swipe far enough - snap back
       this.swipedItemId.set(null);
     }
 
     this.isDragging = false;
+    this.touchStarted = false;
+    event.stopPropagation();
+  }
+
+  onMouseDown(event: MouseEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled()) {
+      this.mouseStarted = false;
+      return;
+    }
+    // Don't interfere with CDK drag handle
+    const target = event.target as HTMLElement;
+    if (target.closest('.cdk-drag-handle') || target.hasAttribute('cdkDragHandle')) {
+      this.mouseStarted = false;
+      return;
+    }
+    // Don't start if clicking on buttons or interactive elements
+    if (target.closest('button') || target.closest('mat-icon-button')) {
+      this.mouseStarted = false;
+      return;
+    }
+
+    this.touchStartX = event.clientX;
+    this.touchStartY = event.clientY;
+    this.isDragging = false;
+    this.mouseStarted = true;
+    this.currentSwipingItem = item;
+
+    // Add global mouse move and up listeners
+    document.addEventListener('mousemove', this.onDocumentMouseMove);
+    document.addEventListener('mouseup', this.onDocumentMouseUp);
+
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private currentSwipingItem: ChecklistItem | null = null;
+  private onDocumentMouseMove = (event: MouseEvent) => {
+    if (!this.mouseStarted || !this.currentSwipingItem) return;
+    this.onMouseMove(event, this.currentSwipingItem);
+  };
+
+  private onDocumentMouseUp = (event: MouseEvent) => {
+    if (!this.mouseStarted || !this.currentSwipingItem) return;
+    this.onMouseUp(event, this.currentSwipingItem);
+    // Clean up listeners
+    document.removeEventListener('mousemove', this.onDocumentMouseMove);
+    document.removeEventListener('mouseup', this.onDocumentMouseUp);
+    this.currentSwipingItem = null;
+  };
+
+  onMouseMove(event: MouseEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled() || !this.mouseStarted) return;
+
+    const deltaX = event.clientX - this.touchStartX;
+    const deltaY = Math.abs(event.clientY - this.touchStartY);
+
+    // Determine if this is a horizontal swipe (not vertical drag)
+    // Only allow swipe if horizontal movement is significantly more than vertical
+    if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY * 1.5) {
+      this.isDragging = true;
+      // Update transform in real-time during drag
+      // We'll handle the transform via the style binding, but we can also update swipedItemId for visual feedback
+      if (deltaX < -20) {
+        if (item.id && !this.isItemSwiped(item)) {
+          this.swipedItemId.set(item.id);
+        }
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  onMouseUp(event: MouseEvent, item: ChecklistItem): void {
+    // Don't interfere with CDK drag when drag and drop is enabled
+    if (this.dragDropEnabled() || !this.mouseStarted) {
+      this.mouseStarted = false;
+      this.isDragging = false;
+      this.currentSwipingItem = null;
+      // Clean up listeners
+      document.removeEventListener('mousemove', this.onDocumentMouseMove);
+      document.removeEventListener('mouseup', this.onDocumentMouseUp);
+      return;
+    }
+
+    const deltaX = event.clientX - this.touchStartX;
+    const threshold = 80; // Minimum swipe distance
+
+    if (this.isDragging && deltaX < -threshold) {
+      // Swiped left - reveal buttons
+      if (item.id) {
+        this.swipedItemId.set(item.id);
+      }
+    } else if (this.isDragging && deltaX > threshold) {
+      // Swiped right - hide buttons
+      this.swipedItemId.set(null);
+    } else if (this.isDragging) {
+      // Didn't swipe far enough - snap back
+      this.swipedItemId.set(null);
+    } else {
+      // If we didn't drag, it was just a click - don't change swipe state
+      // But reset the flag
+    }
+
+    this.isDragging = false;
+    this.mouseStarted = false;
+    this.currentSwipingItem = null;
+    // Clean up listeners
+    document.removeEventListener('mousemove', this.onDocumentMouseMove);
+    document.removeEventListener('mouseup', this.onDocumentMouseUp);
+    event.stopPropagation();
+  }
+
+  onMouseLeave(): void {
+    // Reset mouse drag state when mouse leaves the element
+    if (this.mouseStarted && !this.isDragging) {
+      this.mouseStarted = false;
+    }
   }
 
   closeSwipe(): void {

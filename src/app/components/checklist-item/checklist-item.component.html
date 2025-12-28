@@ -106,7 +106,6 @@
     @for (item of checklistItems(); track item.id) {
     <div class="relative" [class.rounded-xl]="layoutMode() === 'full'" [class.rounded-lg]="layoutMode() !== 'full'" (click)="$event.stopPropagation()">
       <!-- Action buttons behind the card -->
-      @if (layoutMode() === 'full') {
       <div 
         class="absolute right-0 top-0 bottom-0 flex items-center gap-2 px-2 bg-emerald-500 z-10 transition-opacity duration-200"
         [class.opacity-100]="isItemSwiped(item)"
@@ -122,7 +121,7 @@
           mat-icon-button
           (click)="openEditItemDialog(item); closeSwipe(); $event.stopPropagation()"
           aria-label="Edit item"
-          class="w-12! h-12! text-white! hover:bg-white/20!"
+          class="flex! items-center! w-12! h-12! text-white! hover:bg-white/20!"
         >
           <mat-icon class="text-2xl!">edit</mat-icon>
         </button>
@@ -130,12 +129,11 @@
           mat-icon-button
           (click)="deleteItem(item); closeSwipe(); $event.stopPropagation()"
           aria-label="Delete item"
-          class="w-12! h-12! text-white! hover:bg-white/20!"
+          class="flex! items-center! w-12! h-12! text-white! hover:bg-white/20!"
         >
           <mat-icon class="text-2xl!">delete</mat-icon>
         </button>
       </div>
-      }
       
       <!-- Card content -->
       <div
@@ -146,6 +144,7 @@
         [class.cursor-default]="!dragDropEnabled()"
         [class.transition-all]="!dragDropEnabled()"
         [class.duration-300]="!dragDropEnabled()"
+        [style.touch-action]="dragDropEnabled() ? 'none' : 'none'"
         [class.p-4]="layoutMode() === 'full'"
         [class.p-3]="layoutMode() === 'compact'"
         [class.rounded-xl]="layoutMode() === 'full' && !isItemSwiped(item)"
@@ -163,10 +162,12 @@
         [class.hover:shadow-md]="!item.isDone"
         [class.hover:border-gray-300]="!item.isDone"
         [style.transform]="isItemSwiped(item) && !dragDropEnabled() ? 'translateX(-120px)' : 'translateX(0)'"
-        (touchstart)="!dragDropEnabled() && onTouchStart($event, item)"
-        (touchmove)="!dragDropEnabled() && onTouchMove($event, item)"
-        (touchend)="!dragDropEnabled() && onTouchEnd($event, item)"
-        (click)="!isItemSwiped(item) && toggleItemDone(item)"
+        (touchstart)="onTouchStart($event, item)"
+        (touchmove)="onTouchMove($event, item)"
+        (touchend)="onTouchEnd($event, item)"
+        (mousedown)="onMouseDown($event, item)"
+        (mouseleave)="onMouseLeave()"
+        (click)="!isItemSwiped(item) && !mouseStarted && toggleItemDone(item)"
       >
         <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
           <!-- Drag handle -->
