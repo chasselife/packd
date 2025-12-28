@@ -48,13 +48,18 @@ jobs:
         run: |
           touch dist/packd/browser/.nojekyll
 
+      - name: Restructure for /packd subdirectory
+        run: |
+          mkdir -p dist/packd-deploy/packd
+          cp -r dist/packd/browser/* dist/packd-deploy/packd/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/packd/browser
+          path: dist/packd-deploy
 
   deploy:
     environment:
