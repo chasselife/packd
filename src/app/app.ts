@@ -14,10 +14,12 @@ import {
 } from '@angular/animations';
 import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
 import { SeedDataService } from './services/seed-data.service';
+import { DatabaseService } from './services/database.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatDialogModule],
+  imports: [RouterOutlet, MatDialogModule, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
   animations: [
@@ -110,8 +112,10 @@ export class App implements OnInit {
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
   private router = inject(Router);
+  private databaseService = inject(DatabaseService);
   routeAnimationState: 'list' | 'detail' | 'other' = 'list';
   private previousUrl = '';
+  showStorageWarning = false;
 
   private getRouteType(url: string): 'list' | 'detail' | 'other' {
     if (url === '' || url === '/') {
@@ -124,6 +128,11 @@ export class App implements OnInit {
   }
 
   async ngOnInit() {
+    // Check if using localStorage fallback
+    setTimeout(() => {
+      this.showStorageWarning = this.databaseService.isUsingLocalStorage;
+    }, 100);
+
     // Track route changes for animation
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -148,6 +157,10 @@ export class App implements OnInit {
           this.showUpdateDialog();
         });
     }
+  }
+
+  dismissStorageWarning(): void {
+    this.showStorageWarning = false;
   }
 
   private showUpdateDialog(): void {
