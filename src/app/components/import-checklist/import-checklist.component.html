@@ -1,0 +1,125 @@
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4 mb-6">
+    <button
+      mat-button
+      (click)="goBack()"
+      class="min-w-[unset]! w-auto! shrink-0"
+      aria-label="Go back"
+    >
+      <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
+    </button>
+    <h1 class="flex-1 text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans">
+      Import Checklists
+    </h1>
+  </div>
+  <div class="mb-6 px-2 sm:px-4">
+    <p class="text-gray-600">
+      Upload a CSV file to import checklists and items. The file should match the format exported
+      from this app.
+    </p>
+  </div>
+
+  @if (errorMessage()) {
+  <mat-card class="mb-6 bg-red-50 border border-red-200">
+    <mat-card-content>
+      <div class="flex items-center gap-2 text-red-700">
+        <mat-icon class="w-8!">error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  } @if (importSuccess()) {
+  <mat-card class="mb-6 bg-green-50 border border-green-200">
+    <mat-card-content>
+      <div class="flex items-center gap-2 text-green-700">
+        <mat-icon>check_circle</mat-icon>
+        <span>Successfully imported {{ importSuccess() }} checklist(s)!</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  } @if (!fileSelected() && !isImporting()) {
+  <div class="mb-6 sm:px-4">
+    <input type="file" accept=".csv" (change)="onFileSelected($event)" class="hidden" #fileInput />
+    <button mat-raised-button color="primary" (click)="fileInput.click()" class="w-full sm:w-auto">
+      <mat-icon>upload_file</mat-icon>
+      Choose CSV File
+    </button>
+  </div>
+  } @if (fileSelected() && parsedData().length > 0 && !isImporting()) {
+  <div class="mb-6">
+    <h2 class="px-3 mb-4">
+      Preview: {{ getSelectedCount() }} of {{ parsedData().length }} checklist(s) selected
+    </h2>
+    <div
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mb-6 max-h-96 overflow-y-auto"
+    >
+      @for (data of parsedData(); track $index) { @let colorClasses =
+      getColorClasses(data.checklist.color);
+      <div
+        class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer"
+        [class]="
+          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
+        "
+        [class.opacity-50]="!isSelected($index)"
+        (click)="toggleSelection($index)"
+      >
+        <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            color="primary"
+            [style.--mdc-checkbox-selected-hover-state-layer-color]="data.checklist.color"
+            [style.--mdc-checkbox-selected-pressed-state-layer-color]="data.checklist.color"
+            [style.--mdc-checkbox-selected-icon-color]="data.checklist.color"
+            [style.--mat-checkbox-selected-icon-color]="data.checklist.color"
+            [checked]="isSelected($index)"
+            (change)="toggleSelection($index)"
+            (click)="$event.stopPropagation()"
+          ></mat-checkbox>
+        </div>
+        <div class="md:mb-1">
+          <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
+            {{ data.checklist.icon || 'checklist' }}
+          </mat-icon>
+        </div>
+        <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
+          {{ data.checklist.title }}
+        </div>
+        <div class="flex-1"></div>
+        <div class="bg-white/50 rounded-lg text-sm mt-3 px-2 py-1">
+          @if (data.items.length > 0) {
+          <span>{{ data.items.length }} item(s)</span>
+          } @else {
+          <span class="">No items</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="mb-6 px-4">
+    <mat-checkbox [checked]="overwriteExisting()" (change)="overwriteExisting.set($event.checked)">
+      Overwrite existing checklists
+    </mat-checkbox>
+    <p class="text-sm text-gray-600 mt-2 ml-8">
+      If checked, all existing checklists and items will be deleted before importing.
+    </p>
+  </div>
+
+  <div class="flex gap-4 px-4 justify-end">
+    <button mat-raised-button (click)="goBack()">Back</button>
+    <button mat-raised-button color="primary" (click)="importData()" [disabled]="!hasSelection()">
+      <mat-icon>check</mat-icon>
+      Import {{ getSelectedCount() }} Checklist(s)
+    </button>
+  </div>
+  } @if (isImporting()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="text-center py-8">
+        <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
+        <p class="text-gray-600">Importing checklists...</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>

@@ -5,9 +5,10 @@ import { filter, Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
-import { Checklist } from '../../models/checklist.model';
+import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { FooterComponent } from '../footer/footer.component';
 import { SeedDataService } from '../../services/seed-data.service';
@@ -20,6 +21,7 @@ import { SeedDataService } from '../../services/seed-data.service';
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
+    MatMenuModule,
     RouterModule,
     DragDropModule,
     FooterComponent,
@@ -313,6 +315,90 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
         queryParams: { duplicate: 'true' },
       });
     }
+  }
+
+  async exportToCSV(): Promise<void> {
+    try {
+      const allChecklists = await this.databaseService.getAllChecklists();
+      const csvRows: string[] = [];
+
+      // CSV Header
+      csvRows.push(
+        'Checklist ID,Checklist Title,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order'
+      );
+
+      // Process each checklist and its items
+      for (const checklist of allChecklists) {
+        const items = checklist.id
+          ? await this.databaseService.getChecklistItems(checklist.id)
+          : [];
+
+        if (items.length === 0) {
+          // Checklist with no items - still export the checklist
+          const row = [
+            checklist.id?.toString() || '',
+            this.escapeCSVField(checklist.title),
+            checklist.icon || '',
+            checklist.color || '',
+            checklist.sortOrder?.toString() || '0',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+          ];
+          csvRows.push(row.join(','));
+        } else {
+          // Checklist with items - one row per item
+          for (const item of items) {
+            const row = [
+              checklist.id?.toString() || '',
+              this.escapeCSVField(checklist.title),
+              checklist.icon || '',
+              checklist.color || '',
+              checklist.sortOrder?.toString() || '0',
+              item.id?.toString() || '',
+              this.escapeCSVField(item.title),
+              this.escapeCSVField(item.description || ''),
+              item.isDone ? 'true' : 'false',
+              item.icon || '',
+              item.sortOrder?.toString() || '0',
+            ];
+            csvRows.push(row.join(','));
+          }
+        }
+      }
+
+      // Create CSV content
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', `packd-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting to CSV:', error);
+      alert('Failed to export data. Please try again.');
+    }
+  }
+
+  private escapeCSVField(field: string): string {
+    if (!field) return '';
+    // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+      return `"${field.replace(/"/g, '""')}"`;
+    }
+    return field;
+  }
+
+  openImportPage(): void {
+    this.router.navigate(['/import']);
   }
 
   onDrop(event: CdkDragDrop<Checklist[]>): void {

@@ -4,6 +4,7 @@ import { ChecklistListComponent } from './components/checklist-list/checklist-li
 import { ChecklistItemComponent } from './components/checklist-item/checklist-item.component';
 import { NewChecklistDialogComponent } from './components/new-checklist-dialog/new-checklist-dialog.component';
 import { NewChecklistItemDialogComponent } from './components/new-checklist-item-dialog/new-checklist-item-dialog.component';
+import { ImportChecklistComponent } from './components/import-checklist/import-checklist.component';
 
 export const routes: Routes = [
   {
@@ -33,5 +34,9 @@ export const routes: Routes = [
   {
     path: 'seed-data',
     component: SeedDataComponent,
+  },
+  {
+    path: 'import',
+    component: ImportChecklistComponent,
   },
 ];
