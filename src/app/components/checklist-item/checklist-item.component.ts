@@ -168,9 +168,10 @@ export class ChecklistItemComponent {
 
   toggleDragDrop(): void {
     this.dragDropEnabled.update((enabled) => !enabled);
-    // If enabling drag drop, disable sort by done
+    // If enabling drag drop, disable sort by done and reset sorting to sortOrder
     if (this.dragDropEnabled()) {
       this.sortByDoneEnabled.set(false);
+      this.applySorting(); // Reset to sortOrder-based sorting
     }
     // Close any swiped items when toggling drag drop
     if (this.dragDropEnabled()) {
