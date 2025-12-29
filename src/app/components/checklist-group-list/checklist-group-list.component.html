@@ -1,50 +1,43 @@
 <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
-  <!-- Header with back button, icon, title, and add button -->
-  <div class="flex items-center gap-3 px-4 mb-4 md:mb-6">
+  <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4">
     <button
       mat-button
       (click)="goBack()"
       class="min-w-[unset]! w-auto! shrink-0"
       aria-label="Go back"
     >
-      <mat-icon class="mr-0! text-2xl! w-6! h-6! text-primary!">arrow_back</mat-icon>
+      <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
     </button>
-    @if (checklistGroup(); as group) {
-    <div class="flex items-center gap-3 flex-1">
-      @let colorClasses = getColorClasses(group.color);
-      <div
-        class="rounded-lg p-2 flex items-center justify-center"
-        [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass"
+    <h1
+      class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
+    >
+      @if (checklistGroup()) { @if (checklistGroup()!.icon) {
+      <mat-icon
+        class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0"
+        >{{ checklistGroup()!.icon }}</mat-icon
       >
-        <mat-icon class="text-2xl! md:text-3xl!" [class]="colorClasses.textClass">
-          {{ group.icon || 'folder' }}
-        </mat-icon>
-      </div>
-      <h1 class="text-xl md:text-2xl font-semibold" [class]="colorClasses.textClass">
-        {{ group.title }}
-      </h1>
-    </div>
-    }
-    <div class="flex items-center gap-2">
-      <button
-        mat-fab
-        color="primary"
-        (click)="openNewChecklistDialog()"
-        class="sm:hidden! w-12! h-12! shadow-none!"
-        aria-label="Add Checklist"
-      >
-        <mat-icon>add</mat-icon>
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="openNewChecklistDialog()"
-        class="hidden! sm:inline-flex!"
-      >
-        <mat-icon>add</mat-icon>
-        Add Checklist
-      </button>
-    </div>
+      }
+      <span class="truncate">{{ checklistGroup()!.title }}</span>
+      }
+    </h1>
+    <button
+      mat-fab
+      color="primary"
+      (click)="openNewChecklistDialog()"
+      class="shrink-0 sm:hidden! w-12! h-12! shadow-none!"
+      aria-label="Add Checklist"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openNewChecklistDialog()"
+      class="shrink-0 hidden! sm:inline-flex!"
+    >
+      <mat-icon>add</mat-icon>
+      <span>Add Checklist</span>
+    </button>
   </div>
 
   @if (isLoading()) {
@@ -98,4 +91,3 @@
   }
   <app-footer />
 </div>
-
