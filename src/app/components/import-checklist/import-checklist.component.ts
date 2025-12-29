@@ -8,10 +8,17 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
+import { ChecklistGroup } from '../../models/checklist-group.model';
 
 interface ParsedChecklist {
   checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>;
   items: Omit<ChecklistItem, 'id' | 'createdAt' | 'updatedAt' | 'checklistId'>[];
+  group?: Omit<ChecklistGroup, 'id' | 'createdAt' | 'updatedAt'>;
+}
+
+interface ParsedGroup {
+  group: Omit<ChecklistGroup, 'id' | 'createdAt' | 'updatedAt'>;
+  checklists: ParsedChecklist[];
 }
 
 @Component({
@@ -33,7 +40,9 @@ export class ImportChecklistComponent {
 
   fileSelected = signal(false);
   parsedData = signal<ParsedChecklist[]>([]);
+  parsedGroups = signal<ParsedGroup[]>([]);
   selectedIndices = signal<Set<number>>(new Set());
+  selectedGroupIndices = signal<Set<number>>(new Set());
   errorMessage = signal<string>('');
   isImporting = signal(false);
   importSuccess = signal<number | null>(null);
@@ -56,16 +65,20 @@ export class ImportChecklistComponent {
     this.errorMessage.set('');
     this.importSuccess.set(null);
     this.selectedIndices.set(new Set());
+    this.selectedGroupIndices.set(new Set());
 
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const csv = e.target?.result as string;
-        const parsed = this.parseCSV(csv);
-        this.parsedData.set(parsed);
+        const { checklists, groups } = this.parseCSV(csv);
+        this.parsedData.set(checklists);
+        this.parsedGroups.set(groups);
         // Select all by default
-        const allIndices = new Set(parsed.map((_, index) => index));
+        const allIndices = new Set(checklists.map((_, index) => index));
         this.selectedIndices.set(allIndices);
+        const allGroupIndices = new Set(groups.map((_, index) => index));
+        this.selectedGroupIndices.set(allGroupIndices);
       } catch (error) {
         console.error('Error parsing CSV:', error);
         this.errorMessage.set('Failed to parse CSV file. Please check the format.');
@@ -75,32 +88,18 @@ export class ImportChecklistComponent {
     reader.readAsText(file);
   }
 
-  private parseCSV(csv: string): ParsedChecklist[] {
+  private parseCSV(csv: string): {
+    checklists: ParsedChecklist[];
+    groups: ParsedGroup[];
+  } {
     const lines = csv.split('\n').filter((line) => line.trim());
     if (lines.length < 2) {
       throw new Error('CSV file is empty or invalid');
     }
 
     // Parse header
-    const header = lines[0].split(',');
-    const expectedHeader = [
-      'Checklist ID',
-      'Checklist Title',
-      'Checklist Icon',
-      'Checklist Color',
-      'Checklist Sort Order',
-      'Item ID',
-      'Item Title',
-      'Item Description',
-      'Item Is Done',
-      'Item Icon',
-      'Item Sort Order',
-    ];
-
-    // Check if header matches (flexible - just check key fields)
-    if (!header.includes('Checklist Title')) {
-      throw new Error('Invalid CSV format. Expected "Checklist Title" column.');
-    }
+    const header = this.parseCSVLine(lines[0]);
+    const hasGroups = header.includes('Group Title');
 
     // Parse data rows
     const checklistMap = new Map<
@@ -108,8 +107,11 @@ export class ImportChecklistComponent {
       {
         checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>;
         items: Omit<ChecklistItem, 'id' | 'createdAt' | 'updatedAt' | 'checklistId'>[];
+        group?: Omit<ChecklistGroup, 'id' | 'createdAt' | 'updatedAt'>;
       }
     >();
+
+    const groupMap = new Map<string, ParsedGroup>();
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
@@ -121,48 +123,166 @@ export class ImportChecklistComponent {
         continue; // Skip invalid rows
       }
 
-      const checklistId = values[0] || '';
-      const checklistTitle = this.unescapeCSVField(values[1] || '');
-      const checklistIcon = values[2] || '';
-      const checklistColor = values[3] || '';
-      const checklistSortOrder = parseInt(values[4] || '0', 10) || 0;
+      let groupId = '';
+      let groupTitle = '';
+      let groupIcon = '';
+      let groupColor = '';
+      let groupSortOrder = 0;
+      let checklistId = '';
+      let checklistTitle = '';
+      let checklistIcon = '';
+      let checklistColor = '';
+      let checklistSortOrder = 0;
+      let itemTitle = '';
+      let itemDescription = '';
+      let itemIsDone = false;
+      let itemIcon = '';
+      let itemSortOrder = 0;
 
-      const itemTitle = this.unescapeCSVField(values[6] || '');
-      const itemDescription = this.unescapeCSVField(values[7] || '');
-      const itemIsDone = values[8] === 'true';
-      const itemIcon = values[9] || '';
-      const itemSortOrder = parseInt(values[10] || '0', 10) || 0;
+      if (hasGroups) {
+        // New format with groups
+        const groupIdIndex = header.indexOf('Group ID');
+        const groupTitleIndex = header.indexOf('Group Title');
+        const groupIconIndex = header.indexOf('Group Icon');
+        const groupColorIndex = header.indexOf('Group Color');
+        const groupSortOrderIndex = header.indexOf('Group Sort Order');
+        const checklistIdIndex = header.indexOf('Checklist ID');
+        const checklistTitleIndex = header.indexOf('Checklist Title');
+        const checklistIconIndex = header.indexOf('Checklist Icon');
+        const checklistColorIndex = header.indexOf('Checklist Color');
+        const checklistSortOrderIndex = header.indexOf('Checklist Sort Order');
+        const itemIdIndex = header.indexOf('Item ID');
+        const itemTitleIndex = header.indexOf('Item Title');
+        const itemDescriptionIndex = header.indexOf('Item Description');
+        const itemIsDoneIndex = header.indexOf('Item Is Done');
+        const itemIconIndex = header.indexOf('Item Icon');
+        const itemSortOrderIndex = header.indexOf('Item Sort Order');
 
-      // Use checklist title as key (since IDs might not match)
-      const key = checklistTitle;
+        groupId = values[groupIdIndex] || '';
+        groupTitle = this.unescapeCSVField(values[groupTitleIndex] || '');
+        groupIcon = values[groupIconIndex] || '';
+        groupColor = values[groupColorIndex] || '';
+        groupSortOrder = parseInt(values[groupSortOrderIndex] || '0', 10) || 0;
+        checklistId = values[checklistIdIndex] || '';
+        checklistTitle = this.unescapeCSVField(values[checklistTitleIndex] || '');
+        checklistIcon = values[checklistIconIndex] || '';
+        checklistColor = values[checklistColorIndex] || '';
+        checklistSortOrder = parseInt(values[checklistSortOrderIndex] || '0', 10) || 0;
+        itemTitle = this.unescapeCSVField(values[itemTitleIndex] || '');
+        itemDescription = this.unescapeCSVField(values[itemDescriptionIndex] || '');
+        itemIsDone = values[itemIsDoneIndex] === 'true';
+        itemIcon = values[itemIconIndex] || '';
+        itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
+      } else {
+        // Old format without groups (backward compatibility)
+        const checklistIdIndex = header.indexOf('Checklist ID');
+        const checklistTitleIndex = header.indexOf('Checklist Title');
+        const checklistIconIndex = header.indexOf('Checklist Icon');
+        const checklistColorIndex = header.indexOf('Checklist Color');
+        const checklistSortOrderIndex = header.indexOf('Checklist Sort Order');
+        const itemIdIndex = header.indexOf('Item ID');
+        const itemTitleIndex = header.indexOf('Item Title');
+        const itemDescriptionIndex = header.indexOf('Item Description');
+        const itemIsDoneIndex = header.indexOf('Item Is Done');
+        const itemIconIndex = header.indexOf('Item Icon');
+        const itemSortOrderIndex = header.indexOf('Item Sort Order');
 
-      if (!checklistMap.has(key)) {
-        checklistMap.set(key, {
-          checklist: {
-            title: checklistTitle,
-            icon: checklistIcon || undefined,
-            color: checklistColor || undefined,
-            sortOrder: checklistSortOrder,
-          },
-          items: [],
-        });
+        checklistId = values[checklistIdIndex] || '';
+        checklistTitle = this.unescapeCSVField(values[checklistTitleIndex] || '');
+        checklistIcon = values[checklistIconIndex] || '';
+        checklistColor = values[checklistColorIndex] || '';
+        checklistSortOrder = parseInt(values[checklistSortOrderIndex] || '0', 10) || 0;
+        itemTitle = this.unescapeCSVField(values[itemTitleIndex] || '');
+        itemDescription = this.unescapeCSVField(values[itemDescriptionIndex] || '');
+        itemIsDone = values[itemIsDoneIndex] === 'true';
+        itemIcon = values[itemIconIndex] || '';
+        itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
       }
 
-      const entry = checklistMap.get(key)!;
+      // Process groups
+      if (hasGroups && groupTitle) {
+        if (!groupMap.has(groupTitle)) {
+          groupMap.set(groupTitle, {
+            group: {
+              title: groupTitle,
+              icon: groupIcon || undefined,
+              color: groupColor || undefined,
+              sortOrder: groupSortOrder,
+            },
+            checklists: [],
+          });
+        }
+      }
 
-      // Add item if it has a title
-      if (itemTitle) {
-        entry.items.push({
-          title: itemTitle,
-          description: itemDescription || undefined,
-          isDone: itemIsDone,
-          icon: itemIcon || undefined,
-          sortOrder: itemSortOrder,
+      // Process checklists
+      if (checklistTitle) {
+        const key = groupTitle ? `${groupTitle}::${checklistTitle}` : checklistTitle;
+
+        if (!checklistMap.has(key)) {
+          checklistMap.set(key, {
+            checklist: {
+              title: checklistTitle,
+              icon: checklistIcon || undefined,
+              color: checklistColor || undefined,
+              sortOrder: checklistSortOrder,
+            },
+            items: [],
+            group: groupTitle
+              ? {
+                  title: groupTitle,
+                  icon: groupIcon || undefined,
+                  color: groupColor || undefined,
+                  sortOrder: groupSortOrder,
+                }
+              : undefined,
+          });
+        }
+
+        const entry = checklistMap.get(key)!;
+
+        // Add item if it has a title
+        if (itemTitle) {
+          entry.items.push({
+            title: itemTitle,
+            description: itemDescription || undefined,
+            isDone: itemIsDone,
+            icon: itemIcon || undefined,
+            sortOrder: itemSortOrder,
+          });
+        }
+      }
+    }
+
+    // Organize checklists into groups
+    const groups: ParsedGroup[] = [];
+    const ungroupedChecklists: ParsedChecklist[] = [];
+
+    for (const entry of checklistMap.values()) {
+      if (entry.group) {
+        const groupKey = entry.group.title;
+        if (!groupMap.has(groupKey)) {
+          groupMap.set(groupKey, {
+            group: entry.group,
+            checklists: [],
+          });
+        }
+        groupMap.get(groupKey)!.checklists.push({
+          checklist: entry.checklist,
+          items: entry.items,
+          group: entry.group,
+        });
+      } else {
+        ungroupedChecklists.push({
+          checklist: entry.checklist,
+          items: entry.items,
         });
       }
     }
 
-    return Array.from(checklistMap.values());
+    return {
+      checklists: ungroupedChecklists,
+      groups: Array.from(groupMap.values()),
+    };
   }
 
   private parseCSVLine(line: string): string[] {
@@ -216,16 +336,30 @@ export class ImportChecklistComponent {
     this.selectedIndices.set(selected);
   }
 
+  toggleGroupSelection(index: number): void {
+    const selected = new Set(this.selectedGroupIndices());
+    if (selected.has(index)) {
+      selected.delete(index);
+    } else {
+      selected.add(index);
+    }
+    this.selectedGroupIndices.set(selected);
+  }
+
   isSelected(index: number): boolean {
     return this.selectedIndices().has(index);
   }
 
+  isGroupSelected(index: number): boolean {
+    return this.selectedGroupIndices().has(index);
+  }
+
   getSelectedCount(): number {
-    return this.selectedIndices().size;
+    return this.selectedIndices().size + this.selectedGroupIndices().size;
   }
 
   hasSelection(): boolean {
-    return this.selectedIndices().size > 0;
+    return this.selectedIndices().size > 0 || this.selectedGroupIndices().size > 0;
   }
 
   async importData(): Promise<void> {
@@ -233,7 +367,7 @@ export class ImportChecklistComponent {
     this.errorMessage.set('');
 
     try {
-      // If overwrite is enabled, delete all existing checklists first
+      // If overwrite is enabled, delete all existing data first
       if (this.overwriteExisting()) {
         const existingChecklists = await this.databaseService.getAllChecklists();
         for (const checklist of existingChecklists) {
@@ -241,12 +375,48 @@ export class ImportChecklistComponent {
             await this.databaseService.deleteChecklist(checklist.id);
           }
         }
+        const existingGroups = await this.databaseService.getAllChecklistGroups();
+        for (const group of existingGroups) {
+          if (group.id) {
+            await this.databaseService.deleteChecklistGroup(group.id);
+          }
+        }
       }
 
       const parsed = this.parsedData();
+      const parsedGroups = this.parsedGroups();
       const selected = this.selectedIndices();
+      const selectedGroups = this.selectedGroupIndices();
       let importedCount = 0;
 
+      // Import groups
+      for (let i = 0; i < parsedGroups.length; i++) {
+        if (selectedGroups.has(i)) {
+          const groupData = parsedGroups[i];
+          // Create group
+          const groupId = await this.databaseService.createChecklistGroup(groupData.group);
+
+          // Create checklists in the group
+          for (const checklistData of groupData.checklists) {
+            const checklistId = await this.databaseService.createChecklist({
+              ...checklistData.checklist,
+              groupId,
+            });
+
+            // Create items
+            for (const item of checklistData.items) {
+              await this.databaseService.createChecklistItem({
+                ...item,
+                checklistId,
+              });
+            }
+          }
+
+          importedCount += groupData.checklists.length;
+        }
+      }
+
+      // Import ungrouped checklists
       for (let i = 0; i < parsed.length; i++) {
         if (selected.has(i)) {
           const data = parsed[i];
@@ -268,6 +438,7 @@ export class ImportChecklistComponent {
       this.importSuccess.set(importedCount);
       // Reset selections after successful import
       this.selectedIndices.set(new Set());
+      this.selectedGroupIndices.set(new Set());
     } catch (error) {
       console.error('Error importing data:', error);
       this.errorMessage.set('Failed to import data. Please try again.');
@@ -344,7 +515,9 @@ export class ImportChecklistComponent {
   reset(): void {
     this.fileSelected.set(false);
     this.parsedData.set([]);
+    this.parsedGroups.set([]);
     this.selectedIndices.set(new Set());
+    this.selectedGroupIndices.set(new Set());
     this.errorMessage.set('');
     this.importSuccess.set(null);
     this.overwriteExisting.set(false);

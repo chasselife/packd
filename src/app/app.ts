@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, inject, isDevMode } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import {
@@ -24,8 +24,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.css',
   animations: [
     trigger('routeAnimations', [
-      // Forward navigation: slide from right to left (list -> detail)
-      transition('list => detail', [
+      // Forward navigation: slide from right to left
+      transition('forward => forward', [
         style({ position: 'relative' }),
         query(
           ':enter, :leave',
@@ -51,8 +51,8 @@ import { CommonModule } from '@angular/common';
         ]),
         query(':enter', animateChild(), { optional: true }),
       ]),
-      // Backward navigation: slide from left to right (detail -> list)
-      transition('detail => list', [
+      // Backward navigation: slide from left to right
+      transition('back => back', [
         style({ position: 'relative' }),
         query(
           ':enter, :leave',
@@ -78,8 +78,34 @@ import { CommonModule } from '@angular/common';
         ]),
         query(':enter', animateChild(), { optional: true }),
       ]),
-      // Default transition for other routes
-      transition('* <=> *', [
+      // State changes (forward to back or back to forward)
+      transition('forward => back', [
+        style({ position: 'relative' }),
+        query(
+          ':enter, :leave',
+          [
+            style({
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+            }),
+          ],
+          { optional: true }
+        ),
+        query(':enter', [style({ transform: 'translateX(-100%)' })], { optional: true }),
+        query(':leave', animateChild(), { optional: true }),
+        group([
+          query(':leave', [animate('200ms ease-out', style({ transform: 'translateX(100%)' }))], {
+            optional: true,
+          }),
+          query(':enter', [animate('200ms ease-in', style({ transform: 'translateX(0%)' }))], {
+            optional: true,
+          }),
+        ]),
+        query(':enter', animateChild(), { optional: true }),
+      ]),
+      transition('back => forward', [
         style({ position: 'relative' }),
         query(
           ':enter, :leave',
@@ -113,19 +139,10 @@ export class App implements OnInit {
   private dialog = inject(MatDialog);
   private router = inject(Router);
   private databaseService = inject(DatabaseService);
-  routeAnimationState: 'list' | 'detail' | 'other' = 'list';
-  private previousUrl = '';
+  routeAnimationState: 'forward' | 'back' = 'forward';
+  private urlHistory: string[] = [];
+  private isBackNavigation = false;
   showStorageWarning = false;
-
-  private getRouteType(url: string): 'list' | 'detail' | 'other' {
-    if (url === '' || url === '/') {
-      return 'list';
-    }
-    if (url.startsWith('/checklist/')) {
-      return 'detail';
-    }
-    return 'other';
-  }
 
   async ngOnInit() {
     // Check if using localStorage fallback
@@ -133,22 +150,58 @@ export class App implements OnInit {
       this.showStorageWarning = this.databaseService.isUsingLocalStorage;
     }, 100);
 
+    // Listen to NavigationStart to detect back navigation
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationStart))
+      .subscribe((event: NavigationStart) => {
+        const currentUrl = this.router.url;
+        const targetUrl = event.url;
+
+        // Check if we're navigating to a URL that was previously visited (back navigation)
+        // Back navigation occurs when the target URL exists in our history
+        // and it's not the last item (which would indicate forward navigation to a new page)
+        const targetIndex = this.urlHistory.indexOf(targetUrl);
+        const lastIndex = this.urlHistory.length - 1;
+
+        // It's a back navigation if:
+        // 1. Target URL is in history
+        // 2. It's not the last item (forward navigation would add a new item)
+        // 3. It's different from current URL (not staying on same page)
+        this.isBackNavigation =
+          targetIndex >= 0 && targetIndex < lastIndex && targetUrl !== currentUrl;
+      });
+
     // Track route changes for animation
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const currentUrl = event.urlAfterRedirects;
-        const currentType = this.getRouteType(currentUrl);
 
-        // Update state - Angular will automatically match the transition
-        this.routeAnimationState = currentType;
-        this.previousUrl = currentUrl;
+        // Update animation state based on navigation direction
+        this.routeAnimationState = this.isBackNavigation ? 'back' : 'forward';
+
+        // Update URL history
+        // Remove the URL and everything after it if we're going back
+        if (this.isBackNavigation) {
+          const targetIndex = this.urlHistory.indexOf(currentUrl);
+          if (targetIndex >= 0) {
+            this.urlHistory = this.urlHistory.slice(0, targetIndex + 1);
+          }
+        } else {
+          // Forward navigation - add to history
+          // Remove current URL if it exists (to avoid duplicates)
+          this.urlHistory = this.urlHistory.filter((url) => url !== currentUrl);
+          this.urlHistory.push(currentUrl);
+        }
+
+        // Reset flag for next navigation
+        this.isBackNavigation = false;
       });
 
     // Set initial route state
     const initialUrl = this.router.url;
-    this.previousUrl = initialUrl;
-    this.routeAnimationState = this.getRouteType(initialUrl);
+    this.urlHistory = [initialUrl];
+    this.routeAnimationState = 'forward';
     if (!isDevMode() && this.swUpdate.isEnabled) {
       // Check for updates
       this.swUpdate.versionUpdates

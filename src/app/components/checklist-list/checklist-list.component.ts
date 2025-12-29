@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -9,9 +9,15 @@ import { MatMenuModule } from '@angular/material/menu';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
+import { ChecklistGroup } from '../../models/checklist-group.model';
+
+type ChecklistItemWithType =
+  | (Checklist & { isGroup: false })
+  | (ChecklistGroup & { isGroup: true });
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { FooterComponent } from '../footer/footer.component';
 import { SeedDataService } from '../../services/seed-data.service';
+import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 
 @Component({
   selector: 'app-checklist-list',
@@ -25,6 +31,7 @@ import { SeedDataService } from '../../services/seed-data.service';
     RouterModule,
     DragDropModule,
     FooterComponent,
+    ChecklistTileComponent,
   ],
   templateUrl: './checklist-list.component.html',
   styles: [
@@ -85,8 +92,12 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   private seedDataService = inject(SeedDataService);
 
   checklists = signal<Checklist[]>([]);
+  checklistGroups = signal<ChecklistGroup[]>([]);
   isLoading = signal(true);
   isEditMode = signal(false);
+
+  // Combined sorted array of groups and checklists with isGroup flag
+  sortedItems = signal<ChecklistItemWithType[]>([]);
 
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
@@ -100,7 +111,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.seedDataService.seedInitialData();
-    await this.loadChecklists();
+    await this.loadData();
 
     // Reload checklists when navigating back to this page
     this.routerSubscription = this.router.events
@@ -108,7 +119,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       .subscribe((event: NavigationEnd) => {
         // Only reload if we're on the root path
         if (event.urlAfterRedirects === '/' || event.urlAfterRedirects === '') {
-          this.loadChecklists();
+          this.loadData();
         }
       });
   }
@@ -119,17 +130,30 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadChecklists(): Promise<void> {
+  async loadData(): Promise<void> {
     try {
       this.isLoading.set(true);
-      const allChecklists = await this.databaseService.getAllChecklists();
+      // Load groups
+      const allGroups = await this.databaseService.getAllChecklistGroups();
+      // Sort groups by sortOrder
+      const sortedGroups = [...allGroups].sort((a, b) => a.sortOrder - b.sortOrder);
+      this.checklistGroups.set(sortedGroups);
+
+      // Load ungrouped checklists
+      const ungroupedChecklists = await this.databaseService.getUngroupedChecklists();
       // Ensure all checklists have sortOrder (migration for existing data)
-      const checklistsNeedingMigration = allChecklists.filter((c) => c.sortOrder === undefined);
+      const checklistsNeedingMigration = ungroupedChecklists.filter(
+        (c) => c.sortOrder === undefined
+      );
       if (checklistsNeedingMigration.length > 0) {
         // Migrate checklists without sortOrder
-        const maxSortOrder = allChecklists
+        // Get max sortOrder from both groups and checklists
+        const maxGroupSortOrder =
+          sortedGroups.length > 0 ? Math.max(...sortedGroups.map((g) => g.sortOrder)) : -1;
+        const maxChecklistSortOrder = ungroupedChecklists
           .filter((c) => c.sortOrder !== undefined)
           .reduce((max, c) => Math.max(max, c.sortOrder!), -1);
+        const maxSortOrder = Math.max(maxGroupSortOrder, maxChecklistSortOrder);
 
         for (let i = 0; i < checklistsNeedingMigration.length; i++) {
           const checklist = checklistsNeedingMigration[i];
@@ -140,16 +164,37 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
           }
         }
         // Reload after migration
-        const migratedChecklists = await this.databaseService.getAllChecklists();
-        this.checklists.set(migratedChecklists);
+        const migratedChecklists = await this.databaseService.getUngroupedChecklists();
+        const sortedChecklists = [...migratedChecklists].sort((a, b) => a.sortOrder - b.sortOrder);
+        this.checklists.set(sortedChecklists);
+
+        // Create combined sorted array with isGroup flag
+        const combinedItemsAfterMigration: ChecklistItemWithType[] = [
+          ...sortedGroups.map((g) => ({ ...g, isGroup: true as const })),
+          ...sortedChecklists.map((c) => ({ ...c, isGroup: false as const })),
+        ].sort((a, b) => a.sortOrder - b.sortOrder);
+        this.sortedItems.set(combinedItemsAfterMigration);
       } else {
-        this.checklists.set(allChecklists);
+        // Sort checklists by sortOrder
+        const sortedChecklists = [...ungroupedChecklists].sort((a, b) => a.sortOrder - b.sortOrder);
+        this.checklists.set(sortedChecklists);
+
+        // Create combined sorted array with isGroup flag
+        const combinedItems: ChecklistItemWithType[] = [
+          ...sortedGroups.map((g) => ({ ...g, isGroup: true as const })),
+          ...sortedChecklists.map((c) => ({ ...c, isGroup: false as const })),
+        ].sort((a, b) => a.sortOrder - b.sortOrder);
+        this.sortedItems.set(combinedItems);
       }
     } catch (error) {
-      console.error('Error loading checklists:', error);
+      console.error('Error loading data:', error);
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  async loadChecklists(): Promise<void> {
+    await this.loadData();
   }
 
   onChecklistClick(checklist: Checklist): void {
@@ -162,7 +207,17 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/checklist/new']);
   }
 
-  onTileMouseDown(checklist: Checklist, event: MouseEvent | TouchEvent): void {
+  openNewChecklistGroupDialog(): void {
+    this.router.navigate(['/checklist-group/new']);
+  }
+
+  onChecklistGroupClick(group: ChecklistGroup): void {
+    if (group.id) {
+      this.router.navigate(['/checklist-group', group.id]);
+    }
+  }
+
+  onTileMouseDown(item: Checklist | ChecklistGroup, event: MouseEvent | TouchEvent): void {
     if (this.isEditMode()) {
       return; // Don't trigger long press in edit mode
     }
@@ -221,7 +276,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
 
-  onTileTouchEnd(checklist: Checklist, event: TouchEvent): void {
+  onTileTouchEnd(item: Checklist | ChecklistGroup, event: TouchEvent, isGroup: boolean): void {
     // Clear long press timer
     if (this.longPressTimer !== null) {
       clearTimeout(this.longPressTimer);
@@ -230,7 +285,13 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
 
     // Only navigate if touch didn't move (was a tap, not a scroll)
     if (!this.touchMoved && !this.isEditMode()) {
-      this.onChecklistClick(checklist);
+      if (isGroup) {
+        // It's a ChecklistGroup
+        this.onChecklistGroupClick(item as ChecklistGroup);
+      } else {
+        // It's a Checklist
+        this.onChecklistClick(item as Checklist);
+      }
     }
 
     // Reset touch tracking
@@ -273,9 +334,75 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     this.openDeleteChecklistDialog(checklist);
   }
 
-  onDuplicateClick(checklist: Checklist, event: Event): void {
+  async onDuplicateClick(checklist: Checklist, event: Event): Promise<void> {
     event.stopPropagation();
-    this.openDuplicateChecklistDialog(checklist);
+    if (!checklist.id) return;
+
+    try {
+      // Get the original checklist to ensure we have all data
+      const originalChecklist = await this.databaseService.getChecklist(checklist.id);
+      if (!originalChecklist || !originalChecklist.id) return;
+
+      // Create duplicate checklist with "Copy" appended to title
+      const newChecklistId = await this.databaseService.createChecklist({
+        title: `${originalChecklist.title} Copy`,
+        icon: originalChecklist.icon,
+        color: originalChecklist.color,
+        groupId: originalChecklist.groupId,
+      });
+
+      if (!newChecklistId) return;
+
+      // Get all checklists in the same group (or ungrouped) to calculate sortOrder
+      const relevantChecklists = originalChecklist.groupId
+        ? await this.databaseService.getChecklistsByGroupId(originalChecklist.groupId)
+        : await this.databaseService.getUngroupedChecklists();
+
+      // Find the original checklist's sortOrder
+      const originalSortOrder = originalChecklist.sortOrder;
+
+      // Update the duplicate's sortOrder to be right after the original
+      await this.databaseService.updateChecklist(newChecklistId, {
+        sortOrder: originalSortOrder + 1,
+      });
+
+      // Shift all checklists after the original by 1 to make room
+      const checklistsToShift = relevantChecklists.filter(
+        (c) =>
+          c.sortOrder > originalSortOrder &&
+          c.id !== newChecklistId &&
+          c.id !== originalChecklist.id
+      );
+
+      for (const c of checklistsToShift) {
+        if (c.id) {
+          await this.databaseService.updateChecklist(c.id, {
+            sortOrder: c.sortOrder + 1,
+          });
+        }
+      }
+
+      // Get items from the original checklist and duplicate them
+      const items = await this.databaseService.getChecklistItems(originalChecklist.id!);
+      if (items.length > 0) {
+        for (const item of items) {
+          await this.databaseService.createChecklistItem({
+            checklistId: newChecklistId,
+            title: item.title,
+            description: item.description || '',
+            icon: item.icon || '',
+            isDone: false, // Reset isDone for duplicated items
+            sortOrder: item.sortOrder,
+          });
+        }
+      }
+
+      // Reload data to show the new checklist
+      await this.loadData();
+    } catch (error) {
+      console.error('Error duplicating checklist:', error);
+      alert('Failed to duplicate checklist. Please try again.');
+    }
   }
 
   openEditChecklistDialog(checklist: Checklist): void {
@@ -309,26 +436,101 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDuplicateChecklistDialog(checklist: Checklist): void {
-    if (checklist.id) {
-      this.router.navigate(['/checklist', checklist.id, 'edit'], {
-        queryParams: { duplicate: 'true' },
-      });
-    }
-  }
-
   async exportToCSV(): Promise<void> {
     try {
       const allChecklists = await this.databaseService.getAllChecklists();
+      const allGroups = await this.databaseService.getAllChecklistGroups();
       const csvRows: string[] = [];
 
-      // CSV Header
+      // CSV Header - includes group information
       csvRows.push(
-        'Checklist ID,Checklist Title,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order'
+        'Group ID,Group Title,Group Icon,Group Color,Group Sort Order,Checklist ID,Checklist Title,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order'
       );
 
-      // Process each checklist and its items
-      for (const checklist of allChecklists) {
+      // Process each group and its checklists
+      for (const group of allGroups) {
+        const checklistsInGroup = await this.databaseService.getChecklistsByGroupId(group.id!);
+
+        if (checklistsInGroup.length === 0) {
+          // Group with no checklists - still export the group
+          const row = [
+            group.id?.toString() || '',
+            this.escapeCSVField(group.title),
+            group.icon || '',
+            group.color || '',
+            group.sortOrder?.toString() || '0',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+          ];
+          csvRows.push(row.join(','));
+        } else {
+          // Group with checklists - process each checklist
+          for (const checklist of checklistsInGroup) {
+            const items = checklist.id
+              ? await this.databaseService.getChecklistItems(checklist.id)
+              : [];
+
+            if (items.length === 0) {
+              // Checklist with no items - still export the checklist
+              const row = [
+                group.id?.toString() || '',
+                this.escapeCSVField(group.title),
+                group.icon || '',
+                group.color || '',
+                group.sortOrder?.toString() || '0',
+                checklist.id?.toString() || '',
+                this.escapeCSVField(checklist.title),
+                checklist.icon || '',
+                checklist.color || '',
+                checklist.sortOrder?.toString() || '0',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+              ];
+              csvRows.push(row.join(','));
+            } else {
+              // Checklist with items - one row per item
+              for (const item of items) {
+                const row = [
+                  group.id?.toString() || '',
+                  this.escapeCSVField(group.title),
+                  group.icon || '',
+                  group.color || '',
+                  group.sortOrder?.toString() || '0',
+                  checklist.id?.toString() || '',
+                  this.escapeCSVField(checklist.title),
+                  checklist.icon || '',
+                  checklist.color || '',
+                  checklist.sortOrder?.toString() || '0',
+                  item.id?.toString() || '',
+                  this.escapeCSVField(item.title),
+                  this.escapeCSVField(item.description || ''),
+                  item.isDone ? 'true' : 'false',
+                  item.icon || '',
+                  item.sortOrder?.toString() || '0',
+                ];
+                csvRows.push(row.join(','));
+              }
+            }
+          }
+        }
+      }
+
+      // Process ungrouped checklists
+      const ungroupedChecklists = await this.databaseService.getUngroupedChecklists();
+      for (const checklist of ungroupedChecklists) {
         const items = checklist.id
           ? await this.databaseService.getChecklistItems(checklist.id)
           : [];
@@ -336,6 +538,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
         if (items.length === 0) {
           // Checklist with no items - still export the checklist
           const row = [
+            '', // No group
+            '',
+            '',
+            '',
+            '',
             checklist.id?.toString() || '',
             this.escapeCSVField(checklist.title),
             checklist.icon || '',
@@ -353,6 +560,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
           // Checklist with items - one row per item
           for (const item of items) {
             const row = [
+              '', // No group
+              '',
+              '',
+              '',
+              '',
               checklist.id?.toString() || '',
               this.escapeCSVField(checklist.title),
               checklist.icon || '',
@@ -401,6 +613,48 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/import']);
   }
 
+  async onCombinedDrop(event: CdkDragDrop<ChecklistItemWithType[]>): Promise<void> {
+    if (!this.isEditMode()) {
+      return; // Only allow reordering in edit mode
+    }
+
+    // Get current sorted items
+    const allItems = [...this.sortedItems()];
+
+    // Move the item in the combined array
+    moveItemInArray(allItems, event.previousIndex, event.currentIndex);
+
+    // Update sortOrder for all items based on their new positions
+    for (let i = 0; i < allItems.length; i++) {
+      const item = allItems[i];
+      if (item.id) {
+        if (item.isGroup) {
+          await this.databaseService.updateChecklistGroup(item.id, {
+            sortOrder: i,
+          });
+        } else {
+          await this.databaseService.updateChecklist(item.id, {
+            sortOrder: i,
+          });
+        }
+      }
+    }
+
+    // Update the sorted items signal
+    this.sortedItems.set(allItems);
+
+    // Separate back into groups and checklists for the individual signals
+    const newGroups = allItems
+      .filter((item): item is ChecklistGroup & { isGroup: true } => item.isGroup)
+      .map(({ isGroup, ...g }) => g);
+    const newChecklists = allItems
+      .filter((item): item is Checklist & { isGroup: false } => !item.isGroup)
+      .map(({ isGroup, ...c }) => c);
+
+    this.checklistGroups.set(newGroups);
+    this.checklists.set(newChecklists);
+  }
+
   onDrop(event: CdkDragDrop<Checklist[]>): void {
     if (!this.isEditMode()) {
       return; // Only allow reordering in edit mode
@@ -418,6 +672,136 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
         // Reload checklists on error to restore correct order
         this.loadChecklists();
       });
+    }
+  }
+
+  onGroupDrop(event: CdkDragDrop<ChecklistGroup[]>): void {
+    if (!this.isEditMode()) {
+      return;
+    }
+
+    const currentGroups = [...this.checklistGroups()];
+    moveItemInArray(currentGroups, event.previousIndex, event.currentIndex);
+    this.checklistGroups.set(currentGroups);
+
+    const groupIds = currentGroups.map((g) => g.id!).filter((id) => id !== undefined);
+    if (groupIds.length > 0) {
+      this.databaseService.reorderChecklistGroups(groupIds).catch((error) => {
+        console.error('Error reordering checklist groups:', error);
+        this.loadData();
+      });
+    }
+  }
+
+  onGroupEditClick(group: ChecklistGroup, event: Event): void {
+    event.stopPropagation();
+    if (group.id) {
+      this.router.navigate(['/checklist-group', group.id, 'edit']);
+    }
+  }
+
+  onGroupDeleteClick(group: ChecklistGroup, event: Event): void {
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: {
+        title: group.title,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (confirmed && group.id) {
+        try {
+          await this.databaseService.deleteChecklistGroup(group.id);
+          await this.loadData();
+          if (this.checklistGroups().length === 0 && this.checklists().length === 0) {
+            this.deactivateEditMode();
+          }
+        } catch (error) {
+          console.error('Error deleting checklist group:', error);
+        }
+      }
+    });
+  }
+
+  async onGroupDuplicateClick(group: ChecklistGroup, event: Event): Promise<void> {
+    event.stopPropagation();
+    if (!group.id) return;
+
+    try {
+      // Get the original group to ensure we have all data
+      const originalGroup = await this.databaseService.getChecklistGroup(group.id);
+      if (!originalGroup || !originalGroup.id) return;
+
+      // Create duplicate group
+      const newGroupId = await this.databaseService.createChecklistGroup({
+        title: `${originalGroup.title} Copy`,
+        icon: originalGroup.icon,
+        color: originalGroup.color,
+      });
+
+      if (!newGroupId) return;
+
+      // Get all groups to calculate sortOrder
+      const allGroups = await this.databaseService.getAllChecklistGroups();
+
+      // Find the original group's sortOrder
+      const originalSortOrder = originalGroup.sortOrder;
+
+      // Update the duplicate's sortOrder to be right after the original
+      await this.databaseService.updateChecklistGroup(newGroupId, {
+        sortOrder: originalSortOrder + 1,
+      });
+
+      // Shift all groups after the original by 1 to make room
+      const groupsToShift = allGroups.filter(
+        (g) => g.sortOrder > originalSortOrder && g.id !== newGroupId && g.id !== originalGroup.id
+      );
+
+      for (const g of groupsToShift) {
+        if (g.id) {
+          await this.databaseService.updateChecklistGroup(g.id, {
+            sortOrder: g.sortOrder + 1,
+          });
+        }
+      }
+
+      // Get all checklists in the group
+      const checklistsInGroup = await this.databaseService.getChecklistsByGroupId(originalGroup.id);
+
+      // Duplicate each checklist and its items
+      for (const checklist of checklistsInGroup) {
+        if (!checklist.id) continue;
+
+        // Create duplicate checklist
+        const newChecklistId = await this.databaseService.createChecklist({
+          title: checklist.title,
+          icon: checklist.icon,
+          color: checklist.color,
+          groupId: newGroupId,
+        });
+
+        // Get items from the original checklist and duplicate them
+        const items = await this.databaseService.getChecklistItems(checklist.id);
+        if (items.length > 0) {
+          for (const item of items) {
+            await this.databaseService.createChecklistItem({
+              checklistId: newChecklistId,
+              title: item.title,
+              description: item.description || '',
+              icon: item.icon || '',
+              isDone: false, // Reset isDone for duplicated items
+              sortOrder: item.sortOrder,
+            });
+          }
+        }
+      }
+
+      // Reload data to show the new group
+      await this.loadData();
+    } catch (error) {
+      console.error('Error duplicating checklist group:', error);
+      alert('Failed to duplicate group. Please try again.');
     }
   }
 

@@ -5,6 +5,7 @@ export interface Checklist {
   color?: string;
   items?: ChecklistItem[];
   sortOrder: number;
+  groupId?: number;
   createdAt: Date;
   updatedAt: Date;
 }

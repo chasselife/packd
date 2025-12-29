@@ -1,0 +1,80 @@
+<div
+  class="w-full rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
+  [class.border-2]="showBorder()"
+  [class.no-hover]="isEditMode()"
+  [class.wiggle-animation]="isEditMode()"
+  [class]="
+    colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
+  "
+  [class.cursor-pointer]="!isEditMode()"
+  [class.cursor-move]="isEditMode()"
+  [style.touch-action]="isEditMode() ? 'none' : 'auto'"
+  (click)="onTileClick()"
+  (mousedown)="onMouseDown($event)"
+  (mouseup)="onMouseUp($event)"
+  (mouseleave)="onMouseLeave()"
+  (touchstart)="onMouseDown($event)"
+  (touchmove)="onTouchMove($event)"
+  (touchend)="onTouchEnd($event)"
+  (touchcancel)="onMouseLeave()"
+>
+  @if (isEditMode()) {
+  <!-- Drag handle - top left corner -->
+  <div class="absolute top-2 left-2 text-gray-400 cursor-move z-10">
+    <mat-icon class="text-2xl!" [style.color]="itemColor || undefined">drag_indicator</mat-icon>
+  </div>
+  <!-- Delete button - top right corner with red circular background -->
+  <button
+    mat-icon-button
+    color="danger"
+    class="absolute! w-8! h-8! -top-3 -right-3 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
+    (click)="onDeleteClick($event)"
+    [attr.aria-label]="isChecklist() ? 'Delete checklist' : 'Delete group'"
+  >
+    <mat-icon class="text-lg!">close</mat-icon>
+  </button>
+  }
+
+  <div class="md:mb-1">
+    <mat-icon class="text-3xl! w-8! flex h-8! md:text-4xl! md:w-10! md:h-10!">
+      {{ itemIcon }}
+    </mat-icon>
+  </div>
+  <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
+    {{ itemTitle }}
+  </div>
+  <div class="flex-1"></div>
+
+  @if (isEditMode()) {
+  <div class="flex flex-row gap-3 mt-4 max-w-[calc(100%+2.5rem)]">
+    <!-- Edit button -->
+    <button
+      mat-mini-fab
+      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
+      (click)="onEditClick($event)"
+      [class]="
+        colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
+      "
+      [style.color]="itemColor || undefined"
+      [attr.aria-label]="isChecklist() ? 'Edit checklist' : 'Edit group'"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+    <!-- Duplicate button -->
+    @if (showDuplicateButton()) {
+    <button
+      mat-mini-fab
+      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
+      (click)="onDuplicateClick($event)"
+      [class]="
+        colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
+      "
+      [style.color]="itemColor || undefined"
+      [attr.aria-label]="isChecklist() ? 'Duplicate checklist' : 'Duplicate group'"
+    >
+      <mat-icon>content_copy</mat-icon>
+    </button>
+    }
+  </div>
+  }
+</div>

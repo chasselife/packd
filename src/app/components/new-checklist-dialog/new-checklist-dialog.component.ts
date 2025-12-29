@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Checklist } from '../../models/checklist.model';
+import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
@@ -36,6 +37,7 @@ export class NewChecklistDialogComponent implements OnInit {
   isEditMode = false;
   isDuplicateMode = false;
   checklistId: number | null = null;
+  checklistGroups: ChecklistGroup[] = [];
 
   constructor() {
     // Initialize form with default values to prevent template errors
@@ -44,6 +46,7 @@ export class NewChecklistDialogComponent implements OnInit {
       title: ['', [Validators.required, Validators.minLength(1)]],
       icon: ['checklist', Validators.required],
       color: ['#53b87d', Validators.required],
+      groupId: [null], // Optional group selection
     });
   }
 
@@ -154,8 +157,18 @@ export class NewChecklistDialogComponent implements OnInit {
   ];
 
   async ngOnInit(): Promise<void> {
+    // Load all checklist groups for the dropdown
+    try {
+      this.checklistGroups = await this.databaseService.getAllChecklistGroups();
+      // Sort groups by sortOrder
+      this.checklistGroups.sort((a, b) => a.sortOrder - b.sortOrder);
+    } catch (error) {
+      console.error('Error loading checklist groups:', error);
+    }
+
     const checklistId = this.route.snapshot.paramMap.get('id');
     const isDuplicate = this.route.snapshot.queryParamMap.get('duplicate') === 'true';
+    const groupIdParam = this.route.snapshot.queryParamMap.get('groupId');
 
     this.isDuplicateMode = isDuplicate;
 
@@ -175,6 +188,7 @@ export class NewChecklistDialogComponent implements OnInit {
             title: title,
             icon: checklist.icon || 'checklist',
             color: checklist.color || this.colorOptions[0].value,
+            groupId: checklist.groupId || null,
           });
         } else {
           // Checklist not found, redirect back
@@ -184,8 +198,15 @@ export class NewChecklistDialogComponent implements OnInit {
         console.error('Error loading checklist:', error);
         this.router.navigate(['/']);
       }
+    } else {
+      // For new checklist mode, set groupId from query param if provided
+      if (groupIdParam) {
+        const groupId = Number(groupIdParam);
+        this.form.patchValue({
+          groupId: groupId,
+        });
+      }
     }
-    // For new checklist mode, form is already initialized with default values in constructor
   }
 
   goBack(): void {
@@ -200,12 +221,25 @@ export class NewChecklistDialogComponent implements OnInit {
     if (this.form.valid) {
       try {
         const formValue = this.form.value;
+        const groupId = formValue.groupId ? Number(formValue.groupId) : undefined;
+
         await this.databaseService.createChecklist({
           title: formValue.title,
           icon: formValue.icon,
           color: formValue.color,
+          groupId: groupId,
         });
-        this.router.navigate(['/']);
+
+        if (window.history.length > 1) {
+          this.location.back();
+        } else {
+          // Navigate back to the group page if groupId was provided, otherwise go to home
+          if (groupId) {
+            this.router.navigate(['/checklist-group', groupId]);
+          } else {
+            this.router.navigate(['/']);
+          }
+        }
       } catch (error) {
         console.error('Error creating checklist:', error);
       }
@@ -216,10 +250,12 @@ export class NewChecklistDialogComponent implements OnInit {
     if (this.form.valid && this.checklistId) {
       try {
         const formValue = this.form.value;
+        const groupId = formValue.groupId ? Number(formValue.groupId) : undefined;
         await this.databaseService.updateChecklist(this.checklistId, {
           title: formValue.title,
           icon: formValue.icon,
           color: formValue.color,
+          groupId: groupId,
         });
         this.goBack();
       } catch (error) {
@@ -240,15 +276,25 @@ export class NewChecklistDialogComponent implements OnInit {
     return this.colorOptions.find((color) => color.value === selectedValue);
   }
 
+  getSelectedGroup(): ChecklistGroup | undefined {
+    const selectedGroupId = this.form.get('groupId')?.value;
+    if (!selectedGroupId) {
+      return undefined;
+    }
+    return this.checklistGroups.find((group) => group.id === selectedGroupId);
+  }
+
   async onDuplicate(): Promise<void> {
     if (this.form.valid && this.checklistId) {
       try {
         const formValue = this.form.value;
+        const groupId = formValue.groupId ? Number(formValue.groupId) : undefined;
         // Create the duplicated checklist
         const newChecklistId = await this.databaseService.createChecklist({
           title: formValue.title,
           icon: formValue.icon,
           color: formValue.color,
+          groupId: groupId,
         });
 
         // Get items from the original checklist and duplicate them
@@ -266,7 +312,12 @@ export class NewChecklistDialogComponent implements OnInit {
           }
         }
 
-        this.goBack();
+        // Navigate back to the group page if groupId was provided, otherwise go back
+        if (groupId) {
+          this.router.navigate(['/checklist-group', groupId]);
+        } else {
+          this.goBack();
+        }
       } catch (error) {
         console.error('Error duplicating checklist:', error);
       }

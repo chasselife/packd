@@ -9,15 +9,10 @@
       <mat-icon class="mr-0! text-2xl! w-6! h-6! text-primary!">arrow_back</mat-icon>
     </button>
     <h2 class="text-lg! sm:text-xl! md:text-2xl! text-primary flex items-center gap-3 flex-1">
-      @if (isDuplicateMode) {
-      <!-- <mat-icon class="text-primary">content_copy</mat-icon> -->
-      <span>Duplicate Checklist</span>
-      } @else if (isEditMode) {
-      <!-- <mat-icon class="text-primary">edit</mat-icon> -->
-      <span>Edit Checklist</span>
+      @if (isEditMode) {
+      <span>Edit Checklist Group</span>
       } @else {
-      <!-- <mat-icon class="text-primary">add_circle</mat-icon> -->
-      <span>Add Checklist</span>
+      <span>Add Checklist Group</span>
       }
     </h2>
   </div>
@@ -28,59 +23,18 @@
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
           <mat-icon class="text-base! text-primary-600">title</mat-icon>
-          Checklist Title
+          Group Title
         </label>
         <mat-form-field appearance="outline" class="w-full">
           <input
             matInput
             formControlName="title"
-            placeholder="Enter a descriptive title for your checklist"
+            placeholder="Enter a descriptive title for your checklist group"
             class="text-base"
           />
           @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
           <mat-error>Title is required</mat-error>
           }
-        </mat-form-field>
-      </div>
-
-      <!-- Group Field -->
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon class="text-base! text-primary-600">folder</mat-icon>
-          Group (Optional)
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="groupId" placeholder="Select a group (optional)">
-            <mat-select-trigger>
-              @if (getSelectedGroup(); as selectedGroup) {
-              <div class="flex items-center gap-3 py-1">
-                @if (selectedGroup.icon) {
-                <mat-icon class="text-primary-600">{{ selectedGroup.icon }}</mat-icon>
-                } @else {
-                <mat-icon class="text-primary-600">folder</mat-icon>
-                }
-                <span class="font-medium">{{ selectedGroup.title }}</span>
-              </div>
-              } @else {
-              <span class="text-gray-500">No Group</span>
-              }
-            </mat-select-trigger>
-            <mat-option [value]="null">
-              <span class="text-gray-500">No Group</span>
-            </mat-option>
-            @for (group of checklistGroups; track group.id) {
-            <mat-option [value]="group.id">
-              <div class="flex items-center gap-3 py-1">
-                @if (group.icon) {
-                <mat-icon class="text-gray-600">{{ group.icon }}</mat-icon>
-                } @else {
-                <mat-icon class="text-gray-600">folder</mat-icon>
-                }
-                <span>{{ group.title }}</span>
-              </div>
-            </mat-option>
-            }
-          </mat-select>
         </mat-form-field>
       </div>
 
@@ -175,12 +129,12 @@
           "
         >
           <div class="md:mb-1">
-            <mat-icon class="text-3xl! w-8! flex h-8! md:text-4xl! md:w-10! md:h-10!">
-              {{ getSelectedIcon()?.value || 'checklist' }}
+            <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
+              {{ getSelectedIcon()?.value || 'folder' }}
             </mat-icon>
           </div>
           <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-            {{ form.get('title')?.value || 'Your Checklist Title' }}
+            {{ form.get('title')?.value || 'Your Group Title' }}
           </div>
         </div>
       </div>
@@ -198,18 +152,6 @@
         <mat-icon class="text-lg">close</mat-icon>
         <span>Cancel</span>
       </button>
-      @if (isDuplicateMode) {
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="onDuplicate()"
-        [disabled]="!form.valid"
-        class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
-      >
-        <mat-icon class="text-lg">content_copy</mat-icon>
-        <span>Duplicate Checklist</span>
-      </button>
-      } @else {
       <button
         mat-raised-button
         color="primary"
@@ -218,9 +160,8 @@
         class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
       >
         <mat-icon class="text-lg">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
-        <span>{{ isEditMode ? 'Save Changes' : 'Create Checklist' }}</span>
+        <span>{{ isEditMode ? 'Save Changes' : 'Create Group' }}</span>
       </button>
-      }
     </div>
   </div>
 </div>

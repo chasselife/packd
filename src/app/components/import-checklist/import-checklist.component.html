@@ -45,14 +45,54 @@
       Choose CSV File
     </button>
   </div>
-  } @if (fileSelected() && parsedData().length > 0 && !isImporting()) {
+  } @if (fileSelected() && (parsedData().length > 0 || parsedGroups().length > 0) && !isImporting())
+  {
   <div class="mb-6">
     <h2 class="px-3 mb-4">
-      Preview: {{ getSelectedCount() }} of {{ parsedData().length }} checklist(s) selected
+      Preview: {{ getSelectedCount() }} of {{ parsedGroups().length + parsedData().length }} item(s)
+      selected
     </h2>
     <div
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mb-6 max-h-96 overflow-y-auto"
     >
+      <!-- Groups -->
+      @for (groupData of parsedGroups(); track $index) { @let colorClasses =
+      getColorClasses(groupData.group.color);
+      <div
+        class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer border-2"
+        [class]="
+          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
+        "
+        [class.opacity-50]="!isGroupSelected($index)"
+        (click)="toggleGroupSelection($index)"
+      >
+        <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            color="primary"
+            [style.--mdc-checkbox-selected-hover-state-layer-color]="groupData.group.color"
+            [style.--mdc-checkbox-selected-pressed-state-layer-color]="groupData.group.color"
+            [style.--mdc-checkbox-selected-icon-color]="groupData.group.color"
+            [style.--mat-checkbox-selected-icon-color]="groupData.group.color"
+            [checked]="isGroupSelected($index)"
+            (change)="toggleGroupSelection($index)"
+            (click)="$event.stopPropagation()"
+          ></mat-checkbox>
+        </div>
+        <div class="md:mb-1">
+          <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
+            {{ groupData.group.icon || 'folder' }}
+          </mat-icon>
+        </div>
+        <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
+          {{ groupData.group.title }}
+        </div>
+        <div class="flex-1"></div>
+        <div class="bg-white/50 rounded-lg text-sm mt-3 px-2 py-1">
+          <span>{{ groupData.checklists.length }} checklist(s)</span>
+        </div>
+      </div>
+      }
+      <!-- Ungrouped Checklists -->
       @for (data of parsedData(); track $index) { @let colorClasses =
       getColorClasses(data.checklist.color);
       <div
@@ -101,7 +141,7 @@
       Overwrite existing checklists
     </mat-checkbox>
     <p class="text-sm text-gray-600 mt-2 ml-8">
-      If checked, all existing checklists and items will be deleted before importing.
+      If checked, all existing checklists, groups, and items will be deleted before importing.
     </p>
   </div>
 
@@ -109,7 +149,7 @@
     <button mat-raised-button (click)="goBack()">Back</button>
     <button mat-raised-button color="primary" (click)="importData()" [disabled]="!hasSelection()">
       <mat-icon>check</mat-icon>
-      Import {{ getSelectedCount() }} Checklist(s)
+      Import {{ getSelectedCount() }} Item(s)
     </button>
   </div>
   } @if (isImporting()) {

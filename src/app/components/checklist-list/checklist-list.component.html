@@ -7,9 +7,27 @@
       <button
         mat-fab
         color="primary"
+        (click)="openNewChecklistGroupDialog()"
+        class="sm:hidden! w-12! h-12! shadow-none! mr-2!"
+        aria-label="Add Group"
+      >
+        <mat-icon>shadow_add</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openNewChecklistGroupDialog()"
+        class="hidden! sm:inline-flex! mr-2!"
+      >
+        <mat-icon>folder</mat-icon>
+        Add Group
+      </button>
+      <button
+        mat-fab
+        color="primary"
         (click)="openNewChecklistDialog()"
         class="sm:hidden! w-12! h-12! shadow-none!"
-        aria-label="Add Item"
+        aria-label="Add Checklist"
       >
         <mat-icon>add</mat-icon>
       </button>
@@ -55,11 +73,11 @@
   <div class="text-center py-12 text-gray-600 text-lg flex-1 flex flex-col justify-center">
     Loading checklists...
   </div>
-  } @else if (checklists().length === 0) {
+  } @else if (sortedItems().length === 0) {
   <div class="text-center py-16 px-8 text-gray-600 flex-1 flex flex-col justify-center">
     <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!"> block </mat-icon>
     <p class="text-lg m-0 text-gray-500">
-      No checklists yet. <br />Create your first checklist to get started!
+      No checklists or groups yet. <br />Create your first checklist or group to get started!
     </p>
   </div>
   } @else { @if (isEditMode()) {
@@ -73,93 +91,54 @@
   <div class="h-4 md:h-6"></div>
   }
   <div
-    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
     cdkDropList
     cdkDropListOrientation="mixed"
-    (cdkDropListDropped)="onDrop($event)"
+    (cdkDropListDropped)="onCombinedDrop($event)"
     [cdkDropListDisabled]="!isEditMode()"
+    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
   >
-    @for (checklist of checklists(); track checklist.id) { @let colorClasses =
-    getColorClasses(checklist.color);
-    <div
+    @for (item of sortedItems(); track item.id) { @let isGroup = item.isGroup; @let colorClasses =
+    getColorClasses(item.color); @if (isGroup) {
+    <app-checklist-tile
       cdkDrag
       [cdkDragDisabled]="!isEditMode()"
-      class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
-      [class.no-hover]="isEditMode()"
-      [class.wiggle-animation]="isEditMode()"
-      [class]="colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass"
-      [class.cursor-pointer]="!isEditMode()"
-      [class.cursor-move]="isEditMode()"
-      (click)="!isEditMode() && onChecklistClick(checklist)"
-      (mousedown)="onTileMouseDown(checklist, $event)"
-      (mouseup)="onTileMouseUp($event)"
-      (mouseleave)="onTileMouseLeave()"
-      (touchstart)="onTileMouseDown(checklist, $event)"
-      (touchmove)="onTileTouchMove($event)"
-      (touchend)="onTileTouchEnd(checklist, $event)"
-      (touchcancel)="onTileMouseLeave()"
-    >
-      @if (isEditMode()) {
-      <!-- Drag handle - top left corner -->
-      <div class="absolute top-2 left-2 text-gray-400 cursor-move z-10">
-        <mat-icon class="text-2xl!" [style.color]="checklist?.color || undefined"
-          >drag_indicator</mat-icon
-        >
-      </div>
-      <!-- Delete button - top right corner with red circular background -->
-      <button
-        mat-icon-button
-        color="danger"
-        class="absolute! w-8! h-8! -top-3 -right-3 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
-        (click)="onDeleteClick(checklist, $event)"
-        aria-label="Delete checklist"
-      >
-        <mat-icon class="text-lg!">close</mat-icon>
-      </button>
-      }
-
-      <div class="md:mb-1">
-        <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-          {{ checklist.icon || 'checklist' }}
-        </mat-icon>
-      </div>
-      <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-        {{ checklist.title }}
-      </div>
-      <div class="flex-1"></div>
-
-      @if (isEditMode()) {
-      <div class="flex flex-row gap-3 mt-4 max-w-[calc(100%+2.5rem)]">
-        <!-- Edit button -->
-        <button
-          mat-mini-fab
-          class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
-          (click)="onEditClick(checklist, $event)"
-          [class]="
-            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-          "
-          [style.color]="checklist?.color || undefined"
-          aria-label="Edit checklist"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-        <!-- Duplicate button -->
-        <button
-          mat-mini-fab
-          class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
-          (click)="onDuplicateClick(checklist, $event)"
-          [class]="
-            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-          "
-          [style.color]="checklist?.color || undefined"
-          aria-label="Duplicate checklist"
-        >
-          <mat-icon>content_copy</mat-icon>
-        </button>
-      </div>
-      }
-    </div>
-    }
+      [item]="item"
+      [isEditMode]="isEditMode()"
+      [isChecklist]="false"
+      [colorClasses]="colorClasses"
+      [showBorder]="true"
+      [showDuplicateButton]="true"
+      [defaultIcon]="'folder'"
+      (clicked)="onChecklistGroupClick($event)"
+      (editClicked)="onGroupEditClick($event.item, $event.event)"
+      (deleteClicked)="onGroupDeleteClick($event.item, $event.event)"
+      (duplicateClicked)="onGroupDuplicateClick($event.item, $event.event)"
+      (mouseDown)="onTileMouseDown($event.item, $event.event)"
+      (mouseUp)="onTileMouseUp($event)"
+      (mouseLeave)="onTileMouseLeave()"
+      (touchMove)="onTileTouchMove($event)"
+      (touchEnd)="onTileTouchEnd($event.item, $event.event, item.isGroup)"
+    />
+    } @else {
+    <app-checklist-tile
+      cdkDrag
+      [cdkDragDisabled]="!isEditMode()"
+      [item]="item"
+      [isEditMode]="isEditMode()"
+      [colorClasses]="colorClasses"
+      [showDuplicateButton]="true"
+      [defaultIcon]="'checklist'"
+      (clicked)="onChecklistClick($event)"
+      (editClicked)="onEditClick($event.item, $event.event)"
+      (deleteClicked)="onDeleteClick($event.item, $event.event)"
+      (duplicateClicked)="onDuplicateClick($event.item, $event.event)"
+      (mouseDown)="onTileMouseDown($event.item, $event.event)"
+      (mouseUp)="onTileMouseUp($event)"
+      (mouseLeave)="onTileMouseLeave()"
+      (touchMove)="onTileTouchMove($event)"
+      (touchEnd)="onTileTouchEnd($event.item, $event.event, item.isGroup)"
+    />
+    } }
   </div>
   }
   <app-footer />

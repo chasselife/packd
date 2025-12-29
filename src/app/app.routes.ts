@@ -5,12 +5,15 @@ import { ChecklistItemComponent } from './components/checklist-item/checklist-it
 import { NewChecklistDialogComponent } from './components/new-checklist-dialog/new-checklist-dialog.component';
 import { NewChecklistItemDialogComponent } from './components/new-checklist-item-dialog/new-checklist-item-dialog.component';
 import { ImportChecklistComponent } from './components/import-checklist/import-checklist.component';
+import { ChecklistGroupListComponent } from './components/checklist-group-list/checklist-group-list.component';
+import { NewChecklistGroupDialogComponent } from './components/new-checklist-group-dialog/new-checklist-group-dialog.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: ChecklistListComponent,
   },
+
   {
     path: 'checklist/new',
     component: NewChecklistDialogComponent,
@@ -23,6 +26,7 @@ export const routes: Routes = [
     path: 'checklist/:id',
     component: ChecklistItemComponent,
   },
+
   {
     path: 'checklist/:checklistId/item/new',
     component: NewChecklistItemDialogComponent,
@@ -38,5 +42,17 @@ export const routes: Routes = [
   {
     path: 'import',
     component: ImportChecklistComponent,
+  },
+  {
+    path: 'checklist-group/new',
+    component: NewChecklistGroupDialogComponent,
+  },
+  {
+    path: 'checklist-group/:id/edit',
+    component: NewChecklistGroupDialogComponent,
+  },
+  {
+    path: 'checklist-group/:id',
+    component: ChecklistGroupListComponent,
   },
 ];
