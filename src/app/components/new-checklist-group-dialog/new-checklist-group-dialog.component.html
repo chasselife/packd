@@ -93,7 +93,7 @@
         @let colorClasses = getSelectedColor(); @let defaultColorClasses = { bgClass:
         'bg-primary-500/20', borderClass: 'border-primary', textClass: 'text-primary' }; @let
         previewColorClasses = colorClasses || defaultColorClasses;
-        <div class="max-w-full">
+        <div class="w-40">
           <app-checklist-tile
             [item]="getPreviewGroup()"
             [isEditMode]="false"
@@ -101,7 +101,6 @@
             [colorClasses]="previewColorClasses"
             [showBorder]="true"
             [defaultIcon]="'folder'"
-            [layout]="'horizontal'"
           />
         </div>
       </div>
