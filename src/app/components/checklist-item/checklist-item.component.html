@@ -119,7 +119,9 @@
     cdkDropListOrientation="mixed"
     [cdkDropListDisabled]="!dragDropEnabled()"
     (cdkDropListDropped)="onItemDrop($event)"
-    class="select-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4 gap-3"
+    [class.gap-3]="layoutMode() === 'full'"
+    [class.gap-2]="layoutMode() !== 'full'"
+    class="select-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4"
   >
     @for (item of checklistItems(); track item.id) {
     <div class="relative " [class.rounded-xl]="layoutMode() === 'full'" [class.rounded-lg]="layoutMode() !== 'full'" (click)="$event.stopPropagation()">
