@@ -1,14 +1,19 @@
 <div class="max-w-4xl mx-auto p-4 sm:p-6 pb-0 sm:pb-0 flex flex-col min-h-dvh">
   <div class="flex items-center gap-3 mb-6">
-    <button mat-button (click)="goBack()" class="w-auto! shrink-0" aria-label="Go back">
+    <button
+      mat-button
+      (click)="goBack()"
+      class="min-w-[unset]! w-auto! shrink-0"
+      aria-label="Go back"
+    >
       <mat-icon class="mr-0! text-2xl! w-6! h-6! text-primary!">arrow_back</mat-icon>
     </button>
     <h2 class="text-lg! sm:text-xl! md:text-2xl! text-primary flex items-center gap-3 flex-1">
       @if (isEditMode) {
-      <mat-icon class="text-primary">edit</mat-icon>
+      <!-- <mat-icon class="text-primary">edit</mat-icon> -->
       <span>Edit Item</span>
       } @else {
-      <mat-icon class="text-primary">add_circle</mat-icon>
+      <!-- <mat-icon class="text-primary">add_circle</mat-icon> -->
       <span>Add Item</span>
       }
     </h2>
