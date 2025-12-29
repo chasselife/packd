@@ -1,11 +1,19 @@
 <div
-  class="w-full rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
+  [class]="
+    'w-full transition-all duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm ' +
+    (isChecklist()
+      ? 'rounded-2xl p-6 shadow-lg hover:shadow-xl border-2 checklist-tile'
+      : 'rounded-t-2xl rounded-b-xl p-6 pt-8 shadow-xl hover:shadow-2xl border-2 group-tile') +
+    ' ' +
+    colorClasses().bgClass +
+    ' ' +
+    colorClasses().borderClass +
+    ' ' +
+    colorClasses().textClass
+  "
   [class.border-2]="showBorder()"
   [class.no-hover]="isEditMode()"
   [class.wiggle-animation]="isEditMode()"
-  [class]="
-    colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
-  "
   [class.cursor-pointer]="!isEditMode()"
   [class.cursor-move]="isEditMode()"
   [style.touch-action]="isEditMode() ? 'none' : 'auto'"
@@ -18,7 +26,14 @@
   (touchend)="onTouchEnd($event)"
   (touchcancel)="onMouseLeave()"
 >
-  @if (isEditMode()) {
+  @if (!isChecklist()) {
+  <!-- Folder tab for groups -->
+  <div
+    class="absolute -top-[7px] left-[2px] w-[calc(100%-.25rem)] h-2 rounded-t-2xl z-10"
+    [class]="colorClasses().bgClass + ' ' + colorClasses().borderClass"
+    [style.border-width]="'2px 2px 0 2px'"
+  ></div>
+  } @if (isEditMode()) {
   <!-- Drag handle - top left corner -->
   <div class="absolute top-2 left-2 text-gray-400 cursor-move z-10">
     <mat-icon class="text-2xl!" [style.color]="itemColor || undefined">drag_indicator</mat-icon>
@@ -27,7 +42,7 @@
   <button
     mat-icon-button
     color="danger"
-    class="absolute! w-8! h-8! -top-3 -right-3 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-10"
+    class="absolute! w-8! h-8! -top-3 -right-3 bg-red-500! rounded-full flex! items-center justify-center text-white! hover:bg-red-600! transition-colors z-20!"
     (click)="onDeleteClick($event)"
     [attr.aria-label]="isChecklist() ? 'Delete checklist' : 'Delete group'"
   >
@@ -35,12 +50,33 @@
   </button>
   }
 
-  <div class="md:mb-1">
-    <mat-icon class="text-3xl! w-8! flex h-8! md:text-4xl! md:w-10! md:h-10!">
+  <div [class]="isChecklist() ? 'md:mb-1' : 'md:mb-2 relative z-10'">
+    <mat-icon
+      [class]="
+        isChecklist()
+          ? 'text-3xl! w-8! flex h-8! md:text-4xl! md:w-10! md:h-10!'
+          : 'text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!'
+      "
+    >
       {{ itemIcon }}
     </mat-icon>
+    @if (isChecklist() && !isEditMode()) {
+    <!-- Subtle checkmark accent for checklist tiles -->
+    <div
+      class="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-60"
+      [class]="colorClasses().bgClass"
+    >
+      <mat-icon class="text-xs! text-white!">check</mat-icon>
+    </div>
+    }
   </div>
-  <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
+  <div
+    [class]="
+      isChecklist()
+        ? 'text-sm sm:text-lg font-medium text-center wrap-break-word'
+        : 'text-sm sm:text-lg font-semibold text-center wrap-break-word'
+    "
+  >
     {{ itemTitle }}
   </div>
   @if (!isEditMode() && !isChecklist() && checklistCount() !== undefined && checklistCount()! > 0) {
