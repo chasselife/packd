@@ -577,13 +577,21 @@ export class DatabaseService {
 
     if (this.useLocalStorage) {
       const data = this.getLocalStorageData();
-      // Remove groupId from all checklists in this group
-      data.checklists.forEach((c) => {
-        if (c.groupId === id) {
-          c.groupId = undefined;
-          c.updatedAt = new Date();
+      // Get all checklists in this group
+      const checklistsInGroup = data.checklists.filter((c) => c.groupId === id);
+
+      // Delete all items for each checklist in the group
+      for (const checklist of checklistsInGroup) {
+        if (checklist.id) {
+          data.checklistItems = data.checklistItems.filter(
+            (item) => item.checklistId !== checklist.id
+          );
         }
-      });
+      }
+
+      // Delete all checklists in the group
+      data.checklists = data.checklists.filter((c) => c.groupId !== id);
+
       // Then delete the group
       data.checklistGroups = data.checklistGroups.filter((g) => g.id !== id);
       this.saveLocalStorageData(data);
@@ -591,16 +599,19 @@ export class DatabaseService {
     }
 
     if (!this.db) throw new Error('Database not initialized');
-    // Remove groupId from all checklists in this group
+    // Get all checklists in this group
     const checklistsInGroup = await this.db.checklists.where('groupId').equals(id).toArray();
+
+    // Delete all items for each checklist in the group, then delete the checklists
     for (const checklist of checklistsInGroup) {
       if (checklist.id) {
-        await this.db.checklists.update(checklist.id, {
-          groupId: undefined,
-          updatedAt: new Date(),
-        });
+        // Delete all associated checklist items first
+        await this.db.checklistItems.where('checklistId').equals(checklist.id).delete();
+        // Then delete the checklist
+        await this.db.checklists.delete(checklist.id);
       }
     }
+
     // Then delete the group
     await this.db.checklistGroups.delete(id);
   }

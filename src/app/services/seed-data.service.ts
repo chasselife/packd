@@ -211,7 +211,14 @@ export class SeedDataService {
           title: 'First Aid Kit',
           description: 'Complete first aid kit with bandages and medications',
           icon: 'medical_services',
-          subItems: ['Bandages', 'Antiseptic wipes', 'Pain relievers', 'Antihistamine', 'Tweezers', 'Medical tape'],
+          subItems: [
+            'Bandages',
+            'Antiseptic wipes',
+            'Pain relievers',
+            'Antihistamine',
+            'Tweezers',
+            'Medical tape',
+          ],
         },
         {
           title: 'Whistle',
@@ -419,6 +426,13 @@ export class SeedDataService {
       return; // Data already exists
     }
 
+    // Create the "Camping Checklists" group
+    const groupId = await this.databaseService.createChecklistGroup({
+      title: 'Camping Checklists',
+      icon: 'camping',
+      color: '#53b87d', // Emerald
+    });
+
     // Create checklists with random number of items (between 3-10 items per checklist)
     for (const template of this.checklistTemplates) {
       // Generate random number of items (min 3, max the total available items or 10, whichever is smaller)
@@ -434,6 +448,7 @@ export class SeedDataService {
         title: template.title,
         icon: template.icon,
         color: template.color || '#53b87d', // Default to emerald if no color specified
+        groupId, // Assign to the "Camping Checklists" group
       };
       const checklistId = await this.databaseService.createChecklist(checklist);
 
@@ -455,10 +470,19 @@ export class SeedDataService {
   }
 
   async clearAllData(): Promise<void> {
+    // Delete all checklists
     const checklists = await this.databaseService.getAllChecklists();
     for (const checklist of checklists) {
       if (checklist.id) {
         await this.databaseService.deleteChecklist(checklist.id);
+      }
+    }
+
+    // Delete all checklist groups
+    const groups = await this.databaseService.getAllChecklistGroups();
+    for (const group of groups) {
+      if (group.id) {
+        await this.databaseService.deleteChecklistGroup(group.id);
       }
     }
   }
