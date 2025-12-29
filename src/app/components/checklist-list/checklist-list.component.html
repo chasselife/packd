@@ -11,7 +11,7 @@
         class="sm:hidden! w-12! h-12! shadow-none! mr-2!"
         aria-label="Add Group"
       >
-        <mat-icon>shadow_add</mat-icon>
+        <mat-icon>folder</mat-icon>
       </button>
       <button
         mat-raised-button
@@ -109,6 +109,7 @@
       [showBorder]="true"
       [showDuplicateButton]="true"
       [defaultIcon]="'folder'"
+      [checklistCount]="getGroupChecklistCount(item.id)"
       (clicked)="onChecklistGroupClick($event)"
       (editClicked)="onGroupEditClick($event.item, $event.event)"
       (deleteClicked)="onGroupDeleteClick($event.item, $event.event)"

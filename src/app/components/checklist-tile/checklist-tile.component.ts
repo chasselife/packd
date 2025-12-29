@@ -54,6 +54,7 @@ export class ChecklistTileComponent {
   showDuplicateButton = input<boolean>(false);
   showBorder = input<boolean>(false);
   defaultIcon = input<string>('checklist');
+  checklistCount = input<number | undefined>(undefined);
 
   // Outputs
   clicked = output<TileItem>();

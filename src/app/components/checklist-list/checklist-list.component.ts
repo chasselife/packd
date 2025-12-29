@@ -99,6 +99,9 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   // Combined sorted array of groups and checklists with isGroup flag
   sortedItems = signal<ChecklistItemWithType[]>([]);
 
+  // Map to store checklist counts for each group
+  groupChecklistCounts = signal<Map<number, number>>(new Map());
+
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
   private editModeJustActivated = false;
@@ -138,6 +141,16 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       // Sort groups by sortOrder
       const sortedGroups = [...allGroups].sort((a, b) => a.sortOrder - b.sortOrder);
       this.checklistGroups.set(sortedGroups);
+
+      // Load checklist counts for each group
+      const countsMap = new Map<number, number>();
+      for (const group of sortedGroups) {
+        if (group.id) {
+          const checklistsInGroup = await this.databaseService.getChecklistsByGroupId(group.id);
+          countsMap.set(group.id, checklistsInGroup.length);
+        }
+      }
+      this.groupChecklistCounts.set(countsMap);
 
       // Load ungrouped checklists
       const ungroupedChecklists = await this.databaseService.getUngroupedChecklists();
@@ -824,6 +837,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     if (!clickedTile && !isInteractiveElement) {
       this.deactivateEditMode();
     }
+  }
+
+  getGroupChecklistCount(groupId?: number): number {
+    if (!groupId) return 0;
+    return this.groupChecklistCounts().get(groupId) || 0;
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {

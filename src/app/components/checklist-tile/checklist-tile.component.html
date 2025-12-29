@@ -43,6 +43,11 @@
   <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
     {{ itemTitle }}
   </div>
+  @if (!isEditMode() && !isChecklist() && checklistCount() !== undefined && checklistCount()! > 0) {
+  <div class="bg-white/50 rounded-lg text-sm mt-3 px-2 py-1">
+    {{ checklistCount() }} checklist{{ checklistCount()! > 1 ? 's' : '' }}
+  </div>
+  }
   <div class="flex-1"></div>
 
   @if (isEditMode()) {
