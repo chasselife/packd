@@ -508,8 +508,8 @@ export class ChecklistItemComponent {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <div class="mb-4 mr-4">
-        <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-raised-button color="warn" (click)="onConfirm()">Delete</button>
+        <button mat-button class="h-10!" (click)="onCancel()">Cancel</button>
+        <button mat-raised-button class="h-10!" color="warn" (click)="onConfirm()">Delete</button>
       </div>
     </mat-dialog-actions>
   `,
