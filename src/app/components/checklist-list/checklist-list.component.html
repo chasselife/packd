@@ -1,13 +1,13 @@
-<div class="max-w-6xl mx-auto px-4 py-4 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
+<div class="max-w-6xl mx-auto px-4 py-6 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
   <div class="flex justify-between items-center px-4 mb-4 md:mb-6">
     <h1 class="text-2xl font-semibold text-primary font-sans flex gap-3 items-center">
       <img class="w-10 h-10" src="logo.svg" alt="Packd" />Packd.
     </h1>
     <button
-      mat-mini-fab
+      mat-fab
       color="primary"
       (click)="openNewChecklistDialog()"
-      class="sm:hidden!"
+      class="sm:hidden! w-12! h-12!"
       aria-label="Add Checklist"
     >
       <mat-icon>add</mat-icon>
@@ -101,11 +101,11 @@
       <div class="flex-1"></div>
 
       @if (isEditMode()) {
-      <div class="flex flex-col gap-2 mt-3 max-w-[calc(100%+2.5rem)]">
+      <div class="flex flex-row gap-3 mt-4 max-w-[calc(100%+2.5rem)]">
         <!-- Edit button -->
         <button
-          mat-button
-          class="pr-4! bg-white/50! rounded-lg! h-8! text-sm! md:text-base!"
+          mat-mini-fab
+          class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
           (click)="onEditClick(checklist, $event)"
           [class]="
             colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
@@ -114,12 +114,11 @@
           aria-label="Edit checklist"
         >
           <mat-icon>edit</mat-icon>
-          Edit
         </button>
         <!-- Duplicate button -->
         <button
-          mat-button
-          class="pr-4! bg-white/50! rounded-lg! h-8! text-sm! md:text-base!"
+          mat-mini-fab
+          class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
           (click)="onDuplicateClick(checklist, $event)"
           [class]="
             colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
@@ -128,7 +127,6 @@
           aria-label="Duplicate checklist"
         >
           <mat-icon>content_copy</mat-icon>
-          Duplicate
         </button>
       </div>
       }

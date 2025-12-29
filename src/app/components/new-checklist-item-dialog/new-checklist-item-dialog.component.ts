@@ -170,7 +170,7 @@ export class NewChecklistItemDialogComponent implements OnInit {
     // For new item mode, form is already initialized with default values in constructor
   }
 
-  onCancel(): void {
+  goBack(): void {
     if (window.history.length > 1) {
       this.location.back();
     } else {
@@ -210,7 +210,7 @@ export class NewChecklistItemDialogComponent implements OnInit {
           });
         }
 
-        this.router.navigate(['/checklist', this.checklistId]);
+        this.goBack();
       } catch (error) {
         console.error('Error saving item:', error);
       }

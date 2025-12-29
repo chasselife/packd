@@ -188,7 +188,7 @@ export class NewChecklistDialogComponent implements OnInit {
     // For new checklist mode, form is already initialized with default values in constructor
   }
 
-  onCancel(): void {
+  goBack(): void {
     if (window.history.length > 1) {
       this.location.back();
     } else {
@@ -221,7 +221,7 @@ export class NewChecklistDialogComponent implements OnInit {
           icon: formValue.icon,
           color: formValue.color,
         });
-        this.router.navigate(['/']);
+        this.goBack();
       } catch (error) {
         console.error('Error updating checklist:', error);
       }
@@ -266,7 +266,7 @@ export class NewChecklistDialogComponent implements OnInit {
           }
         }
 
-        this.router.navigate(['/']);
+        this.goBack();
       } catch (error) {
         console.error('Error duplicating checklist:', error);
       }
