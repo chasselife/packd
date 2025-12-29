@@ -34,13 +34,18 @@ export class ChecklistItemComponent {
 
   id = input.required<string>();
 
+  // LocalStorage keys
+  private readonly STORAGE_KEY_LAYOUT_MODE = 'packd-checklist-layout-mode';
+  private readonly STORAGE_KEY_DRAG_DROP = 'packd-checklist-drag-drop';
+  private readonly STORAGE_KEY_SORT_BY_DONE = 'packd-checklist-sort-by-done';
+
   checklist = signal<Checklist | undefined>(undefined);
   checklistItems = signal<ChecklistItem[]>([]);
   isLoading = signal(true);
-  layoutMode = signal<'compact' | 'full'>('full');
+  layoutMode = signal<'compact' | 'full'>(this.loadLayoutMode());
   swipedItemId = signal<number | null>(null);
-  dragDropEnabled = signal(false);
-  sortByDoneEnabled = signal(false);
+  dragDropEnabled = signal(this.loadDragDropEnabled());
+  sortByDoneEnabled = signal(this.loadSortByDoneEnabled());
 
   // Swipe gesture tracking
   private touchStartX = 0;
@@ -52,12 +57,84 @@ export class ChecklistItemComponent {
   private longPressDuration = 500; // milliseconds
 
   constructor() {
+    // Save to localStorage when signals change
+    effect(() => {
+      const layoutMode = this.layoutMode();
+      this.saveLayoutMode(layoutMode);
+    });
+
+    effect(() => {
+      const dragDropEnabled = this.dragDropEnabled();
+      this.saveDragDropEnabled(dragDropEnabled);
+    });
+
+    effect(() => {
+      const sortByDoneEnabled = this.sortByDoneEnabled();
+      this.saveSortByDoneEnabled(sortByDoneEnabled);
+    });
+
     effect(() => {
       const checklistId = this.id();
       if (checklistId) {
         this.loadChecklistAndItems(Number(checklistId));
       }
     });
+  }
+
+  private loadLayoutMode(): 'compact' | 'full' {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY_LAYOUT_MODE);
+      if (stored === 'compact' || stored === 'full') {
+        return stored;
+      }
+    } catch (error) {
+      console.warn('Error loading layout mode from localStorage:', error);
+    }
+    return 'full';
+  }
+
+  private saveLayoutMode(mode: 'compact' | 'full'): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY_LAYOUT_MODE, mode);
+    } catch (error) {
+      console.warn('Error saving layout mode to localStorage:', error);
+    }
+  }
+
+  private loadDragDropEnabled(): boolean {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY_DRAG_DROP);
+      return stored === 'true';
+    } catch (error) {
+      console.warn('Error loading drag drop enabled from localStorage:', error);
+    }
+    return false;
+  }
+
+  private saveDragDropEnabled(enabled: boolean): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY_DRAG_DROP, String(enabled));
+    } catch (error) {
+      console.warn('Error saving drag drop enabled to localStorage:', error);
+    }
+  }
+
+  private loadSortByDoneEnabled(): boolean {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY_SORT_BY_DONE);
+      return stored === 'true';
+    } catch (error) {
+      console.warn('Error loading sort by done enabled from localStorage:', error);
+    }
+    return false;
+  }
+
+  private saveSortByDoneEnabled(enabled: boolean): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY_SORT_BY_DONE, String(enabled));
+    } catch (error) {
+      console.warn('Error saving sort by done enabled to localStorage:', error);
+    }
   }
 
   async loadChecklistAndItems(checklistId: number): Promise<void> {
