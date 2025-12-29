@@ -5,7 +5,7 @@
 
 .color-picker-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
   gap: 8px;
   width: 100%;
   justify-items: center;
@@ -14,7 +14,7 @@
 /* Larger screens - 5 columns */
 @media (min-width: 768px) {
   .color-picker-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
     gap: 10px;
   }
 }
@@ -22,7 +22,7 @@
 /* Extra large screens - 6 columns */
 @media (min-width: 1024px) {
   .color-picker-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
     gap: 12px;
   }
 }
@@ -67,7 +67,7 @@
 /* Small screens - keep 4 columns but adjust spacing */
 @media (max-width: 640px) {
   .color-picker-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
     gap: 6px;
   }
 

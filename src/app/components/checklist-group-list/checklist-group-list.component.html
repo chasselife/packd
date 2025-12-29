@@ -71,6 +71,9 @@
     @for (checklist of checklists(); track checklist.id) { @let colorClasses =
     getColorClasses(checklist.color);
     <app-checklist-tile
+      cdkDrag
+      [cdkDragDisabled]="!isEditMode()"
+      cdkDragHandle
       [item]="checklist"
       [isEditMode]="isEditMode()"
       [colorClasses]="colorClasses"

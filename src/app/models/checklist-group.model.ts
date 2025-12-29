@@ -7,4 +7,3 @@ export interface ChecklistGroup {
   createdAt: Date;
   updatedAt: Date;
 }
-
