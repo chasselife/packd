@@ -37,12 +37,15 @@ export class NewChecklistItemDialogComponent implements OnInit {
   checklistId: number | null = null;
   itemId: number | null = null;
 
+  newTagInput = '';
+
   constructor() {
     // Initialize form with default values to prevent template errors
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1)]],
       description: [''],
       icon: [''],
+      subItems: [[]],
     });
   }
 
@@ -157,6 +160,7 @@ export class NewChecklistItemDialogComponent implements OnInit {
             title: item.title || '',
             description: item.description || '',
             icon: item.icon || '',
+            subItems: item.subItems || [],
           });
         } else {
           // Item not found, redirect back
@@ -193,6 +197,7 @@ export class NewChecklistItemDialogComponent implements OnInit {
             title: formValue.title,
             description: formValue.description || '',
             icon: formValue.icon || '',
+            subItems: formValue.subItems || [],
           });
         } else {
           // Create new item
@@ -205,6 +210,7 @@ export class NewChecklistItemDialogComponent implements OnInit {
             title: formValue.title,
             description: formValue.description || '',
             icon: formValue.icon || '',
+            subItems: formValue.subItems || [],
             isDone: false,
             sortOrder: maxSortOrder + 1,
           });
@@ -221,5 +227,34 @@ export class NewChecklistItemDialogComponent implements OnInit {
     const selectedValue = this.form.get('icon')?.value;
     if (!selectedValue) return undefined;
     return this.icons.find((icon) => icon.value === selectedValue);
+  }
+
+  getSubItems(): string[] {
+    return this.form.get('subItems')?.value || [];
+  }
+
+  addTag(): void {
+    const tag = this.newTagInput.trim();
+    if (tag && !this.getSubItems().includes(tag)) {
+      const currentSubItems = this.getSubItems();
+      this.form.patchValue({
+        subItems: [...currentSubItems, tag],
+      });
+      this.newTagInput = '';
+    }
+  }
+
+  removeTag(tagToRemove: string): void {
+    const currentSubItems = this.getSubItems();
+    this.form.patchValue({
+      subItems: currentSubItems.filter((tag) => tag !== tagToRemove),
+    });
+  }
+
+  onTagInputKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.addTag();
+    }
   }
 }

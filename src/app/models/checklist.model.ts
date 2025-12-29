@@ -16,6 +16,7 @@ export interface ChecklistItem {
   description?: string;
   isDone: boolean;
   icon?: string;
+  subItems?: string[];
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
