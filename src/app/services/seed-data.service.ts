@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Checklist, ChecklistItem } from '../models/checklist.model';
 import { DatabaseService } from './database.service';
+import {
+  CHECKLIST_ICON_OPTIONS,
+  CHECKLIST_ITEM_ICON_OPTIONS,
+} from '../constants/icon-options.constant';
 
 interface ChecklistTemplate {
   title: string;
@@ -21,6 +25,8 @@ interface ChecklistTemplate {
 export class SeedDataService {
   constructor(private databaseService: DatabaseService) {}
 
+  // Note: Icons used in templates should be from CHECKLIST_ICON_OPTIONS (for checklist icons)
+  // and CHECKLIST_ITEM_ICON_OPTIONS (for item icons) to ensure consistency across the app
   private readonly checklistTemplates: ChecklistTemplate[] = [
     {
       title: 'Camping Essentials',

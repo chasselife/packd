@@ -12,6 +12,7 @@ import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { COLOR_OPTIONS } from '../../constants/color-options.constant';
+import { CHECKLIST_ICON_OPTIONS } from '../../constants/icon-options.constant';
 
 @Component({
   selector: 'app-new-checklist-dialog',
@@ -53,36 +54,7 @@ export class NewChecklistDialogComponent implements OnInit {
     });
   }
 
-  // Popular Material Icons for checklists
-  icons = [
-    { value: 'checklist', label: 'Checklist' },
-    { value: 'camping', label: 'Camping' },
-    { value: 'backpack', label: 'Backpack' },
-    { value: 'hiking', label: 'Hiking' },
-    { value: 'sports', label: 'Sports' },
-    { value: 'fitness_center', label: 'Fitness' },
-    { value: 'restaurant', label: 'Restaurant' },
-    { value: 'shopping_cart', label: 'Shopping' },
-    { value: 'work', label: 'Work' },
-    { value: 'school', label: 'School' },
-    { value: 'home', label: 'Home' },
-    { value: 'flight', label: 'Travel' },
-    { value: 'beach_access', label: 'Beach' },
-    { value: 'snowboarding', label: 'Winter Sports' },
-    { value: 'directions_bike', label: 'Biking' },
-    { value: 'pool', label: 'Pool' },
-    { value: 'music_note', label: 'Music' },
-    { value: 'book', label: 'Books' },
-    { value: 'local_movies', label: 'Movies' },
-    { value: 'videogame_asset', label: 'Games' },
-    // Icons from seed-data.service.ts
-    { value: 'outdoor_garden', label: 'Outdoor Garden' },
-    { value: 'checkroom', label: 'Checkroom' },
-    { value: 'medical_services', label: 'Medical Services' },
-    { value: 'person', label: 'Person' },
-    { value: 'sports_esports', label: 'Sports Esports' },
-    { value: 'build', label: 'Build' },
-  ];
+  icons = CHECKLIST_ICON_OPTIONS;
 
   colorOptions = COLOR_OPTIONS;
 

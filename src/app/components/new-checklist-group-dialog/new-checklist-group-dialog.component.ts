@@ -12,6 +12,7 @@ import { DatabaseService } from '../../services/database.service';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { COLOR_OPTIONS } from '../../constants/color-options.constant';
+import { CHECKLIST_ICON_OPTIONS } from '../../constants/icon-options.constant';
 
 @Component({
   selector: 'app-new-checklist-group-dialog',
@@ -49,28 +50,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
     });
   }
 
-  icons = [
-    { value: 'folder', label: 'Folder' },
-    { value: 'folder_special', label: 'Special Folder' },
-    { value: 'category', label: 'Category' },
-    { value: 'label', label: 'Label' },
-    { value: 'bookmark', label: 'Bookmark' },
-    { value: 'collections', label: 'Collections' },
-    { value: 'inventory_2', label: 'Inventory' },
-    { value: 'archive', label: 'Archive' },
-    { value: 'work', label: 'Work' },
-    { value: 'home', label: 'Home' },
-    { value: 'school', label: 'School' },
-    { value: 'sports', label: 'Sports' },
-    { value: 'fitness_center', label: 'Fitness' },
-    { value: 'restaurant', label: 'Restaurant' },
-    { value: 'shopping_cart', label: 'Shopping' },
-    { value: 'flight', label: 'Travel' },
-    { value: 'camping', label: 'Camping' },
-    { value: 'beach_access', label: 'Beach' },
-    { value: 'snowboarding', label: 'Winter Sports' },
-    { value: 'directions_bike', label: 'Biking' },
-  ];
+  icons = CHECKLIST_ICON_OPTIONS;
 
   colorOptions = COLOR_OPTIONS;
 
