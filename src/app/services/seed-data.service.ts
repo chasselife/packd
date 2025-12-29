@@ -11,6 +11,7 @@ interface ChecklistTemplate {
     description?: string;
     icon?: string;
     isDone?: boolean;
+    subItems?: string[];
   }>;
 }
 
@@ -26,27 +27,55 @@ export class SeedDataService {
       icon: 'camping',
       color: '#53b87d', // Emerald
       items: [
-        { title: 'Tent', description: 'Weatherproof tent with rainfly', icon: 'home' },
+        {
+          title: 'Tent',
+          description: 'Weatherproof tent with rainfly',
+          icon: 'home',
+          subItems: ['Tent poles', 'Rainfly', 'Tent stakes', 'Guy lines', 'Footprint/ground cloth'],
+        },
         {
           title: 'Sleeping Bag',
           description: 'Warm sleeping bag suitable for the season',
           icon: 'hotel',
+          subItems: ['Sleeping bag liner', 'Compression sack', 'Pillow'],
         },
         {
           title: 'Sleeping Pad',
           description: 'Inflatable or foam sleeping pad',
           icon: 'airline_seat_flat',
           isDone: true,
+          subItems: ['Pump (if inflatable)', 'Repair kit'],
         },
         {
           title: 'Camping Stove',
           description: 'Portable stove with fuel',
           icon: 'local_fire_department',
+          subItems: ['Fuel canisters', 'Lighter', 'Wind screen', 'Pot holder'],
         },
-        { title: 'Headlamp', description: 'LED headlamp with extra batteries', icon: 'light_mode' },
-        { title: 'Camping Chairs', description: 'Portable folding chairs', icon: 'chair' },
-        { title: 'Lantern', description: 'Battery or solar-powered lantern', icon: 'lightbulb' },
-        { title: 'Tarp', description: 'Waterproof tarp for ground cover', icon: 'layers' },
+        {
+          title: 'Headlamp',
+          description: 'LED headlamp with extra batteries',
+          icon: 'light_mode',
+          subItems: ['Extra batteries', 'Backup headlamp'],
+        },
+        {
+          title: 'Camping Chairs',
+          description: 'Portable folding chairs',
+          icon: 'chair',
+          subItems: ['Camp table (optional)'],
+        },
+        {
+          title: 'Lantern',
+          description: 'Battery or solar-powered lantern',
+          icon: 'lightbulb',
+          subItems: ['Extra batteries', 'Solar panel (if solar)'],
+        },
+        {
+          title: 'Tarp',
+          description: 'Waterproof tarp for ground cover',
+          icon: 'layers',
+          subItems: ['Rope', 'Tarp stakes'],
+        },
       ],
     },
     {
@@ -54,32 +83,66 @@ export class SeedDataService {
       icon: 'restaurant',
       color: '#f97316', // Orange
       items: [
-        { title: 'Cookware Set', description: 'Pots, pans, and utensils', icon: 'soup_kitchen' },
+        {
+          title: 'Cookware Set',
+          description: 'Pots, pans, and utensils',
+          icon: 'soup_kitchen',
+          subItems: ['Pot (2-3qt)', 'Pan', 'Spatula', 'Serving spoon', 'Tongs', 'Pot gripper'],
+        },
         {
           title: 'Cooler',
           description: 'Insulated cooler with ice packs',
           icon: 'ac_unit',
           isDone: true,
+          subItems: ['Ice packs', 'Ice', 'Cooler thermometer'],
         },
         {
           title: 'Water Bottles',
           description: 'Reusable water bottles or hydration system',
           icon: 'water_drop',
+          subItems: ['Water filter', 'Water purification tablets', 'Hydration bladder'],
         },
-        { title: 'Cutting Board', description: 'Portable cutting board', icon: 'content_cut' },
+        {
+          title: 'Cutting Board',
+          description: 'Portable cutting board',
+          icon: 'content_cut',
+          subItems: ['Knife set', 'Knife sharpener'],
+        },
         {
           title: 'Coffee Maker',
           description: 'Portable coffee maker or French press',
           icon: 'local_cafe',
+          subItems: ['Coffee grounds', 'Filters (if needed)', 'Sugar', 'Creamer'],
         },
-        { title: 'Can Opener', description: 'Manual can opener', icon: 'settings' },
-        { title: 'Dish Soap', description: 'Biodegradable dish soap', icon: 'cleaning_services' },
-        { title: 'Paper Towels', description: 'Roll of paper towels', icon: 'receipt' },
-        { title: 'Aluminum Foil', description: 'Heavy-duty aluminum foil', icon: 'layers' },
+        {
+          title: 'Can Opener',
+          description: 'Manual can opener',
+          icon: 'settings',
+          subItems: ['Bottle opener', 'Corkscrew'],
+        },
+        {
+          title: 'Dish Soap',
+          description: 'Biodegradable dish soap',
+          icon: 'cleaning_services',
+          subItems: ['Sponge', 'Dish towel', 'Wash basin'],
+        },
+        {
+          title: 'Paper Towels',
+          description: 'Roll of paper towels',
+          icon: 'receipt',
+          subItems: ['Trash bags', 'Ziploc bags'],
+        },
+        {
+          title: 'Aluminum Foil',
+          description: 'Heavy-duty aluminum foil',
+          icon: 'layers',
+          subItems: ['Plastic wrap', 'Storage containers'],
+        },
         {
           title: 'Matches/Lighter',
           description: 'Waterproof matches or lighter',
           icon: 'local_fire_department',
+          subItems: ['Fire starter', 'Firewood'],
         },
       ],
     },
@@ -92,31 +155,51 @@ export class SeedDataService {
           title: 'Hiking Boots',
           description: 'Comfortable, waterproof hiking boots',
           icon: 'directions_walk',
+          subItems: ['Hiking socks', 'Boot laces (extra)', 'Boot waterproofing spray'],
         },
         {
           title: 'Rain Jacket',
           description: 'Waterproof rain jacket',
           icon: 'umbrella',
           isDone: true,
+          subItems: ['Rain pants', 'Pack cover'],
         },
         {
           title: 'Warm Layers',
           description: 'Fleece or wool layers for cold nights',
           icon: 'thermostat',
+          subItems: ['Fleece jacket', 'Wool sweater', 'Down vest'],
         },
         {
           title: 'Extra Socks',
           description: 'Multiple pairs of moisture-wicking socks',
           icon: 'inventory_2',
+          subItems: ['Wool socks (3-4 pairs)', 'Liner socks'],
         },
-        { title: 'Hat', description: 'Sun hat or beanie depending on weather', icon: 'checkroom' },
-        { title: 'Gloves', description: 'Warm gloves for cold weather', icon: 'back_hand' },
+        {
+          title: 'Hat',
+          description: 'Sun hat or beanie depending on weather',
+          icon: 'checkroom',
+          subItems: ['Sun hat', 'Beanie', 'Buff/neck gaiter'],
+        },
+        {
+          title: 'Gloves',
+          description: 'Warm gloves for cold weather',
+          icon: 'back_hand',
+          subItems: ['Liner gloves', 'Waterproof gloves'],
+        },
         {
           title: 'Base Layers',
           description: 'Moisture-wicking base layer clothing',
           icon: 'checkroom',
+          subItems: ['Long underwear top', 'Long underwear bottom'],
         },
-        { title: 'Swimwear', description: 'Swimsuit or swim trunks', icon: 'pool' },
+        {
+          title: 'Swimwear',
+          description: 'Swimsuit or swim trunks',
+          icon: 'pool',
+          subItems: ['Quick-dry towel', 'Water shoes'],
+        },
       ],
     },
     {
@@ -128,29 +211,44 @@ export class SeedDataService {
           title: 'First Aid Kit',
           description: 'Complete first aid kit with bandages and medications',
           icon: 'medical_services',
+          subItems: ['Bandages', 'Antiseptic wipes', 'Pain relievers', 'Antihistamine', 'Tweezers', 'Medical tape'],
         },
-        { title: 'Whistle', description: 'Emergency whistle for signaling', icon: 'volume_up' },
+        {
+          title: 'Whistle',
+          description: 'Emergency whistle for signaling',
+          icon: 'volume_up',
+          subItems: ['Signal mirror', 'Emergency beacon'],
+        },
         {
           title: 'Multi-tool',
           description: 'Swiss Army knife or multi-tool',
           icon: 'build',
           isDone: true,
+          subItems: ['Pocket knife', 'Duct tape'],
         },
-        { title: 'Map & Compass', description: 'Topographic map and compass', icon: 'map' },
+        {
+          title: 'Map & Compass',
+          description: 'Topographic map and compass',
+          icon: 'map',
+          subItems: ['GPS device', 'Trail guide', 'Compass (backup)'],
+        },
         {
           title: 'Emergency Blanket',
           description: 'Space blanket for emergency warmth',
           icon: 'emergency',
+          subItems: ['Emergency shelter', 'Hand warmers'],
         },
         {
           title: 'Flashlight',
           description: 'Extra flashlight with batteries',
           icon: 'flashlight_on',
+          subItems: ['Extra batteries', 'Backup flashlight', 'Glow sticks'],
         },
         {
           title: 'Fire Starter',
           description: 'Waterproof fire starter kit',
           icon: 'local_fire_department',
+          subItems: ['Waterproof matches', 'Lighter', 'Fire starter cubes'],
         },
       ],
     },
@@ -159,22 +257,49 @@ export class SeedDataService {
       icon: 'person',
       color: '#8b5cf6', // Purple
       items: [
-        { title: 'Toiletries', description: 'Toothbrush, toothpaste, soap, etc.', icon: 'bath' },
-        { title: 'Sunscreen', description: 'SPF 30+ sunscreen', icon: 'wb_sunny' },
+        {
+          title: 'Toiletries',
+          description: 'Toothbrush, toothpaste, soap, etc.',
+          icon: 'bath',
+          subItems: ['Toothbrush', 'Toothpaste', 'Soap', 'Shampoo', 'Deodorant', 'Razor'],
+        },
+        {
+          title: 'Sunscreen',
+          description: 'SPF 30+ sunscreen',
+          icon: 'wb_sunny',
+          subItems: ['SPF 50+', 'Lip balm with SPF', 'After-sun lotion'],
+        },
         {
           title: 'Insect Repellent',
           description: 'DEET or natural insect repellent',
           icon: 'bug_report',
           isDone: true,
+          subItems: ['DEET spray', 'Natural repellent', 'Mosquito net'],
         },
-        { title: 'Towel', description: 'Quick-dry camping towel', icon: 'dry_cleaning' },
+        {
+          title: 'Towel',
+          description: 'Quick-dry camping towel',
+          icon: 'dry_cleaning',
+          subItems: ['Face towel', 'Hand towel'],
+        },
         {
           title: 'Portable Charger',
           description: 'Power bank for charging devices',
           icon: 'battery_charging_full',
+          subItems: ['USB cables', 'Solar charger', 'Car adapter'],
         },
-        { title: 'Hand Sanitizer', description: 'Alcohol-based hand sanitizer', icon: 'sanitizer' },
-        { title: 'Wet Wipes', description: 'Biodegradable wet wipes', icon: 'cleaning_services' },
+        {
+          title: 'Hand Sanitizer',
+          description: 'Alcohol-based hand sanitizer',
+          icon: 'sanitizer',
+          subItems: ['Hand soap', 'Wet wipes'],
+        },
+        {
+          title: 'Wet Wipes',
+          description: 'Biodegradable wet wipes',
+          icon: 'cleaning_services',
+          subItems: ['Baby wipes', 'Disinfecting wipes'],
+        },
       ],
     },
     {
@@ -182,16 +307,42 @@ export class SeedDataService {
       icon: 'sports_esports',
       color: '#f59e0b', // Amber
       items: [
-        { title: 'Books', description: 'Reading materials for downtime', icon: 'menu_book' },
-        { title: 'Playing Cards', description: 'Deck of playing cards', icon: 'style' },
-        { title: 'Board Games', description: 'Portable board games', icon: 'sports_esports' },
+        {
+          title: 'Books',
+          description: 'Reading materials for downtime',
+          icon: 'menu_book',
+          subItems: ['E-reader', 'Book light', 'Bookmark'],
+        },
+        {
+          title: 'Playing Cards',
+          description: 'Deck of playing cards',
+          icon: 'style',
+          subItems: ['Multiple decks', 'Card games guide'],
+        },
+        {
+          title: 'Board Games',
+          description: 'Portable board games',
+          icon: 'sports_esports',
+          subItems: ['Travel games', 'Dice', 'Score pad'],
+        },
         {
           title: 'Fishing Gear',
           description: 'Fishing rod, tackle, and license',
           icon: 'sports_volleyball',
+          subItems: ['Fishing rod', 'Tackle box', 'Fishing license', 'Bait', 'Fishing line'],
         },
-        { title: 'Camera', description: 'Camera or smartphone for photos', icon: 'camera_alt' },
-        { title: 'Binoculars', description: 'Binoculars for wildlife viewing', icon: 'visibility' },
+        {
+          title: 'Camera',
+          description: 'Camera or smartphone for photos',
+          icon: 'camera_alt',
+          subItems: ['Extra memory cards', 'Camera batteries', 'Tripod', 'Lens cleaner'],
+        },
+        {
+          title: 'Binoculars',
+          description: 'Binoculars for wildlife viewing',
+          icon: 'visibility',
+          subItems: ['Binocular case', 'Lens cleaning cloth'],
+        },
       ],
     },
     {
@@ -203,19 +354,51 @@ export class SeedDataService {
           title: 'Tire Repair Kit',
           description: 'Tire patch kit and air compressor',
           icon: 'build',
+          subItems: ['Tire patches', 'Tire sealant', 'Air compressor', 'Tire pressure gauge'],
         },
-        { title: 'Jumper Cables', description: 'Heavy-duty jumper cables', icon: 'cable' },
-        { title: 'Tool Kit', description: 'Basic automotive tool kit', icon: 'construction' },
+        {
+          title: 'Jumper Cables',
+          description: 'Heavy-duty jumper cables',
+          icon: 'cable',
+          subItems: ['Portable jump starter', 'Battery terminals'],
+        },
+        {
+          title: 'Tool Kit',
+          description: 'Basic automotive tool kit',
+          icon: 'construction',
+          subItems: ['Screwdrivers', 'Wrenches', 'Pliers', 'Hammer'],
+        },
         {
           title: 'Spare Tire',
           description: 'Check spare tire pressure',
           icon: 'tire_repair',
           isDone: true,
+          subItems: ['Lug wrench', 'Jack', 'Wheel chocks'],
         },
-        { title: 'Road Flares', description: 'Emergency road flares', icon: 'warning' },
-        { title: 'Car Charger', description: 'USB car charger adapter', icon: 'charging_station' },
-        { title: 'GPS Device', description: 'GPS navigation device or app', icon: 'navigation' },
-        { title: 'Towing Rope', description: 'Heavy-duty towing rope', icon: 'cable' },
+        {
+          title: 'Road Flares',
+          description: 'Emergency road flares',
+          icon: 'warning',
+          subItems: ['Reflective triangles', 'Emergency vest'],
+        },
+        {
+          title: 'Car Charger',
+          description: 'USB car charger adapter',
+          icon: 'charging_station',
+          subItems: ['Multiple USB ports', 'Cigarette lighter adapter'],
+        },
+        {
+          title: 'GPS Device',
+          description: 'GPS navigation device or app',
+          icon: 'navigation',
+          subItems: ['GPS mount', 'Offline maps', 'Compass app'],
+        },
+        {
+          title: 'Towing Rope',
+          description: 'Heavy-duty towing rope',
+          icon: 'cable',
+          subItems: ['Recovery strap', 'Shackles', 'Winch (if applicable)'],
+        },
       ],
     },
   ];
@@ -263,6 +446,7 @@ export class SeedDataService {
           description: itemTemplate.description,
           icon: itemTemplate.icon,
           isDone: itemTemplate.isDone ?? false,
+          subItems: itemTemplate.subItems || [],
           sortOrder: i + 1,
         };
         await this.databaseService.createChecklistItem(checklistItem);
