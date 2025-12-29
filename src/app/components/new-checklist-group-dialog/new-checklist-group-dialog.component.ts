@@ -45,6 +45,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
   constructor() {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1)]],
+      description: [''],
       icon: ['folder', Validators.required],
       color: ['#53b87d', Validators.required],
     });
@@ -65,6 +66,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
           this.isEditMode = true;
           this.form.patchValue({
             title: group.title,
+            description: group.description || '',
             icon: group.icon || 'folder',
             color: group.color || COLOR_OPTIONS[0].value,
           });
@@ -92,6 +94,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
         const formValue = this.form.value;
         await this.databaseService.createChecklistGroup({
           title: formValue.title,
+          description: formValue.description || undefined,
           icon: formValue.icon,
           color: formValue.color,
         });
@@ -108,6 +111,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
         const formValue = this.form.value;
         await this.databaseService.updateChecklistGroup(this.groupId, {
           title: formValue.title,
+          description: formValue.description || undefined,
           icon: formValue.icon,
           color: formValue.color,
         });
@@ -135,6 +139,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
     return {
       id: undefined,
       title: formValue.title || 'Your Group Title',
+      description: formValue.description || undefined,
       icon: formValue.icon || 'folder',
       color: formValue.color || COLOR_OPTIONS[0].value,
       sortOrder: 0,

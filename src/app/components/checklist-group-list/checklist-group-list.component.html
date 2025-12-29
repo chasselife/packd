@@ -40,14 +40,20 @@
     </button>
   </div>
 
-  @if (isLoading()) {
-  <div class="text-center py-12 text-gray-600 text-lg flex-1 flex flex-col justify-center">
+  @if (checklistGroup()?.description) {
+  <div class="px-2 sm:px-4 mb-4">
+    <p class="text-gray-600 text-center sm:text-left whitespace-pre-wrap">
+      {{ checklistGroup()!.description }}
+    </p>
+  </div>
+  } @if (isLoading()) {
+  <div class="text-center py-12 text-gray-600 flex-1 flex flex-col justify-center">
     Loading checklists...
   </div>
   } @else if (checklists().length === 0) {
   <div class="text-center py-16 px-8 text-gray-600 flex-1 flex flex-col justify-center">
     <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!"> block </mat-icon>
-    <p class="text-lg m-0 text-gray-500">
+    <p class="m-0 text-gray-500">
       No checklists in this group yet. <br />Create your first checklist to get started!
     </p>
   </div>
