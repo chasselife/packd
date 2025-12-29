@@ -97,6 +97,7 @@ export class ChecklistTileComponent {
   showBorder = input<boolean>(false);
   defaultIcon = input<string>('checklist');
   checklistCount = input<number | undefined>(undefined);
+  layout = input<'vertical' | 'horizontal'>('vertical');
 
   // Outputs
   clicked = output<TileItem>();

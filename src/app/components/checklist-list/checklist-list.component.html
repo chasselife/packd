@@ -58,14 +58,14 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu" class="mt-2">
-        <button mat-menu-item (click)="openNewChecklistDialog()">
+        <!-- <button mat-menu-item (click)="openNewChecklistDialog()">
           <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
           <span class="pr-2">Create Checklist</span>
-        </button>
-        <button mat-menu-item (click)="openNewChecklistGroupDialog()">
+        </button> -->
+        <!-- <button mat-menu-item (click)="openNewChecklistGroupDialog()">
           <mat-icon class="mr-2! text-gray-500!">folder</mat-icon>
           <span class="pr-2">Create Checklist Group</span>
-        </button>
+        </button> -->
         <button mat-menu-item (click)="openImportPage()">
           <mat-icon class="mr-2! text-gray-500!">upload_file</mat-icon>
           <span class="pr-2">Import Data</span>
@@ -105,7 +105,7 @@
     cdkDropListOrientation="mixed"
     (cdkDropListDropped)="onCombinedDrop($event)"
     [cdkDropListDisabled]="!isEditMode()"
-    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
+    class="select-none flex-1 flex flex-col gap-2 md:gap-3 px-4 mt-4 md:mt-8"
   >
     @for (item of sortedItems(); track item.id) { @let isGroup = item.isGroup; @let colorClasses =
     getColorClasses(item.color); @if (isGroup) {
@@ -120,6 +120,7 @@
       [showDuplicateButton]="true"
       [defaultIcon]="'folder'"
       [checklistCount]="getGroupChecklistCount(item.id)"
+      [layout]="'horizontal'"
       (clicked)="onChecklistGroupClick($event)"
       (editClicked)="onGroupEditClick($event.item, $event.event)"
       (deleteClicked)="onGroupDeleteClick($event.item, $event.event)"
@@ -139,6 +140,7 @@
       [colorClasses]="colorClasses"
       [showDuplicateButton]="true"
       [defaultIcon]="'checklist'"
+      [layout]="'horizontal'"
       (clicked)="onChecklistClick($event)"
       (editClicked)="onEditClick($event.item, $event.event)"
       (deleteClicked)="onDeleteClick($event.item, $event.event)"

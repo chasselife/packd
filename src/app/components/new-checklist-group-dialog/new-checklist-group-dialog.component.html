@@ -118,24 +118,16 @@
         @let colorClasses = getSelectedColor(); @let defaultColorClasses = { bgClass:
         'bg-primary-500/20', borderClass: 'border-primary', textClass: 'text-primary' }; @let
         previewColorClasses = colorClasses || defaultColorClasses;
-        <div
-          class="max-w-36 rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm"
-          [class]="
-            previewColorClasses.bgClass +
-            ' ' +
-            previewColorClasses.borderClass +
-            ' ' +
-            previewColorClasses.textClass
-          "
-        >
-          <div class="md:mb-1">
-            <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-              {{ getSelectedIcon()?.value || 'folder' }}
-            </mat-icon>
-          </div>
-          <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-            {{ form.get('title')?.value || 'Your Group Title' }}
-          </div>
+        <div class="max-w-full">
+          <app-checklist-tile
+            [item]="getPreviewGroup()"
+            [isEditMode]="false"
+            [isChecklist]="false"
+            [colorClasses]="previewColorClasses"
+            [showBorder]="true"
+            [defaultIcon]="'folder'"
+            [layout]="'horizontal'"
+          />
         </div>
       </div>
       }

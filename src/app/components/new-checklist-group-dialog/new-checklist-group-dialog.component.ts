@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
+import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 
 @Component({
   selector: 'app-new-checklist-group-dialog',
@@ -22,6 +23,7 @@ import { DatabaseService } from '../../services/database.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    ChecklistTileComponent,
   ],
   templateUrl: './new-checklist-group-dialog.component.html',
 })
@@ -214,5 +216,18 @@ export class NewChecklistGroupDialogComponent implements OnInit {
     | undefined {
     const selectedValue = this.form.get('color')?.value;
     return this.colorOptions.find((color) => color.value === selectedValue);
+  }
+
+  getPreviewGroup(): ChecklistGroup {
+    const formValue = this.form.value;
+    return {
+      id: undefined,
+      title: formValue.title || 'Your Group Title',
+      icon: formValue.icon || 'folder',
+      color: formValue.color || this.colorOptions[0].value,
+      sortOrder: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
   }
 }
