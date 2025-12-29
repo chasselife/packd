@@ -40,6 +40,7 @@ export class ChecklistItemComponent {
   layoutMode = signal<'compact' | 'full'>('full');
   swipedItemId = signal<number | null>(null);
   dragDropEnabled = signal(false);
+  sortByDoneEnabled = signal(false);
 
   // Swipe gesture tracking
   private touchStartX = 0;
@@ -68,6 +69,7 @@ export class ChecklistItemComponent {
       ]);
       this.checklist.set(checklist);
       this.checklistItems.set(items);
+      this.applySorting();
     } catch (error) {
       console.error('Error loading checklist and items:', error);
     } finally {
@@ -86,6 +88,7 @@ export class ChecklistItemComponent {
       this.checklistItems.update((items) =>
         items.map((i) => (i.id === item.id ? { ...i, isDone: !i.isDone } : i))
       );
+      this.applySorting();
     } catch (error) {
       console.error('Error toggling item:', error);
     }
@@ -165,12 +168,51 @@ export class ChecklistItemComponent {
 
   toggleDragDrop(): void {
     this.dragDropEnabled.update((enabled) => !enabled);
+    // If enabling drag drop, disable sort by done
+    if (this.dragDropEnabled()) {
+      this.sortByDoneEnabled.set(false);
+    }
     // Close any swiped items when toggling drag drop
     if (this.dragDropEnabled()) {
       this.swipedItemId.set(null);
     }
     // Clear any pending long press timer
     this.clearLongPressTimer();
+  }
+
+  toggleSortByDone(): void {
+    this.sortByDoneEnabled.update((enabled) => !enabled);
+    // If enabling sort by done, disable drag drop
+    if (this.sortByDoneEnabled()) {
+      this.dragDropEnabled.set(false);
+    }
+    this.applySorting();
+  }
+
+  private applySorting(): void {
+    if (this.sortByDoneEnabled()) {
+      this.checklistItems.update((items) => {
+        // Create a copy to avoid mutating the original
+        const sorted = [...items];
+        // Sort by isDone first (false before true), then by sortOrder
+        sorted.sort((a, b) => {
+          // First, separate done and undone items
+          if (a.isDone !== b.isDone) {
+            return a.isDone ? 1 : -1; // undone items (false) come first
+          }
+          // Within the same done state, sort by sortOrder
+          return a.sortOrder - b.sortOrder;
+        });
+        return sorted;
+      });
+    } else {
+      // When sort by done is disabled, restore original order by sortOrder
+      this.checklistItems.update((items) => {
+        const sorted = [...items];
+        sorted.sort((a, b) => a.sortOrder - b.sortOrder);
+        return sorted;
+      });
+    }
   }
 
   onTouchStart(event: TouchEvent, item: ChecklistItem): void {

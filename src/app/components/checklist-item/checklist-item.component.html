@@ -37,20 +37,36 @@
   @if (!isLoading()) {
   <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
     @if (checklistItems().length > 0) {
-    <button
-      mat-icon-button
-      [class.bg-primary-100!]="dragDropEnabled()"
-      [class.text-primary!]="dragDropEnabled()"
-      [class.bg-gray-100!]="!dragDropEnabled()"
-      [class.text-gray-500!]="!dragDropEnabled()"
-      [class.opacity-70!]="!dragDropEnabled()"
-      (click)="toggleDragDrop()"
-      aria-label="Toggle drag and drop"
-      [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
-      class="transition-all rounded-lg"
-    >
-      <mat-icon>drag_indicator</mat-icon>
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [class.bg-primary-100!]="dragDropEnabled()"
+        [class.text-primary!]="dragDropEnabled()"
+        [class.bg-gray-100!]="!dragDropEnabled()"
+        [class.text-gray-500!]="!dragDropEnabled()"
+        [class.opacity-70!]="!dragDropEnabled()"
+        (click)="toggleDragDrop()"
+        aria-label="Toggle drag and drop"
+        [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
+        class="transition-all rounded-lg"
+      >
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [class.bg-primary-100!]="sortByDoneEnabled()"
+        [class.text-primary!]="sortByDoneEnabled()"
+        [class.bg-gray-100!]="!sortByDoneEnabled()"
+        [class.text-gray-500!]="!sortByDoneEnabled()"
+        [class.opacity-70!]="!sortByDoneEnabled()"
+        (click)="toggleSortByDone()"
+        aria-label="Toggle sort by done"
+        [attr.title]="sortByDoneEnabled() ? 'Disable sort by done' : 'Enable sort by done'"
+        class="transition-all rounded-lg"
+      >
+        <mat-icon>low_priority</mat-icon>
+      </button>
+    </div>
     } @else {
     <div></div>
     }
