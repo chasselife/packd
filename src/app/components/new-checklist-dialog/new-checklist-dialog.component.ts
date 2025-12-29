@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { Checklist } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
+import { ColorPickerComponent } from '../color-picker/color-picker.component';
+import { COLOR_OPTIONS } from '../../constants/color-options.constant';
 
 @Component({
   selector: 'app-new-checklist-dialog',
@@ -23,6 +25,7 @@ import { DatabaseService } from '../../services/database.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    ColorPickerComponent,
   ],
   templateUrl: './new-checklist-dialog.component.html',
 })
@@ -81,80 +84,7 @@ export class NewChecklistDialogComponent implements OnInit {
     { value: 'build', label: 'Build' },
   ];
 
-  // Predefined colors suitable for glassmorphism/liquid glass effects
-  // These colors work well with semi-transparent backgrounds and provide good text contrast
-  colorOptions = [
-    {
-      value: '#53b87d',
-      label: 'Emerald',
-      bgClass: 'bg-primary-500/20',
-      borderClass: 'border-primary',
-      textClass: 'text-primary',
-    },
-    {
-      value: '#3b82f6',
-      label: 'Blue',
-      bgClass: 'bg-blue-500/20',
-      borderClass: 'border-blue-700',
-      textClass: 'text-blue-700',
-    },
-    {
-      value: '#8b5cf6',
-      label: 'Purple',
-      bgClass: 'bg-purple-500/20',
-      borderClass: 'border-purple-700',
-      textClass: 'text-purple-700',
-    },
-    {
-      value: '#ec4899',
-      label: 'Pink',
-      bgClass: 'bg-pink-500/20',
-      borderClass: 'border-pink-700',
-      textClass: 'text-pink-700',
-    },
-    {
-      value: '#f59e0b',
-      label: 'Amber',
-      bgClass: 'bg-amber-500/20',
-      borderClass: 'border-amber-700',
-      textClass: 'text-amber-700',
-    },
-    {
-      value: '#10b981',
-      label: 'Green',
-      bgClass: 'bg-green-500/20',
-      borderClass: 'border-green-700',
-      textClass: 'text-green-700',
-    },
-    {
-      value: '#06b6d4',
-      label: 'Cyan',
-      bgClass: 'bg-cyan-500/20',
-      borderClass: 'border-cyan-700',
-      textClass: 'text-cyan-700',
-    },
-    {
-      value: '#f97316',
-      label: 'Orange',
-      bgClass: 'bg-orange-500/20',
-      borderClass: 'border-orange-700',
-      textClass: 'text-orange-700',
-    },
-    {
-      value: '#6366f1',
-      label: 'Indigo',
-      bgClass: 'bg-indigo-500/20',
-      borderClass: 'border-indigo-700',
-      textClass: 'text-indigo-700',
-    },
-    {
-      value: '#14b8a6',
-      label: 'Teal',
-      bgClass: 'bg-teal-500/20',
-      borderClass: 'border-teal-700',
-      textClass: 'text-teal-700',
-    },
-  ];
+  colorOptions = COLOR_OPTIONS;
 
   async ngOnInit(): Promise<void> {
     // Load all checklist groups for the dropdown
@@ -187,7 +117,7 @@ export class NewChecklistDialogComponent implements OnInit {
           this.form.patchValue({
             title: title,
             icon: checklist.icon || 'checklist',
-            color: checklist.color || this.colorOptions[0].value,
+            color: checklist.color || COLOR_OPTIONS[0].value,
             groupId: checklist.groupId || null,
           });
         } else {
@@ -273,7 +203,7 @@ export class NewChecklistDialogComponent implements OnInit {
     | { value: string; label: string; bgClass: string; borderClass: string; textClass: string }
     | undefined {
     const selectedValue = this.form.get('color')?.value;
-    return this.colorOptions.find((color) => color.value === selectedValue);
+    return COLOR_OPTIONS.find((color) => color.value === selectedValue);
   }
 
   getSelectedGroup(): ChecklistGroup | undefined {

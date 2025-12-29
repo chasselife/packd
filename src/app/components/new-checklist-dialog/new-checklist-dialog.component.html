@@ -123,37 +123,12 @@
             <mat-icon class="text-base! text-primary-600">color_lens</mat-icon>
             Color Theme
           </label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select formControlName="color">
-              <mat-select-trigger>
-                @if (getSelectedColor(); as selectedColor) {
-                <div class="flex items-center gap-3 py-1">
-                  <div
-                    class="w-8 h-8 rounded-lg border-2 shadow-sm"
-                    [style.background-color]="selectedColor.value"
-                    [style.border-color]="selectedColor.value"
-                  ></div>
-                  <span class="font-medium">{{ selectedColor.label }}</span>
-                </div>
-                }
-              </mat-select-trigger>
-              @for (color of colorOptions; track color.value) {
-              <mat-option [value]="color.value">
-                <div class="flex items-center gap-3 py-1">
-                  <div
-                    class="w-8 h-8 rounded-lg border-2 shadow-sm"
-                    [style.background-color]="color.value"
-                    [style.border-color]="color.value"
-                  ></div>
-                  <span>{{ color.label }}</span>
-                </div>
-              </mat-option>
-              }
-            </mat-select>
+          <div class="w-full">
+            <app-color-picker [colors]="colorOptions" formControlName="color"></app-color-picker>
             @if (form.get('color')?.hasError('required') && form.get('color')?.touched) {
-            <mat-error>Color is required</mat-error>
+            <div class="text-xs text-red-600 mt-1 ml-1">Color is required</div>
             }
-          </mat-form-field>
+          </div>
         </div>
       </div>
 

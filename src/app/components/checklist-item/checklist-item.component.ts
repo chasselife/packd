@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
+import { getColorClasses as getColorClassesHelper } from '../../constants/color-options.constant';
 
 @Component({
   selector: 'app-checklist-item',
@@ -530,88 +531,12 @@ export class ChecklistItemComponent {
     textClass: string;
     buttonClass: string;
   } {
-    const defaultColor = {
-      bgClass: 'bg-primary-500/20',
-      borderClass: 'border-primary-500',
-      textClass: 'text-primary-800',
-      buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
+    return getColorClassesHelper(color, true) as {
+      bgClass: string;
+      borderClass: string;
+      textClass: string;
+      buttonClass: string;
     };
-
-    if (!color) return defaultColor;
-
-    const colorMap: Record<
-      string,
-      { bgClass: string; borderClass: string; textClass: string; buttonClass: string }
-    > = {
-      '#49966d': {
-        bgClass: 'bg-primary-500/20',
-        borderClass: 'border-primary-500',
-        textClass: 'text-primary-800',
-        buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
-      },
-      '#53b87d': {
-        bgClass: 'bg-primary-500/20',
-        borderClass: 'border-primary-500',
-        textClass: 'text-primary-800',
-        buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
-      },
-      '#3b82f6': {
-        bgClass: 'bg-blue-500/20',
-        borderClass: 'border-blue-500',
-        textClass: 'text-blue-800',
-        buttonClass: 'bg-blue-500/30 hover:bg-blue-500/40',
-      },
-      '#8b5cf6': {
-        bgClass: 'bg-purple-500/20',
-        borderClass: 'border-purple-500',
-        textClass: 'text-purple-800',
-        buttonClass: 'bg-purple-500/30 hover:bg-purple-500/40',
-      },
-      '#ec4899': {
-        bgClass: 'bg-pink-500/20',
-        borderClass: 'border-pink-500',
-        textClass: 'text-pink-800',
-        buttonClass: 'bg-pink-500/30 hover:bg-pink-500/40',
-      },
-      '#f59e0b': {
-        bgClass: 'bg-amber-500/20',
-        borderClass: 'border-amber-500',
-        textClass: 'text-amber-800',
-        buttonClass: 'bg-amber-500/30 hover:bg-amber-500/40',
-      },
-      '#10b981': {
-        bgClass: 'bg-green-500/20',
-        borderClass: 'border-green-500',
-        textClass: 'text-green-800',
-        buttonClass: 'bg-green-500/30 hover:bg-green-500/40',
-      },
-      '#06b6d4': {
-        bgClass: 'bg-cyan-500/20',
-        borderClass: 'border-cyan-500',
-        textClass: 'text-cyan-800',
-        buttonClass: 'bg-cyan-500/30 hover:bg-cyan-500/40',
-      },
-      '#f97316': {
-        bgClass: 'bg-orange-500/20',
-        borderClass: 'border-orange-500',
-        textClass: 'text-orange-800',
-        buttonClass: 'bg-orange-500/30 hover:bg-orange-500/40',
-      },
-      '#6366f1': {
-        bgClass: 'bg-indigo-500/20',
-        borderClass: 'border-indigo-500',
-        textClass: 'text-indigo-800',
-        buttonClass: 'bg-indigo-500/30 hover:bg-indigo-500/40',
-      },
-      '#14b8a6': {
-        bgClass: 'bg-teal-500/20',
-        borderClass: 'border-teal-500',
-        textClass: 'text-teal-800',
-        buttonClass: 'bg-teal-500/30 hover:bg-teal-500/40',
-      },
-    };
-
-    return colorMap[color] || defaultColor;
   }
 }
 

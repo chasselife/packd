@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
+import { getColorClasses } from '../../constants/color-options.constant';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
@@ -305,7 +306,10 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
 
       // Shift all checklists after the original by 1 to make room
       const checklistsToShift = relevantChecklists.filter(
-        (c) => c.sortOrder > originalSortOrder && c.id !== newChecklistId && c.id !== originalChecklist.id
+        (c) =>
+          c.sortOrder > originalSortOrder &&
+          c.id !== newChecklistId &&
+          c.id !== originalChecklist.id
       );
 
       for (const c of checklistsToShift) {
@@ -368,7 +372,6 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
     });
   }
 
-
   onDrop(event: CdkDragDrop<Checklist[]>): void {
     if (!this.isEditMode()) {
       return;
@@ -406,68 +409,6 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
-    const defaultColor = {
-      bgClass: 'bg-primary-500/20',
-      borderClass: 'border-primary',
-      textClass: 'text-primary',
-    };
-
-    if (!color) return defaultColor;
-
-    const colorMap: Record<string, { bgClass: string; borderClass: string; textClass: string }> = {
-      '#53b87d': {
-        bgClass: 'bg-primary-500/20',
-        borderClass: 'border-primary',
-        textClass: 'text-primary',
-      },
-      '#3b82f6': {
-        bgClass: 'bg-blue-500/20',
-        borderClass: 'border-blue-700',
-        textClass: 'text-blue-700',
-      },
-      '#8b5cf6': {
-        bgClass: 'bg-purple-500/20',
-        borderClass: 'border-purple-700',
-        textClass: 'text-purple-700',
-      },
-      '#ec4899': {
-        bgClass: 'bg-pink-500/20',
-        borderClass: 'border-pink-700',
-        textClass: 'text-pink-700',
-      },
-      '#f59e0b': {
-        bgClass: 'bg-amber-500/20',
-        borderClass: 'border-amber-700',
-        textClass: 'text-amber-700',
-      },
-      '#10b981': {
-        bgClass: 'bg-green-500/20',
-        borderClass: 'border-green-700',
-        textClass: 'text-green-700',
-      },
-      '#06b6d4': {
-        bgClass: 'bg-cyan-500/20',
-        borderClass: 'border-cyan-700',
-        textClass: 'text-cyan-700',
-      },
-      '#f97316': {
-        bgClass: 'bg-orange-500/20',
-        borderClass: 'border-orange-700',
-        textClass: 'text-orange-700',
-      },
-      '#6366f1': {
-        bgClass: 'bg-indigo-500/20',
-        borderClass: 'border-indigo-700',
-        textClass: 'text-indigo-700',
-      },
-      '#14b8a6': {
-        bgClass: 'bg-teal-500/20',
-        borderClass: 'border-teal-700',
-        textClass: 'text-teal-700',
-      },
-    };
-
-    return colorMap[color] || defaultColor;
+    return getColorClasses(color, false);
   }
 }
-

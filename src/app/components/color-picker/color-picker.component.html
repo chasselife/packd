@@ -1,0 +1,36 @@
+<div class="color-picker-container pb-12 pt-4">
+  <div class="color-picker-grid">
+    @for (color of colors; track color.value) {
+    <button
+      type="button"
+      class="color-swatch"
+      [class.selected]="isSelected(color.value)"
+      [style.background-color]="color.value"
+      [style.border-color]="color.value"
+      (click)="selectColor(color.value)"
+      [attr.aria-label]="color.label || 'Select color ' + color.value"
+      [attr.aria-pressed]="isSelected(color.value)"
+    >
+      @if (isSelected(color.value)) {
+      <svg
+        class="check-icon"
+        [class.check-icon-dark]="color.value === '#ffffff'"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M13.3333 4L6 11.3333L2.66667 8"
+          [attr.stroke]="color.value === '#ffffff' ? '#000000' : 'white'"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      }
+    </button>
+    }
+  </div>
+</div>
