@@ -29,7 +29,7 @@ export class SeedDataComponent {
       this.addLog('Initializing services...');
       this.addLog('Starting to seed dummy data...');
 
-      await this.seedDataService.seedInitialData();
+      await this.seedDataService.forceSeedInitialData();
 
       this.addLog('✅ Dummy data seeded successfully!');
       this.statusMessage =

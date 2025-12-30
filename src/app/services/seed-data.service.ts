@@ -425,6 +425,11 @@ export class SeedDataService {
     return shuffled.slice(0, count);
   }
 
+  async forceSeedInitialData(): Promise<void> {
+    localStorage.removeItem('chckd_has_seeded_data');
+    await this.seedInitialData();
+  }
+
   async seedInitialData(): Promise<void> {
     // Check if seeding has already happened (using localStorage flag)
     const hasSeededKey = 'chckd_has_seeded_data';
