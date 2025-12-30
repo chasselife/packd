@@ -66,6 +66,10 @@
           <mat-icon class="mr-2! text-gray-500!">folder</mat-icon>
           <span class="pr-2">Add Group</span>
         </button>
+        <button mat-menu-item (click)="openNewChecklistDialog()">
+          <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
+          <span class="pr-2">Add Checklist</span>
+        </button>
         <button mat-menu-item (click)="isEditMode() ? deactivateEditMode() : activateEditMode()">
           <mat-icon class="mr-2! text-gray-500!">dashboard_2_edit</mat-icon>
           <span class="pr-2">{{ isEditMode() ? 'Exit Edit Mode' : 'Edit Mode' }}</span>
@@ -76,11 +80,6 @@
         >
           <mat-icon class="mr-2! text-gray-500!">check_box</mat-icon>
           <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
-        </button>
-
-        <button mat-menu-item (click)="openNewChecklistDialog()">
-          <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
-          <span class="pr-2">Simple Checklist</span>
         </button>
 
         <button mat-menu-item (click)="openImportPage()">
