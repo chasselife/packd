@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
       <p class="text-sm text-gray-600">Would you like to update now?</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <div class="mb-4 mr-4">
+      <div class="mb-4">
         <button mat-button (click)="onCancel()">Later</button>
         <button mat-raised-button color="primary" (click)="onConfirm()">Update Now</button>
       </div>
