@@ -62,17 +62,20 @@
         <mat-icon class="mr-2! text-gray-500!">edit</mat-icon>
         <span class="pr-2">Edit</span>
       </button>
-      <button mat-menu-item (click)="isEditMode() ? deactivateEditMode() : activateEditMode()">
-        <mat-icon class="mr-2! text-gray-500!">dashboard_2_edit</mat-icon>
-        <span class="pr-2">{{ isEditMode() ? 'Exit Edit Mode' : 'Edit Mode' }}</span>
-      </button>
       <button mat-menu-item (click)="openNewChecklistDialog()">
         <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
         <span class="pr-2">Add Checklist</span>
       </button>
-      <button mat-menu-item (click)="activateSelectMode()">
+      <button mat-menu-item (click)="isEditMode() ? deactivateEditMode() : activateEditMode()">
+        <mat-icon class="mr-2! text-gray-500!">dashboard_2_edit</mat-icon>
+        <span class="pr-2">{{ isEditMode() ? 'Exit Edit Mode' : 'Edit Mode' }}</span>
+      </button>
+      <button
+        mat-menu-item
+        (click)="isSelectMode() ? deactivateSelectMode() : activateSelectMode()"
+      >
         <mat-icon class="mr-2! text-gray-500!">check_box</mat-icon>
-        <span class="pr-2">Batch Delete</span>
+        <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
       </button>
     </mat-menu>
   </div>
@@ -131,7 +134,7 @@
   <div class="h-4 md:h-6"></div>
   }
   <div
-    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-4 md:mt-8 content-start"
+    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-6 md:mt-8 content-start"
     cdkDropList
     cdkDropListOrientation="mixed"
     (cdkDropListDropped)="onDrop($event)"
