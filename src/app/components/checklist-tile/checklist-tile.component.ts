@@ -1,7 +1,8 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Checklist } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
@@ -17,7 +18,7 @@ export interface ColorClasses {
 @Component({
   selector: 'app-checklist-tile',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, DragDropModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatCheckboxModule, DragDropModule],
   templateUrl: './checklist-tile.component.html',
   styles: [
     `
@@ -92,12 +93,14 @@ export class ChecklistTileComponent {
   // Inputs
   item = input.required<TileItem>();
   isEditMode = input.required<boolean>();
+  isSelectMode = input<boolean>(false);
   colorClasses = input.required<ColorClasses>();
   showDuplicateButton = input<boolean>(false);
   showBorder = input<boolean>(false);
   defaultIcon = input<string>('checklist');
   checklistCount = input<number | undefined>(undefined);
   layout = input<'vertical' | 'horizontal'>('vertical');
+  isSelected = input<boolean>(false);
 
   // Outputs
   clicked = output<TileItem>();
@@ -109,6 +112,7 @@ export class ChecklistTileComponent {
   mouseLeave = output<void>();
   touchMove = output<TouchEvent>();
   touchEnd = output<{ item: TileItem; event: TouchEvent; isGroup: boolean }>();
+  selectionChanged = output<{ item: TileItem; selected: boolean }>();
 
   get itemTitle(): string {
     return this.item().title;
@@ -125,7 +129,10 @@ export class ChecklistTileComponent {
   isChecklist = input<boolean>(true);
 
   onTileClick(): void {
-    if (!this.isEditMode()) {
+    if (this.isSelectMode()) {
+      // In select mode, clicking the tile toggles selection
+      this.onSelectionChange(!this.isSelected());
+    } else if (!this.isEditMode()) {
       this.clicked.emit(this.item());
     }
   }
@@ -146,42 +153,46 @@ export class ChecklistTileComponent {
   }
 
   onMouseDown(event: MouseEvent | TouchEvent): void {
-    // Don't interfere with drag and drop when in edit mode
-    if (this.isEditMode()) {
+    // Don't interfere with drag and drop when in edit mode or select mode
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
     this.mouseDown.emit({ item: this.item(), event });
   }
 
   onMouseUp(event: MouseEvent | TouchEvent): void {
-    // Don't interfere with drag and drop when in edit mode
-    if (this.isEditMode()) {
+    // Don't interfere with drag and drop when in edit mode or select mode
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
     this.mouseUp.emit(event);
   }
 
   onMouseLeave(): void {
-    // Don't interfere with drag and drop when in edit mode
-    if (this.isEditMode()) {
+    // Don't interfere with drag and drop when in edit mode or select mode
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
     this.mouseLeave.emit();
   }
 
   onTouchMove(event: TouchEvent): void {
-    // Don't interfere with drag and drop when in edit mode
-    if (this.isEditMode()) {
+    // Don't interfere with drag and drop when in edit mode or select mode
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
     this.touchMove.emit(event);
   }
 
   onTouchEnd(event: TouchEvent): void {
-    // Don't interfere with drag and drop when in edit mode
-    if (this.isEditMode()) {
+    // Don't interfere with drag and drop when in edit mode or select mode
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
     this.touchEnd.emit({ item: this.item(), event, isGroup: !this.isChecklist() });
+  }
+
+  onSelectionChange(checked: boolean): void {
+    this.selectionChanged.emit({ item: this.item(), selected: checked });
   }
 }

@@ -19,11 +19,11 @@
     colorClasses().textClass
   "
   [class.border]="showBorder()"
-  [class.no-hover]="isEditMode()"
+  [class.no-hover]="isEditMode() || isSelectMode()"
   [class.wiggle-animation]="isEditMode()"
-  [class.cursor-pointer]="!isEditMode()"
+  [class.cursor-pointer]="!isEditMode() && !isSelectMode()"
   [class.cursor-move]="isEditMode()"
-  [style.touch-action]="isEditMode() ? 'none' : 'auto'"
+  [style.touch-action]="isEditMode() || isSelectMode() ? 'none' : 'auto'"
   (click)="onTileClick()"
   (mousedown)="onMouseDown($event)"
   (mouseup)="onMouseUp($event)"
@@ -40,8 +40,27 @@
     [class]="colorClasses().bgClass + ' ' + colorClasses().borderClass"
     [style.border-width]="'0px 0px 0 0px'"
   ></div>
+  } @if (isSelectMode()) {
+  <!-- Checkbox - top left corner in select mode -->
+  <div
+    [class]="
+      layout() === 'horizontal' ? 'absolute top-1 left-1 z-30' : 'absolute top-2 left-2 z-30'
+    "
+  >
+    <mat-checkbox
+      [checked]="isSelected()"
+      (change)="onSelectionChange($event.checked)"
+      (click)="$event.stopPropagation()"
+      [class]="layout() === 'horizontal' ? 'scale-75' : ''"
+      color="primary"
+      [style.--mdc-checkbox-selected-hover-state-layer-color]="itemColor"
+      [style.--mdc-checkbox-selected-pressed-state-layer-color]="itemColor"
+      [style.--mdc-checkbox-selected-icon-color]="itemColor"
+      [style.--mat-checkbox-selected-icon-color]="itemColor"
+    ></mat-checkbox>
+  </div>
   } @if (isEditMode()) {
-  <!-- Drag handle - top left corner -->
+  <!-- Drag handle - top left corner in edit mode -->
   <div
     [class]="
       layout() === 'horizontal'

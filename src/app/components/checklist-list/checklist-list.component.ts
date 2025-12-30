@@ -96,12 +96,17 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   checklistGroups = signal<ChecklistGroup[]>([]);
   isLoading = signal(true);
   isEditMode = signal(false);
+  isSelectMode = signal(false);
 
   // Combined sorted array of groups and checklists with isGroup flag
   sortedItems = signal<ChecklistItemWithType[]>([]);
 
   // Map to store checklist counts for each group
   groupChecklistCounts = signal<Map<number, number>>(new Map());
+
+  // Selection state
+  selectedChecklistIds = signal<Set<number>>(new Set());
+  selectedGroupIds = signal<Set<number>>(new Set());
 
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
@@ -232,8 +237,8 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   onTileMouseDown(item: Checklist | ChecklistGroup, event: MouseEvent | TouchEvent): void {
-    if (this.isEditMode()) {
-      return; // Don't trigger long press in edit mode
+    if (this.isEditMode() || this.isSelectMode()) {
+      return; // Don't trigger long press in edit mode or select mode
     }
 
     // Track touch start position for mobile scroll detection
@@ -256,7 +261,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   onTileTouchMove(event: TouchEvent): void {
-    if (this.isEditMode()) {
+    if (this.isEditMode() || this.isSelectMode()) {
       return;
     }
 
@@ -298,7 +303,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     }
 
     // Only navigate if touch didn't move (was a tap, not a scroll)
-    if (!this.touchMoved && !this.isEditMode()) {
+    if (!this.touchMoved && !this.isEditMode() && !this.isSelectMode()) {
       if (isGroup) {
         // It's a ChecklistGroup
         this.onChecklistGroupClick(item as ChecklistGroup);
@@ -332,10 +337,28 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
 
   activateEditMode(): void {
     this.isEditMode.set(true);
+    this.isSelectMode.set(false);
+    this.selectedChecklistIds.set(new Set());
+    this.selectedGroupIds.set(new Set());
   }
 
   deactivateEditMode(): void {
     this.isEditMode.set(false);
+    this.selectedChecklistIds.set(new Set());
+    this.selectedGroupIds.set(new Set());
+  }
+
+  activateSelectMode(): void {
+    this.isSelectMode.set(true);
+    this.isEditMode.set(false);
+    this.selectedChecklistIds.set(new Set());
+    this.selectedGroupIds.set(new Set());
+  }
+
+  deactivateSelectMode(): void {
+    this.isSelectMode.set(false);
+    this.selectedChecklistIds.set(new Set());
+    this.selectedGroupIds.set(new Set());
   }
 
   onEditClick(checklist: Checklist, event: Event): void {
@@ -628,8 +651,8 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   async onCombinedDrop(event: CdkDragDrop<ChecklistItemWithType[]>): Promise<void> {
-    if (!this.isEditMode()) {
-      return; // Only allow reordering in edit mode
+    if (!this.isEditMode() || this.isSelectMode()) {
+      return; // Only allow reordering in edit mode (not select mode)
     }
 
     // Get current sorted items
@@ -670,8 +693,8 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   onDrop(event: CdkDragDrop<Checklist[]>): void {
-    if (!this.isEditMode()) {
-      return; // Only allow reordering in edit mode
+    if (!this.isEditMode() || this.isSelectMode()) {
+      return; // Only allow reordering in edit mode (not select mode)
     }
 
     const currentChecklists = [...this.checklists()];
@@ -690,7 +713,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   onGroupDrop(event: CdkDragDrop<ChecklistGroup[]>): void {
-    if (!this.isEditMode()) {
+    if (!this.isEditMode() || this.isSelectMode()) {
       return;
     }
 
@@ -821,7 +844,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
   }
 
   onContainerClick(event: MouseEvent): void {
-    if (!this.isEditMode()) {
+    if (!this.isEditMode() && !this.isSelectMode()) {
       return;
     }
 
@@ -833,11 +856,15 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     // Check if the click target is within a tile or is an interactive element
     const target = event.target as HTMLElement;
     const clickedTile = target.closest('[cdkDrag]') || target.hasAttribute('cdkDrag');
-    const isInteractiveElement = target.closest('button, a, input, select, textarea');
+    const isInteractiveElement = target.closest('button, a, input, select, textarea, mat-checkbox');
 
-    // If click is not on a tile and not on an interactive element, deactivate edit mode
+    // If click is not on a tile and not on an interactive element, deactivate current mode
     if (!clickedTile && !isInteractiveElement) {
-      this.deactivateEditMode();
+      if (this.isEditMode()) {
+        this.deactivateEditMode();
+      } else if (this.isSelectMode()) {
+        this.deactivateSelectMode();
+      }
     }
   }
 
@@ -848,5 +875,123 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
     return getColorClasses(color, false);
+  }
+
+  isItemSelected(item: ChecklistItemWithType): boolean {
+    if (!item.id) return false;
+    if (item.isGroup) {
+      return this.selectedGroupIds().has(item.id);
+    } else {
+      return this.selectedChecklistIds().has(item.id);
+    }
+  }
+
+  onSelectionChanged(event: { item: Checklist | ChecklistGroup; selected: boolean }): void {
+    const item = event.item;
+    const selected = event.selected;
+    if (!item.id) return;
+
+    // Check if it's a group by checking if it exists in checklistGroups
+    const isGroup = this.checklistGroups().some((g) => g.id === item.id);
+
+    if (isGroup) {
+      const currentSelection = new Set(this.selectedGroupIds());
+      if (selected) {
+        currentSelection.add(item.id);
+      } else {
+        currentSelection.delete(item.id);
+      }
+      this.selectedGroupIds.set(currentSelection);
+    } else {
+      const currentSelection = new Set(this.selectedChecklistIds());
+      if (selected) {
+        currentSelection.add(item.id);
+      } else {
+        currentSelection.delete(item.id);
+      }
+      this.selectedChecklistIds.set(currentSelection);
+    }
+  }
+
+  selectAll(): void {
+    const allGroupIds = new Set(
+      this.checklistGroups()
+        .map((g) => g.id)
+        .filter((id): id is number => id !== undefined)
+    );
+    const allChecklistIds = new Set(
+      this.checklists()
+        .map((c) => c.id)
+        .filter((id): id is number => id !== undefined)
+    );
+    this.selectedGroupIds.set(allGroupIds);
+    this.selectedChecklistIds.set(allChecklistIds);
+  }
+
+  deselectAll(): void {
+    this.selectedGroupIds.set(new Set());
+    this.selectedChecklistIds.set(new Set());
+  }
+
+  getSelectedCount(): number {
+    return this.selectedChecklistIds().size + this.selectedGroupIds().size;
+  }
+
+  async deleteSelectedItems(): Promise<void> {
+    const selectedChecklistIds = Array.from(this.selectedChecklistIds());
+    const selectedGroupIds = Array.from(this.selectedGroupIds());
+    const totalCount = selectedChecklistIds.length + selectedGroupIds.length;
+
+    if (totalCount === 0) return;
+
+    const selectedChecklists = this.checklists().filter(
+      (c) => c.id && selectedChecklistIds.includes(c.id)
+    );
+    const selectedGroups = this.checklistGroups().filter(
+      (g) => g.id && selectedGroupIds.includes(g.id)
+    );
+
+    let titleText = '';
+    if (totalCount === 1) {
+      if (selectedChecklists.length > 0) {
+        titleText = selectedChecklists[0].title;
+      } else {
+        titleText = selectedGroups[0].title;
+      }
+    } else {
+      titleText = `${totalCount} items`;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: {
+        title: titleText,
+        isGroup: selectedGroups.length > 0 && selectedChecklists.length === 0,
+        count: totalCount,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        try {
+          // Delete selected checklists
+          for (const id of selectedChecklistIds) {
+            await this.databaseService.deleteChecklist(id);
+          }
+          // Delete selected groups
+          for (const id of selectedGroupIds) {
+            await this.databaseService.deleteChecklistGroup(id);
+          }
+          this.selectedChecklistIds.set(new Set());
+          this.selectedGroupIds.set(new Set());
+          await this.loadData();
+          if (this.checklistGroups().length === 0 && this.checklists().length === 0) {
+            this.deactivateSelectMode();
+          }
+        } catch (error) {
+          console.error('Error deleting items:', error);
+        }
+      }
+    });
   }
 }
