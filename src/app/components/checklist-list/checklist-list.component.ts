@@ -133,6 +133,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       });
   }
 
+  async loadSampleData() {
+    await this.seedDataService.forceSeedInitialData();
+    await this.loadData();
+  }
+
   ngOnDestroy(): void {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();

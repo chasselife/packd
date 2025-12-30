@@ -11,7 +11,7 @@ export interface ColorClasses {
   borderClass: string;
   textClass: string;
   buttonClass?: string;
-  textColorValue: string;
+  textColorValue?: string;
 }
 
 // Predefined colors suitable for glassmorphism/liquid glass effects
