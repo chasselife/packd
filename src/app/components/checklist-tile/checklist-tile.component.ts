@@ -125,6 +125,9 @@ export class ChecklistTileComponent {
   get itemColor(): string | undefined {
     return this.item().color;
   }
+  get itemDescription(): string | undefined {
+    return this.item().description;
+  }
 
   isChecklist = input<boolean>(true);
 

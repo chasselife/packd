@@ -9,8 +9,8 @@
         ? 'rounded-lg px-4 py-3 shadow-md hover:shadow-lg border-none checklist-tile'
         : 'rounded-lg px-4 py-3 shadow-md hover:shadow-lg border-none group-tile'
       : isChecklist()
-      ? 'rounded-2xl p-6 shadow-lg hover:shadow-xl border-none checklist-tile'
-      : 'rounded-t-2xl rounded-b-xl p-6 pt-8 shadow-xl hover:shadow-2xl border-none group-tile') +
+      ? 'rounded-2xl p-5 shadow-lg hover:shadow-xl border-none checklist-tile'
+      : 'rounded-t-2xl rounded-b-xl p-5 shadow-xl hover:shadow-2xl border-none group-tile') +
     ' ' +
     colorClasses().bgClass +
     ' ' +
@@ -124,7 +124,12 @@
   >
     {{ itemTitle }}
   </div>
-  @if (!isEditMode() && !isChecklist() && checklistCount() !== undefined && checklistCount()! > 0) {
+  @if (!isEditMode() && itemDescription) {
+  <div class="text-[.625rem] white-space-pre-wrap line-clamp-2 text-center mt-2">
+    {{ itemDescription }}
+  </div>
+  } @if (!isEditMode() && !isChecklist() && checklistCount() !== undefined && checklistCount()! > 0)
+  {
   <div
     [class]="
       layout() === 'horizontal'

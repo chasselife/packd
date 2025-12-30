@@ -3,6 +3,7 @@ export interface Checklist {
   title: string;
   icon?: string;
   color?: string;
+  description?: string;
   items?: ChecklistItem[];
   sortOrder: number;
   groupId?: number;
