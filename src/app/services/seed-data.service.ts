@@ -426,10 +426,19 @@ export class SeedDataService {
   }
 
   async seedInitialData(): Promise<void> {
-    // Check if data already exists
-    const existingChecklists = await this.databaseService.getAllChecklists();
-    if (existingChecklists.length > 0) {
-      return; // Data already exists
+    // Check if seeding has already happened (using localStorage flag)
+    const hasSeededKey = 'packd_has_seeded_data';
+    const hasSeeded = localStorage.getItem(hasSeededKey);
+    if (hasSeeded === 'true') {
+      return; // Already seeded once, don't seed again even if data was deleted
+    }
+
+    // Check if checklist groups already exist
+    const existingGroups = await this.databaseService.getAllChecklistGroups();
+    if (existingGroups.length > 0) {
+      // Mark as seeded if groups exist (in case flag was cleared)
+      localStorage.setItem(hasSeededKey, 'true');
+      return; // Data already exists, don't seed
     }
 
     // Create the "Camping Checklists" group
@@ -473,6 +482,9 @@ export class SeedDataService {
         await this.databaseService.createChecklistItem(checklistItem);
       }
     }
+
+    // Mark as seeded so it won't happen again even if data is deleted
+    localStorage.setItem(hasSeededKey, 'true');
   }
 
   async clearAllData(): Promise<void> {
