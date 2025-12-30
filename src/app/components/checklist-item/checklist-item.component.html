@@ -34,77 +34,7 @@
       </button>
     </div>
 
-  @if (!isLoading()) {
-  <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
-    @if (checklistItems().length > 0) {
-    <div class="flex items-center gap-2">
-      <button
-        mat-icon-button
-        [class.bg-primary-100!]="dragDropEnabled()"
-        [class.text-primary!]="dragDropEnabled()"
-        [class.bg-gray-100!]="!dragDropEnabled()"
-        [class.text-gray-500!]="!dragDropEnabled()"
-        [class.opacity-70!]="!dragDropEnabled()"
-        (click)="toggleDragDrop()"
-        aria-label="Toggle drag and drop"
-        [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
-        class="transition-all rounded-lg"
-      >
-        <mat-icon>drag_indicator</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        [class.bg-primary-100!]="sortByDoneEnabled()"
-        [class.text-primary!]="sortByDoneEnabled()"
-        [class.bg-gray-100!]="!sortByDoneEnabled()"
-        [class.text-gray-500!]="!sortByDoneEnabled()"
-        [class.opacity-70!]="!sortByDoneEnabled()"
-        (click)="toggleSortByDone()"
-        aria-label="Toggle sort by done"
-        [attr.title]="sortByDoneEnabled() ? 'Disable sort by done' : 'Enable sort by done'"
-        class="transition-all rounded-lg"
-      >
-        <mat-icon>low_priority</mat-icon>
-      </button>
-    </div>
-    } @else {
-    <div></div>
-    }
-    <div class="flex items-center gap-2">
-      @if (checklistItems().length > 0) {
-      <div class="flex gap-1 bg-gray-100 rounded-4xl p-1 border border-gray-200">
-        <button
-          mat-icon-button
-          [class.bg-white!]="layoutMode() === 'compact'"
-          [class.text-primary!]="layoutMode() === 'compact'"
-          [class.shadow-sm]="layoutMode() === 'compact'"
-          [class.text-gray-600]="layoutMode() !== 'compact'"
-          (click)="setLayoutMode('compact')"
-          aria-label="Compact view"
-          title="Compact view"
-          class="transition-all"
-        >
-          <mat-icon>view_stream</mat-icon>
-        </button>
-        <button
-          mat-icon-button
-          [class.bg-white!]="layoutMode() === 'full'"
-          [class.text-primary!]="layoutMode() === 'full'"
-          [class.shadow-sm]="layoutMode() === 'full'"
-          [class.text-gray-600]="layoutMode() !== 'full'"
-          (click)="setLayoutMode('full')"
-          aria-label="Full view"
-          title="Full view"
-          class="transition-all"
-        >
-          <mat-icon>view_agenda</mat-icon>
-        </button>
-      </div>
-      }
-
-    </div>
-  </div>
-  } @if (isLoading()) {
+@if (isLoading()) {
   <div class="text-center py-4 text-gray-600 flex-1 flex flex-col justify-center">
     Loading checklist items...
   </div>
@@ -114,6 +44,70 @@
     <p class="m-0 text-gray-500">No items in the checklist yet.</p>
   </div>
   } @else {
+        @if (checklistItems().length > 0) {
+      <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
+      <div class="flex items-center gap-2">
+        <button
+          mat-icon-button
+          [class.bg-primary-100!]="dragDropEnabled()"
+          [class.text-primary!]="dragDropEnabled()"
+          [class.bg-gray-100!]="!dragDropEnabled()"
+          [class.text-gray-500!]="!dragDropEnabled()"
+          [class.opacity-70!]="!dragDropEnabled()"
+          (click)="toggleDragDrop()"
+          aria-label="Toggle drag and drop"
+          [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
+          class="transition-all rounded-lg"
+        >
+          <mat-icon>drag_indicator</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          [class.bg-primary-100!]="sortByDoneEnabled()"
+          [class.text-primary!]="sortByDoneEnabled()"
+          [class.bg-gray-100!]="!sortByDoneEnabled()"
+          [class.text-gray-500!]="!sortByDoneEnabled()"
+          [class.opacity-70!]="!sortByDoneEnabled()"
+          (click)="toggleSortByDone()"
+          aria-label="Toggle sort by done"
+          [attr.title]="sortByDoneEnabled() ? 'Disable sort by done' : 'Enable sort by done'"
+          class="transition-all rounded-lg"
+        >
+          <mat-icon>low_priority</mat-icon>
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="flex gap-1 bg-gray-100 rounded-4xl p-1 border border-gray-200">
+          <button
+            mat-icon-button
+            [class.bg-white!]="layoutMode() === 'compact'"
+            [class.text-primary!]="layoutMode() === 'compact'"
+            [class.shadow-sm]="layoutMode() === 'compact'"
+            [class.text-gray-600]="layoutMode() !== 'compact'"
+            (click)="setLayoutMode('compact')"
+            aria-label="Compact view"
+            title="Compact view"
+            class="transition-all"
+          >
+            <mat-icon>view_stream</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            [class.bg-white!]="layoutMode() === 'full'"
+            [class.text-primary!]="layoutMode() === 'full'"
+            [class.shadow-sm]="layoutMode() === 'full'"
+            [class.text-gray-600]="layoutMode() !== 'full'"
+            (click)="setLayoutMode('full')"
+            aria-label="Full view"
+            title="Full view"
+            class="transition-all"
+          >
+            <mat-icon>view_agenda</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
   <div
     cdkDropList
     cdkDropListOrientation="mixed"
