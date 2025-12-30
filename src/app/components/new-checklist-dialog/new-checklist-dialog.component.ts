@@ -45,11 +45,11 @@ export class NewChecklistDialogComponent implements OnInit {
 
   constructor() {
     // Initialize form with default values to prevent template errors
-    // Using default color '#53b87d' (Emerald) - first color in colorOptions
+    // Using default color '#1d93c8' (Emerald) - first color in colorOptions
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1)]],
       icon: ['checklist', Validators.required],
-      color: ['#53b87d', Validators.required],
+      color: ['#1d93c8', Validators.required],
       groupId: [null], // Optional group selection
     });
   }

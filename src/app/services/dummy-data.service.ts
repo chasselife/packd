@@ -24,7 +24,7 @@ export class SeedDataService {
     {
       title: 'Camping Essentials',
       icon: 'camping',
-      color: '#53b87d', // Emerald
+      color: '#1d93c8', // Emerald
       items: [
         { title: 'Tent', description: 'Weatherproof tent with rainfly', icon: 'home' },
         {
@@ -250,7 +250,7 @@ export class SeedDataService {
       const checklist: Omit<Checklist, 'id' | 'sortOrder' | 'createdAt' | 'updatedAt'> = {
         title: template.title,
         icon: template.icon,
-        color: template.color || '#53b87d', // Default to emerald if no color specified
+        color: template.color || '#1d93c8', // Default to emerald if no color specified
       };
       const checklistId = await this.databaseService.createChecklist(checklist);
 

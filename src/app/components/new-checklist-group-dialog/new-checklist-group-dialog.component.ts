@@ -47,7 +47,7 @@ export class NewChecklistGroupDialogComponent implements OnInit {
       title: ['', [Validators.required, Validators.minLength(1)]],
       description: [''],
       icon: ['folder', Validators.required],
-      color: ['#53b87d', Validators.required],
+      color: ['#1d93c8', Validators.required],
     });
   }
 

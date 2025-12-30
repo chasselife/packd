@@ -31,7 +31,7 @@ export class SeedDataService {
     {
       title: 'Camping Essentials',
       icon: 'camping',
-      color: '#53b87d', // Emerald
+      color: '#1d93c8', // Emerald
       items: [
         {
           title: 'Tent',
@@ -445,7 +445,7 @@ export class SeedDataService {
     const groupId = await this.databaseService.createChecklistGroup({
       title: 'Camping Checklists',
       icon: 'camping',
-      color: '#53b87d', // Emerald
+      color: '#1d93c8', // Emerald
     });
 
     // Create checklists with random number of items (between 3-10 items per checklist)
@@ -462,7 +462,7 @@ export class SeedDataService {
       const checklist: Omit<Checklist, 'id' | 'sortOrder' | 'createdAt' | 'updatedAt'> = {
         title: template.title,
         icon: template.icon,
-        color: template.color || '#53b87d', // Default to emerald if no color specified
+        color: template.color || '#1d93c8', // Default to emerald if no color specified
         groupId, // Assign to the "Camping Checklists" group
       };
       const checklistId = await this.databaseService.createChecklist(checklist);

@@ -64,13 +64,11 @@
   <div
     [class]="
       layout() === 'horizontal'
-        ? 'absolute top-1 left-1 text-gray-400 cursor-move z-10'
-        : 'absolute top-2 left-2 text-gray-400 cursor-move z-10'
+        ? 'absolute top-1 left-1 text-gray-400 cursor-move z-10' + ' ' + colorClasses().textClass
+        : 'absolute top-2 left-2 text-gray-400 cursor-move z-10' + ' ' + colorClasses().textClass
     "
   >
-    <mat-icon
-      [class]="layout() === 'horizontal' ? 'text-xl!' : 'text-2xl!'"
-      [style.color]="itemColor || undefined"
+    <mat-icon [class]="layout() === 'horizontal' ? 'text-xl!' : 'text-2xl!'"
       >drag_indicator</mat-icon
     >
   </div>
@@ -149,12 +147,10 @@
     <!-- Edit button -->
     <button
       mat-mini-fab
-      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
+      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base! {{
+        colorClasses().textClass
+      }}"
       (click)="onEditClick($event)"
-      [class]="
-        colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
-      "
-      [style.color]="itemColor || undefined"
       [attr.aria-label]="isChecklist() ? 'Edit checklist' : 'Edit group'"
     >
       <mat-icon>edit</mat-icon>
@@ -163,12 +159,10 @@
     @if (showDuplicateButton()) {
     <button
       mat-mini-fab
-      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base!"
+      class="shadow-none! bg-white/50! flex content-center text-sm! md:text-base! {{
+        colorClasses().textClass
+      }}"
       (click)="onDuplicateClick($event)"
-      [class]="
-        colorClasses().bgClass + ' ' + colorClasses().borderClass + ' ' + colorClasses().textClass
-      "
-      [style.color]="itemColor || undefined"
       [attr.aria-label]="isChecklist() ? 'Duplicate checklist' : 'Duplicate group'"
     >
       <mat-icon>content_copy</mat-icon>
