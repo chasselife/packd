@@ -538,6 +538,12 @@ export class ChecklistItemComponent {
       buttonClass: string;
     };
   }
+  resetChecklistItems(): void {
+    const checklistId = Number(this.id());
+    this.databaseService.resetChecklistItemsByChecklistId(checklistId).then(() => {
+      this.loadChecklistAndItems(checklistId);
+    });
+  }
 }
 
 // Simple confirmation dialog component

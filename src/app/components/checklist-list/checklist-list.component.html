@@ -78,6 +78,11 @@
           <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
         </button>
 
+        <button mat-menu-item (click)="openNewChecklistDialog()">
+          <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
+          <span class="pr-2">Simple Checklist</span>
+        </button>
+
         <button mat-menu-item (click)="openImportPage()">
           <mat-icon class="mr-2! text-gray-500!">upload_file</mat-icon>
           <span class="pr-2">Import Data</span>

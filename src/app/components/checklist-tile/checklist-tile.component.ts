@@ -109,6 +109,20 @@ export class ChecklistTileComponent {
   touchEnd = output<{ item: TileItem; event: TouchEvent; isGroup: boolean }>();
   selectionChanged = output<{ item: TileItem; selected: boolean }>();
 
+  doneItemsCount = computed(() => {
+    if (this.isChecklist()) {
+      console.log(this.item());
+      return (<Checklist>this.item()).items?.filter((item) => item.isDone).length;
+    }
+    return undefined;
+  });
+  pendingItemsCount = computed(() => {
+    if (this.isChecklist()) {
+      return (<Checklist>this.item()).items?.filter((item) => !item.isDone).length;
+    }
+    return undefined;
+  });
+
   get itemTitle(): string {
     return this.item().title;
   }

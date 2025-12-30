@@ -23,6 +23,7 @@ import { ChecklistGroup } from '../../models/checklist-group.model';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
+import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
 
 @Component({
   selector: 'app-checklist-group-list',
@@ -564,5 +565,19 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
 
   toggleDescription(): void {
     this.isDescriptionExpanded.set(!this.isDescriptionExpanded());
+  }
+
+  resetAllChecklists(): void {
+    const dialogRef = this.dialog.open(ConfirmResetDialogComponent, {
+      width: '400px',
+    });
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        if (!this.groupId) return;
+        this.databaseService.resetChecklistItemsByGroupId(this.groupId!).then(() => {
+          this.loadChecklists();
+        });
+      }
+    });
   }
 }

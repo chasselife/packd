@@ -77,6 +77,10 @@
         <mat-icon class="mr-2! text-gray-500!">check_box</mat-icon>
         <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
       </button>
+      <button mat-menu-item (click)="resetAllChecklists()">
+        <mat-icon class="mr-2! text-gray-500!">replay</mat-icon>
+        <span class="pr-2">Reset All Checklists</span>
+      </button>
     </mat-menu>
   </div>
 

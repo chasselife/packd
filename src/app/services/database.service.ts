@@ -620,23 +620,64 @@ export class DatabaseService {
     await this.ensureInitialized();
     if (this.useLocalStorage) {
       const data = this.getLocalStorageData();
+      // For each checklist in the group, also get the related checklist items
       return data.checklists
         .filter((c) => c.groupId === groupId)
-        .sort((a, b) => a.sortOrder - b.sortOrder);
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((checklist) => ({
+          ...checklist,
+          items: data.checklistItems
+            .filter((item) => item.checklistId === checklist.id)
+            .sort((a, b) => a.sortOrder - b.sortOrder),
+        }));
     }
     if (!this.db) throw new Error('Database not initialized');
-    return await this.db.checklists.where('groupId').equals(groupId).sortBy('sortOrder');
+
+    const checklists = await this.db.checklists
+      .where('groupId')
+      .equals(groupId)
+      .sortBy('sortOrder');
+    // For each checklist, fetch the related checklist items
+    const checklistsWithItems = await Promise.all(
+      checklists.map(async (checklist) => ({
+        ...checklist,
+        items: await this.db!.checklistItems.where('checklistId')
+          .equals(checklist.id!)
+          .sortBy('sortOrder'),
+      }))
+    );
+    return checklistsWithItems;
   }
 
   async getUngroupedChecklists(): Promise<Checklist[]> {
     await this.ensureInitialized();
     if (this.useLocalStorage) {
       const data = this.getLocalStorageData();
-      return data.checklists.filter((c) => !c.groupId).sort((a, b) => a.sortOrder - b.sortOrder);
+      return data.checklists
+        .filter((c) => !c.groupId)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((checklist) => ({
+          ...checklist,
+          items: data.checklistItems
+            .filter((item) => item.checklistId === checklist.id)
+            .sort((a, b) => a.sortOrder - b.sortOrder),
+        }));
     }
     if (!this.db) throw new Error('Database not initialized');
     const allChecklists = await this.db.checklists.toArray();
-    return allChecklists.filter((c) => !c.groupId).sort((a, b) => a.sortOrder - b.sortOrder);
+    const ungroupedChecklists = allChecklists
+      .filter((c) => !c.groupId)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+    // For each checklist, fetch the related checklist items
+    const ungroupedChecklistsWithItems = await Promise.all(
+      ungroupedChecklists.map(async (checklist) => ({
+        ...checklist,
+        items: await this.db!.checklistItems.where('checklistId')
+          .equals(checklist.id!)
+          .sortBy('sortOrder'),
+      }))
+    );
+    return ungroupedChecklistsWithItems;
   }
 
   // Utility methods
@@ -649,5 +690,71 @@ export class DatabaseService {
 
   get isUsingLocalStorage(): boolean {
     return this.useLocalStorage;
+  }
+
+  // resets all checklists items that belong to the checklists of the given group id
+  async resetChecklistItemsByGroupId(groupId: number): Promise<void> {
+    await this.ensureInitialized();
+    if (this.useLocalStorage) {
+      const data = this.getLocalStorageData();
+      // Find checklists with matching groupId
+      const checklistIds = data.checklists
+        .filter((c) => c.groupId === groupId)
+        .map((c) => c.id)
+        .filter((id) => id !== undefined) as number[];
+      let changed = false;
+      for (const item of data.checklistItems) {
+        if (item.checklistId && checklistIds.includes(item.checklistId)) {
+          if (item.isDone !== false) {
+            item.isDone = false;
+            item.updatedAt = new Date();
+            changed = true;
+          }
+        }
+      }
+      if (changed) {
+        this.saveLocalStorageData(data);
+      }
+      return;
+    }
+    if (!this.db) throw new Error('Database not initialized');
+    const checklistsInGroup = await this.db.checklists.where('groupId').equals(groupId).toArray();
+    const checklistIds = checklistsInGroup
+      .map((c) => c.id)
+      .filter((id) => id !== undefined) as number[];
+    await this.db.transaction('rw', this.db.checklistItems, async () => {
+      for (const checklistId of checklistIds) {
+        await this.db!.checklistItems.where('checklistId')
+          .equals(checklistId)
+          .modify({ isDone: false, updatedAt: new Date() });
+      }
+    });
+  }
+
+  // resets all checklists items that belong to the checklist id
+  async resetChecklistItemsByChecklistId(checklistId: number): Promise<void> {
+    await this.ensureInitialized();
+    if (this.useLocalStorage) {
+      const data = this.getLocalStorageData();
+
+      let changed = false;
+      for (const item of data.checklistItems) {
+        if (item.checklistId && checklistId === item.checklistId) {
+          if (item.isDone !== false) {
+            item.isDone = false;
+            item.updatedAt = new Date();
+            changed = true;
+          }
+        }
+      }
+      if (changed) {
+        this.saveLocalStorageData(data);
+      }
+      return;
+    }
+    if (!this.db) throw new Error('Database not initialized');
+    await this.db!.checklistItems.where('checklistId')
+      .equals(checklistId)
+      .modify({ isDone: false, updatedAt: new Date() });
   }
 }
