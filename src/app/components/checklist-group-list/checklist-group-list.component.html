@@ -20,33 +20,35 @@
       <span class="truncate">{{ checklistGroup()!.title }}</span>
       }
     </h1>
-    <button
-      mat-fab
-      color="primary"
-      (click)="openNewChecklistDialog()"
-      class="shrink-0 sm:hidden! w-12! h-12! shadow-none!"
-      aria-label="Add Checklist"
-    >
-      <mat-icon>add</mat-icon>
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="openNewChecklistDialog()"
-      class="shrink-0 hidden! sm:inline-flex!"
-    >
-      <mat-icon>add</mat-icon>
-      <span>Add Checklist</span>
-    </button>
+    <div class="flex items-center">
+      <button
+        mat-fab
+        color="primary"
+        (click)="openNewChecklistDialog()"
+        class="shrink-0 sm:hidden! w-11! h-11! shadow-none!"
+        aria-label="Add Checklist"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openNewChecklistDialog()"
+        class="shrink-0 hidden! sm:inline-flex!"
+      >
+        <mat-icon>add</mat-icon>
+        <span>Add Checklist</span>
+      </button>
 
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="menu"
-      aria-label="More options"
-      class="sm:hidden! -mr-2"
-    >
-      <mat-icon>more_vert</mat-icon>
-    </button>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+        aria-label="More options"
+        class="sm:hidden! -mr-2"
+      >
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
     <button
       mat-icon-button
       [matMenuTriggerFor]="menu"
