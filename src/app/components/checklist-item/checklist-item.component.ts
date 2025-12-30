@@ -36,9 +36,9 @@ export class ChecklistItemComponent {
   id = input.required<string>();
 
   // LocalStorage keys
-  private readonly STORAGE_KEY_LAYOUT_MODE = 'packd-checklist-layout-mode';
-  private readonly STORAGE_KEY_DRAG_DROP = 'packd-checklist-drag-drop';
-  private readonly STORAGE_KEY_SORT_BY_DONE = 'packd-checklist-sort-by-done';
+  private readonly STORAGE_KEY_LAYOUT_MODE = 'chckd-checklist-layout-mode';
+  private readonly STORAGE_KEY_DRAG_DROP = 'chckd-checklist-drag-drop';
+  private readonly STORAGE_KEY_SORT_BY_DONE = 'chckd-checklist-sort-by-done';
 
   checklist = signal<Checklist | undefined>(undefined);
   checklistItems = signal<ChecklistItem[]>([]);

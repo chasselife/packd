@@ -427,7 +427,7 @@ export class SeedDataService {
 
   async seedInitialData(): Promise<void> {
     // Check if seeding has already happened (using localStorage flag)
-    const hasSeededKey = 'packd_has_seeded_data';
+    const hasSeededKey = 'chckd_has_seeded_data';
     const hasSeeded = localStorage.getItem(hasSeededKey);
     if (hasSeeded === 'true') {
       return; // Already seeded once, don't seed again even if data was deleted

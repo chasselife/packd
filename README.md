@@ -70,7 +70,7 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
    - You can also manually trigger it from the Actions tab using "workflow_dispatch"
 
 3. **Your site will be available at:**
-   - `https://[your-username].github.io/packd/`
+   - `https://[your-username].github.io/chckd/`
 
 ### Manual Deployment
 
@@ -84,7 +84,7 @@ This will build the project and prepare the necessary files (404.html and .nojek
 
 ### Important Notes
 
-- The project is configured with `baseHref: "/packd/"` for GitHub Pages subdirectory deployment
+- The project is configured with `baseHref: "/chckd/"` for GitHub Pages subdirectory deployment
 - A `404.html` file is automatically created to support Angular routing on GitHub Pages
 - A `.nojekyll` file is created to prevent Jekyll from processing the site
 

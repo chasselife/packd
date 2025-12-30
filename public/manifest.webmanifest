@@ -1,6 +1,6 @@
 {
-  "name": "Packd",
-  "short_name": "Packd",
+  "name": "Chckd",
+  "short_name": "Chckd",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

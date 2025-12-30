@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
@@ -42,33 +42,33 @@ jobs:
 
       - name: Create 404.html for Angular routing
         run: |
-          cp dist/packd/browser/index.html dist/packd/browser/404.html
+          cp dist/chckd/browser/index.html dist/chckd/browser/404.html
 
       - name: Create .nojekyll file
         run: |
-          touch dist/packd/browser/.nojekyll
+          touch dist/chckd/browser/.nojekyll
 
-      - name: Restructure for /packd subdirectory
+      - name: Restructure for /chckd subdirectory
         run: |
-          mkdir -p dist/packd-deploy/packd
-          cp -r dist/packd/browser/* dist/packd-deploy/packd/
+          mkdir -p dist/chckd-deploy/chckd
+          cp -r dist/chckd/browser/* dist/chckd-deploy/chckd/
 
       - name: Create root redirect
         run: |
-          cat > dist/packd-deploy/index.html << 'EOF'
+          cat > dist/chckd-deploy/index.html << 'EOF'
           <!DOCTYPE html>
           <html>
             <head>
               <meta charset="utf-8">
               <title>Redirecting...</title>
-              <meta http-equiv="refresh" content="0; url=/packd/">
-              <link rel="canonical" href="/packd/">
+              <meta http-equiv="refresh" content="0; url=/chckd/">
+              <link rel="canonical" href="/chckd/">
               <script>
-                window.location.href = "/packd/";
+                window.location.href = "/chckd/";
               </script>
             </head>
             <body>
-              <p>If you are not redirected, <a href="/packd/">click here</a>.</p>
+              <p>If you are not redirected, <a href="/chckd/">click here</a>.</p>
             </body>
           </html>
           EOF
@@ -79,7 +79,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/packd-deploy
+          path: dist/chckd-deploy
 
   deploy:
     environment:
@@ -91,4 +91,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

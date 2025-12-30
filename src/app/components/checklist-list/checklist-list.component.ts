@@ -626,7 +626,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
       const url = URL.createObjectURL(blob);
 
       link.setAttribute('href', url);
-      link.setAttribute('download', `packd-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `chckd-export-${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();

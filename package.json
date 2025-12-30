@@ -1,5 +1,5 @@
 {
-  "name": "packd",
+  "name": "chckd",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pwa-icons": "ngx-pwa-icons --output=public/icons --size='1024, 512, 384, 192, 152, 144, 128, 96, 72'",
-    "deploy": "ng build && cp dist/packd/browser/index.html dist/packd/browser/404.html && touch dist/packd/browser/.nojekyll"
+    "deploy": "ng build && cp dist/chckd/browser/index.html dist/chckd/browser/404.html && touch dist/chckd/browser/.nojekyll"
   },
   "prettier": {
     "printWidth": 100,

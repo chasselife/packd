@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "packd": {
+    "chckd": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -18,7 +18,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "baseHref": "/packd/",
+            "baseHref": "/chckd/",
             "assets": [
               {
                 "glob": "**/*",
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "packd:build:production"
+              "buildTarget": "chckd:build:production"
             },
             "development": {
-              "buildTarget": "packd:build:development"
+              "buildTarget": "chckd:build:development"
             }
           },
           "defaultConfiguration": "development"
