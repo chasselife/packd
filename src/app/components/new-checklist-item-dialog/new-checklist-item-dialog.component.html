@@ -47,7 +47,11 @@
           Sub-items
           <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
         </label>
-        <div class="w-full border border-gray-400 rounded p-3 min-h-[60px] bg-white">
+        <p class="text-xs text-gray-500 mt-1">Press enter to add a sub-item</p>
+
+        <div
+          class="w-full border border-gray-400 rounded p-3 min-h-[120px] bg-white has-[input:focus]:border-2 has-[input:focus]:border-primary-600"
+        >
           <!-- Existing Tags -->
           @if (getSubItems().length > 0) {
           <div class="flex flex-wrap gap-1.5 mb-2">
@@ -71,15 +75,14 @@
           <!-- Tag Input -->
           <input
             type="text"
-            class="mt-2 text-sm!"
+            class="mt-4 text-sm!"
             [value]="newTagInput"
             (input)="newTagInput = $any($event.target).value"
             (keydown)="onTagInputKeydown($event)"
-            placeholder="Type a sub-item and press Enter to add"
-            class="w-full border-0 outline-none text-base bg-transparent placeholder:text-sm placeholder:text-gray-400"
+            placeholder="Type a sub-item then press enter to add"
+            class="w-full border-0 outline-none text-base bg-transparent placeholder-gray-500 placeholder:font-light"
           />
         </div>
-        <p class="text-xs text-gray-500 mt-1">Press Enter to add a sub-item</p>
       </div>
 
       <!-- Description Field -->
