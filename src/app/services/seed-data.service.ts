@@ -49,7 +49,7 @@ export class SeedDataService {
           title: 'Sleeping Pad',
           description: 'Inflatable or foam sleeping pad',
           icon: 'airline_seat_flat',
-          isDone: true,
+          isDone: false,
           subItems: ['Pump (if inflatable)', 'Repair kit'],
         },
         {
@@ -99,7 +99,7 @@ export class SeedDataService {
           title: 'Cooler',
           description: 'Insulated cooler with ice packs',
           icon: 'ac_unit',
-          isDone: true,
+          isDone: false,
           subItems: ['Ice packs', 'Ice', 'Cooler thermometer'],
         },
         {
@@ -167,7 +167,7 @@ export class SeedDataService {
           title: 'Rain Jacket',
           description: 'Waterproof rain jacket',
           icon: 'umbrella',
-          isDone: true,
+          isDone: false,
           subItems: ['Rain pants', 'Pack cover'],
         },
         {
@@ -236,7 +236,7 @@ export class SeedDataService {
           title: 'Multi-tool',
           description: 'Swiss Army knife or multi-tool',
           icon: 'build',
-          isDone: true,
+          isDone: false,
           subItems: ['Pocket knife', 'Duct tape'],
         },
         {
@@ -286,7 +286,7 @@ export class SeedDataService {
           title: 'Insect Repellent',
           description: 'DEET or natural insect repellent',
           icon: 'bug_report',
-          isDone: true,
+          isDone: false,
           subItems: ['DEET spray', 'Natural repellent', 'Mosquito net'],
         },
         {
@@ -385,7 +385,7 @@ export class SeedDataService {
           title: 'Spare Tire',
           description: 'Check spare tire pressure',
           icon: 'tire_repair',
-          isDone: true,
+          isDone: false,
           subItems: ['Lug wrench', 'Jack', 'Wheel chocks'],
         },
         {

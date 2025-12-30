@@ -195,11 +195,12 @@ export class DatabaseService {
 
     if (this.useLocalStorage) {
       const data = this.getLocalStorageData();
+
       // Calculate sortOrder based on groupId - if groupId is provided, sort within that group
-      // Otherwise, sort among ungrouped checklists
+      // Otherwise, sort among ungrouped checklists and groups
       const relevantChecklists = checklist.groupId
         ? data.checklists.filter((c) => c.groupId === checklist.groupId)
-        : data.checklists.filter((c) => !c.groupId);
+        : [...data.checklists.filter((c) => !c.groupId), ...data.checklistGroups];
 
       const sortOrders = relevantChecklists
         .map((c) => c.sortOrder)
@@ -224,7 +225,7 @@ export class DatabaseService {
     // Calculate sortOrder based on groupId
     const relevantChecklists = checklist.groupId
       ? allChecklists.filter((c) => c.groupId === checklist.groupId)
-      : allChecklists.filter((c) => !c.groupId);
+      : [...allChecklists.filter((c) => !c.groupId), ...(await this.db.checklistGroups.toArray())];
 
     const sortOrders = relevantChecklists
       .map((c) => c.sortOrder)
@@ -484,7 +485,8 @@ export class DatabaseService {
 
     if (this.useLocalStorage) {
       const data = this.getLocalStorageData();
-      const sortOrders = data.checklistGroups
+      const ungroupedChecklists = data.checklists.filter((c) => !c.groupId);
+      const sortOrders = [...data.checklistGroups, ...ungroupedChecklists]
         .map((g) => g.sortOrder)
         .filter((order): order is number => order !== undefined);
       const maxSortOrder = sortOrders.length > 0 ? Math.max(...sortOrders) : -1;
@@ -504,7 +506,10 @@ export class DatabaseService {
 
     if (!this.db) throw new Error('Database not initialized');
     const allGroups = await this.db.checklistGroups.toArray();
-    const sortOrders = allGroups
+
+    const allChecklists = await this.db.checklists.toArray();
+    const ungroupedChecklists = allChecklists.filter((c) => !c.groupId);
+    const sortOrders = [...allGroups, ...ungroupedChecklists]
       .map((g) => g.sortOrder)
       .filter((order): order is number => order !== undefined);
     const maxSortOrder = sortOrders.length > 0 ? Math.max(...sortOrders) : -1;
