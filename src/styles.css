@@ -86,3 +86,20 @@ body {
 .mat-mdc-dialog-container .mdc-dialog__surface>mat-dialog-content {
   flex-shrink: 1;
 }
+
+.mat-mdc-dialog-title {
+  padding: 16px 18px 12px !important;
+}
+
+.mat-mdc-dialog-title::before {
+  display: none !important;
+}
+
+mat-dialog-content {
+  padding: 0px 18px 12px !important;
+}
+
+mat-dialog-actions {
+  padding: 8px 18px !important;
+  margin: 0 !important;
+}
