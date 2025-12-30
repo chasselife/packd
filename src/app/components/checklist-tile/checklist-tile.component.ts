@@ -6,14 +6,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Checklist } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
+import { ColorClasses } from '../../constants/color-options.constant';
 
 export type TileItem = Checklist | ChecklistGroup;
-
-export interface ColorClasses {
-  bgClass: string;
-  borderClass: string;
-  textClass: string;
-}
 
 @Component({
   selector: 'app-checklist-tile',

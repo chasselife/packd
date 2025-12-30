@@ -11,6 +11,7 @@ export interface ColorClasses {
   borderClass: string;
   textClass: string;
   buttonClass?: string;
+  textColorValue: string;
 }
 
 // Predefined colors suitable for glassmorphism/liquid glass effects
@@ -253,6 +254,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
     bgClass: 'bg-primary-500/20',
     borderClass: 'border-primary',
     textClass: 'text-primary!',
+    textColorValue: 'var(--color-primary)',
     ...(includeButtonClass && {
       buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
     }),
@@ -263,21 +265,10 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
   const colorOption = COLOR_OPTIONS.find((option) => option.value === color);
   if (!colorOption) return defaultColor;
 
-  // Handle legacy color values that might be in the database
-  if (color === '#49966d') {
-    return {
-      bgClass: 'bg-primary-500/20',
-      borderClass: includeButtonClass ? 'border-primary-500' : 'border-primary',
-      textClass: includeButtonClass ? 'text-primary-800!' : 'text-primary!',
-      ...(includeButtonClass && {
-        buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
-      }),
-    };
-  }
-
   // For checklist items, use -500 border and -800 text, otherwise use original classes
   let borderClass = colorOption.borderClass;
   let textClass = colorOption.textClass;
+  let textColorValue = colorOption.textClass.replace(/^text-/, 'var(--color-').replace(/!$/, '');
 
   if (includeButtonClass) {
     // Replace -700 with -500 for borders, -700 with -800 for text
@@ -293,6 +284,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
     bgClass: colorOption.bgClass,
     borderClass: borderClass,
     textClass: textClass,
+    textColorValue,
   };
 
   if (includeButtonClass) {

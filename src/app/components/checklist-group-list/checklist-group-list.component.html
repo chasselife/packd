@@ -94,7 +94,7 @@
   </div>
   } @else { @if (isSelectMode()) {
   <div class="flex justify-center items-center gap-2 mt-4 mb-2 flex-wrap">
-    <button mat-button (click)="deactivateSelectMode()" class="exit-edit-button">
+    <button mat-button (click)="deactivateSelectMode()" class="h-9! exit-edit-button">
       <mat-icon>close</mat-icon>
       Exit Mode
     </button>
@@ -122,7 +122,7 @@
   </div>
   } @else if (isEditMode()) {
   <div class="flex justify-center mt-2">
-    <button mat-button (click)="deactivateEditMode()" class="exit-edit-button">
+    <button mat-button (click)="deactivateEditMode()" class="h-9! exit-edit-button">
       <mat-icon>close</mat-icon>
       Exit Mode
     </button>

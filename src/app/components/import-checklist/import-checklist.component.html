@@ -137,7 +137,11 @@
   </div>
 
   <div class="mb-6 px-4">
-    <mat-checkbox [checked]="overwriteExisting()" (change)="overwriteExisting.set($event.checked)">
+    <mat-checkbox
+      color="primary"
+      [checked]="overwriteExisting()"
+      (change)="overwriteExisting.set($event.checked)"
+    >
       Overwrite existing checklists
     </mat-checkbox>
     <p class="text-sm text-gray-600 mt-2 ml-8">
