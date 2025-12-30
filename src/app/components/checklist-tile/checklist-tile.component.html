@@ -157,7 +157,7 @@
   >
     @if (doneItemsCount() !== undefined && doneItemsCount()! > 0) {
     <div class="flex gap-[2px]">
-      <div>{{ doneItemsCount() }}</div>
+      <div>{{ pendingItemsCount() === 0 ? 'All Done' : doneItemsCount() }}</div>
       <mat-icon class="text-base! h-5 w-4!">check</mat-icon>
     </div>
     } @if (pendingItemsCount() !== undefined && pendingItemsCount()! > 0) {
