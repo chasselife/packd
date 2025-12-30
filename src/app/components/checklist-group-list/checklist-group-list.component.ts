@@ -1,4 +1,13 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -81,7 +90,7 @@ import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.compone
     `,
   ],
 })
-export class ChecklistGroupListComponent implements OnInit, OnDestroy {
+export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterViewInit {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -95,6 +104,11 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
   isSelectMode = signal(false);
   groupId: number | null = null;
   selectedChecklistIds = signal<Set<number>>(new Set());
+  isDescriptionExpanded = signal(false);
+  isDescriptionTruncated = signal(false);
+
+  @ViewChild('descriptionElement', { static: false })
+  descriptionElement?: ElementRef<HTMLParagraphElement>;
 
   private longPressTimer: number | null = null;
   private readonly LONG_PRESS_DURATION = 500; // milliseconds
@@ -145,6 +159,10 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
       const group = await this.databaseService.getChecklistGroup(this.groupId);
       if (group) {
         this.checklistGroup.set(group);
+        // Reset expanded state when loading a new group
+        this.isDescriptionExpanded.set(false);
+        // Check if description is truncated after view updates
+        setTimeout(() => this.checkDescriptionTruncation(), 100);
       } else {
         this.router.navigate(['/']);
       }
@@ -152,6 +170,40 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
       console.error('Error loading checklist group:', error);
       this.router.navigate(['/']);
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Check if description is truncated after view initialization
+    setTimeout(() => this.checkDescriptionTruncation(), 100);
+  }
+
+  checkDescriptionTruncation(): void {
+    if (!this.descriptionElement?.nativeElement) return;
+    const element = this.descriptionElement.nativeElement;
+
+    // Use requestAnimationFrame to ensure DOM is updated
+    requestAnimationFrame(() => {
+      // Temporarily remove line-clamp to measure full height
+      const hasLineClamp = element.classList.contains('line-clamp-3');
+      if (hasLineClamp) {
+        element.classList.remove('line-clamp-3');
+      }
+
+      // Force a reflow to get accurate measurements
+      void element.offsetHeight;
+
+      const fullHeight = element.scrollHeight;
+
+      if (hasLineClamp) {
+        element.classList.add('line-clamp-3');
+      }
+
+      // Force another reflow
+      void element.offsetHeight;
+
+      const clampedHeight = element.clientHeight;
+      this.isDescriptionTruncated.set(fullHeight > clampedHeight);
+    });
   }
 
   async loadChecklists(): Promise<void> {
@@ -508,5 +560,9 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  toggleDescription(): void {
+    this.isDescriptionExpanded.set(!this.isDescriptionExpanded());
   }
 }
