@@ -87,29 +87,33 @@
   </div>
 
   @if (checklistGroup()?.description) {
-  <div class="px-2 sm:px-17 mt-4">
-    <div class="relative">
+  <div class="px-4 mt-6 mb-2">
+    <div
+      class="relative bg-gray-50/80 backdrop-blur-sm rounded-xl border border-gray-200/60 p-4 sm:p-5 shadow-sm"
+    >
       <p
         [class.line-clamp-3]="!isDescriptionExpanded()"
         [class.cursor-pointer]="isDescriptionTruncated()"
         (click)="isDescriptionTruncated() && toggleDescription()"
-        class="text-sm text-gray-600 text-center sm:text-left whitespace-pre-wrap"
+        class="text-sm sm:text-base text-gray-700 leading-relaxed sm:leading-loose text-center sm:text-left whitespace-pre-wrap flex-1 m-0"
         #descriptionElement
         [innerHTML]="checklistGroup()!.description"
       ></p>
       @if (isDescriptionTruncated()) { @if (!isDescriptionExpanded()) {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm text-primary font-medium mt-1 block w-full text-center sm:text-left focus:outline-none"
+        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline justify-center sm:justify-start gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
       >
-        See more
+        <span>See more</span>
+        <mat-icon class="text-base! w-4! h-4!">expand_more</mat-icon>
       </button>
       } @else {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs text-primary font-medium mt-1 block w-full text-center sm:text-left focus:outline-none"
+        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline justify-center sm:justify-start gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
       >
-        See less
+        <span>See less</span>
+        <mat-icon class="text-base! w-4! h-4!">expand_less</mat-icon>
       </button>
       } }
     </div>
@@ -158,8 +162,6 @@
       Exit Mode
     </button>
   </div>
-  } @else {
-  <div class="h-4 md:h-6"></div>
   }
   <div
     class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mt-6 md:mt-8 content-start"
