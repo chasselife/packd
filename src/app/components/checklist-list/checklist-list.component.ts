@@ -486,7 +486,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
 
       // CSV Header - includes group information
       csvRows.push(
-        'Group ID,Group Title,Group Icon,Group Color,Group Sort Order,Checklist ID,Checklist Title,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order'
+        'Group ID,Group Title,Group Description,Group Icon,Group Color,Group Sort Order,Checklist ID,Checklist Title,Checklist Description,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order,Item Sub Items'
       );
 
       // Process each group and its checklists
@@ -498,9 +498,12 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
           const row = [
             group.id?.toString() || '',
             this.escapeCSVField(group.title),
+            this.escapeCSVField(group.description || ''),
             group.icon || '',
             group.color || '',
             group.sortOrder?.toString() || '0',
+            '',
+            '',
             '',
             '',
             '',
@@ -526,14 +529,17 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
               const row = [
                 group.id?.toString() || '',
                 this.escapeCSVField(group.title),
+                this.escapeCSVField(group.description || ''),
                 group.icon || '',
                 group.color || '',
                 group.sortOrder?.toString() || '0',
                 checklist.id?.toString() || '',
                 this.escapeCSVField(checklist.title),
+                this.escapeCSVField(checklist.description || ''),
                 checklist.icon || '',
                 checklist.color || '',
                 checklist.sortOrder?.toString() || '0',
+                '',
                 '',
                 '',
                 '',
@@ -548,11 +554,13 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
                 const row = [
                   group.id?.toString() || '',
                   this.escapeCSVField(group.title),
+                  this.escapeCSVField(group.description || ''),
                   group.icon || '',
                   group.color || '',
                   group.sortOrder?.toString() || '0',
                   checklist.id?.toString() || '',
                   this.escapeCSVField(checklist.title),
+                  this.escapeCSVField(checklist.description || ''),
                   checklist.icon || '',
                   checklist.color || '',
                   checklist.sortOrder?.toString() || '0',
@@ -562,6 +570,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
                   item.isDone ? 'true' : 'false',
                   item.icon || '',
                   item.sortOrder?.toString() || '0',
+                  this.escapeCSVField(item.subItems ? JSON.stringify(item.subItems) : ''),
                 ];
                 csvRows.push(row.join(','));
               }
@@ -585,11 +594,14 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
             '',
             '',
             '',
+            '',
             checklist.id?.toString() || '',
             this.escapeCSVField(checklist.title),
+            this.escapeCSVField(checklist.description || ''),
             checklist.icon || '',
             checklist.color || '',
             checklist.sortOrder?.toString() || '0',
+            '',
             '',
             '',
             '',
@@ -607,8 +619,10 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
               '',
               '',
               '',
+              '',
               checklist.id?.toString() || '',
               this.escapeCSVField(checklist.title),
+              this.escapeCSVField(checklist.description || ''),
               checklist.icon || '',
               checklist.color || '',
               checklist.sortOrder?.toString() || '0',
@@ -618,6 +632,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
               item.isDone ? 'true' : 'false',
               item.icon || '',
               item.sortOrder?.toString() || '0',
+              this.escapeCSVField(item.subItems ? JSON.stringify(item.subItems) : ''),
             ];
             csvRows.push(row.join(','));
           }

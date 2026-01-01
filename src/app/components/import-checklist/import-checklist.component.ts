@@ -126,11 +126,13 @@ export class ImportChecklistComponent {
 
       let groupId = '';
       let groupTitle = '';
+      let groupDescription = '';
       let groupIcon = '';
       let groupColor = '';
       let groupSortOrder = 0;
       let checklistId = '';
       let checklistTitle = '';
+      let checklistDescription = '';
       let checklistIcon = '';
       let checklistColor = '';
       let checklistSortOrder = 0;
@@ -139,16 +141,19 @@ export class ImportChecklistComponent {
       let itemIsDone = false;
       let itemIcon = '';
       let itemSortOrder = 0;
+      let itemSubItems = '';
 
       if (hasGroups) {
         // New format with groups
         const groupIdIndex = header.indexOf('Group ID');
         const groupTitleIndex = header.indexOf('Group Title');
+        const groupDescriptionIndex = header.indexOf('Group Description');
         const groupIconIndex = header.indexOf('Group Icon');
         const groupColorIndex = header.indexOf('Group Color');
         const groupSortOrderIndex = header.indexOf('Group Sort Order');
         const checklistIdIndex = header.indexOf('Checklist ID');
         const checklistTitleIndex = header.indexOf('Checklist Title');
+        const checklistDescriptionIndex = header.indexOf('Checklist Description');
         const checklistIconIndex = header.indexOf('Checklist Icon');
         const checklistColorIndex = header.indexOf('Checklist Color');
         const checklistSortOrderIndex = header.indexOf('Checklist Sort Order');
@@ -158,14 +163,17 @@ export class ImportChecklistComponent {
         const itemIsDoneIndex = header.indexOf('Item Is Done');
         const itemIconIndex = header.indexOf('Item Icon');
         const itemSortOrderIndex = header.indexOf('Item Sort Order');
+        const itemSubItemsIndex = header.indexOf('Item Sub Items');
 
         groupId = values[groupIdIndex] || '';
         groupTitle = this.unescapeCSVField(values[groupTitleIndex] || '');
+        groupDescription = this.unescapeCSVField(values[groupDescriptionIndex] || '');
         groupIcon = values[groupIconIndex] || '';
         groupColor = values[groupColorIndex] || '';
         groupSortOrder = parseInt(values[groupSortOrderIndex] || '0', 10) || 0;
         checklistId = values[checklistIdIndex] || '';
         checklistTitle = this.unescapeCSVField(values[checklistTitleIndex] || '');
+        checklistDescription = this.unescapeCSVField(values[checklistDescriptionIndex] || '');
         checklistIcon = values[checklistIconIndex] || '';
         checklistColor = values[checklistColorIndex] || '';
         checklistSortOrder = parseInt(values[checklistSortOrderIndex] || '0', 10) || 0;
@@ -174,10 +182,12 @@ export class ImportChecklistComponent {
         itemIsDone = values[itemIsDoneIndex] === 'true';
         itemIcon = values[itemIconIndex] || '';
         itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
+        itemSubItems = this.unescapeCSVField(values[itemSubItemsIndex] || '');
       } else {
         // Old format without groups (backward compatibility)
         const checklistIdIndex = header.indexOf('Checklist ID');
         const checklistTitleIndex = header.indexOf('Checklist Title');
+        const checklistDescriptionIndex = header.indexOf('Checklist Description');
         const checklistIconIndex = header.indexOf('Checklist Icon');
         const checklistColorIndex = header.indexOf('Checklist Color');
         const checklistSortOrderIndex = header.indexOf('Checklist Sort Order');
@@ -187,9 +197,11 @@ export class ImportChecklistComponent {
         const itemIsDoneIndex = header.indexOf('Item Is Done');
         const itemIconIndex = header.indexOf('Item Icon');
         const itemSortOrderIndex = header.indexOf('Item Sort Order');
+        const itemSubItemsIndex = header.indexOf('Item Sub Items');
 
         checklistId = values[checklistIdIndex] || '';
         checklistTitle = this.unescapeCSVField(values[checklistTitleIndex] || '');
+        checklistDescription = this.unescapeCSVField(values[checklistDescriptionIndex] || '');
         checklistIcon = values[checklistIconIndex] || '';
         checklistColor = values[checklistColorIndex] || '';
         checklistSortOrder = parseInt(values[checklistSortOrderIndex] || '0', 10) || 0;
@@ -198,6 +210,7 @@ export class ImportChecklistComponent {
         itemIsDone = values[itemIsDoneIndex] === 'true';
         itemIcon = values[itemIconIndex] || '';
         itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
+        itemSubItems = this.unescapeCSVField(values[itemSubItemsIndex] || '');
       }
 
       // Process groups
@@ -206,6 +219,7 @@ export class ImportChecklistComponent {
           groupMap.set(groupTitle, {
             group: {
               title: groupTitle,
+              description: groupDescription || undefined,
               icon: groupIcon || undefined,
               color: groupColor || undefined,
               sortOrder: groupSortOrder,
@@ -223,6 +237,7 @@ export class ImportChecklistComponent {
           checklistMap.set(key, {
             checklist: {
               title: checklistTitle,
+              description: checklistDescription || undefined,
               icon: checklistIcon || undefined,
               color: checklistColor || undefined,
               sortOrder: checklistSortOrder,
@@ -231,6 +246,7 @@ export class ImportChecklistComponent {
             group: groupTitle
               ? {
                   title: groupTitle,
+                  description: groupDescription || undefined,
                   icon: groupIcon || undefined,
                   color: groupColor || undefined,
                   sortOrder: groupSortOrder,
@@ -243,11 +259,21 @@ export class ImportChecklistComponent {
 
         // Add item if it has a title
         if (itemTitle) {
+          let subItemsArray: string[] | undefined = undefined;
+          if (itemSubItems) {
+            try {
+              subItemsArray = JSON.parse(itemSubItems);
+            } catch (e) {
+              // If parsing fails, treat as empty array
+              subItemsArray = undefined;
+            }
+          }
           entry.items.push({
             title: itemTitle,
             description: itemDescription || undefined,
             isDone: itemIsDone,
             icon: itemIcon || undefined,
+            subItems: subItemsArray,
             sortOrder: itemSortOrder,
           });
         }
