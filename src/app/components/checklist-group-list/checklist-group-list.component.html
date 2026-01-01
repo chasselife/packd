@@ -1,87 +1,89 @@
 <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
-  <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4">
-    <button
-      mat-button
-      (click)="goBack()"
-      class="min-w-[unset]! w-auto! shrink-0"
-      aria-label="Go back"
-    >
-      <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
-    </button>
-    <h1
-      class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
-    >
-      @if (checklistGroup()) { @if (checklistGroup()!.icon) {
-      <mat-icon
-        class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0"
-        >{{ checklistGroup()!.icon }}</mat-icon
-      >
-      }
-      <span class="truncate">{{ checklistGroup()!.title }}</span>
-      }
-    </h1>
-    <div class="flex items-center">
+  <div class="border-b border-gray-200 pb-4 -ml-4 -mr-4 px-4">
+    <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4">
       <button
-        mat-fab
-        color="primary"
-        (click)="openNewChecklistDialog()"
-        class="shrink-0 sm:hidden! w-11! h-11! shadow-none!"
-        aria-label="Add Checklist"
+        mat-button
+        (click)="goBack()"
+        class="min-w-[unset]! w-auto! shrink-0"
+        aria-label="Go back"
       >
-        <mat-icon>add</mat-icon>
+        <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
       </button>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="openNewChecklistDialog()"
-        class="shrink-0 hidden! sm:inline-flex!"
+      <h1
+        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
       >
-        <mat-icon>add</mat-icon>
-        <span>Add Checklist</span>
-      </button>
+        @if (checklistGroup()) { @if (checklistGroup()!.icon) {
+        <mat-icon
+          class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0"
+          >{{ checklistGroup()!.icon }}</mat-icon
+        >
+        }
+        <span class="truncate">{{ checklistGroup()!.title }}</span>
+        }
+      </h1>
+      <div class="flex items-center">
+        <button
+          mat-fab
+          color="primary"
+          (click)="openNewChecklistDialog()"
+          class="shrink-0 sm:hidden! w-11! h-11! shadow-none!"
+          aria-label="Add Checklist"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openNewChecklistDialog()"
+          class="shrink-0 hidden! sm:inline-flex!"
+        >
+          <mat-icon>add</mat-icon>
+          <span>Add Checklist</span>
+        </button>
 
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          aria-label="More options"
+          class="sm:hidden! -mr-2"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
       <button
         mat-icon-button
         [matMenuTriggerFor]="menu"
         aria-label="More options"
-        class="sm:hidden! -mr-2"
+        class="hidden! sm:inline-flex!"
       >
         <mat-icon>more_vert</mat-icon>
       </button>
+      <mat-menu #menu="matMenu" class="mt-2">
+        <button mat-menu-item (click)="onGroupEditClick()">
+          <mat-icon class="mr-2! text-gray-500!">edit</mat-icon>
+          <span class="pr-2">Edit</span>
+        </button>
+        <button mat-menu-item (click)="openNewChecklistDialog()">
+          <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
+          <span class="pr-2">Add Checklist</span>
+        </button>
+        <button mat-menu-item (click)="isEditMode() ? deactivateEditMode() : activateEditMode()">
+          <mat-icon class="mr-2! text-gray-500!">dashboard_2_edit</mat-icon>
+          <span class="pr-2">{{ isEditMode() ? 'Exit Edit Mode' : 'Edit Mode' }}</span>
+        </button>
+        <button
+          mat-menu-item
+          (click)="isSelectMode() ? deactivateSelectMode() : activateSelectMode()"
+        >
+          <mat-icon class="mr-2! text-gray-500!">check_box</mat-icon>
+          <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
+        </button>
+        <button mat-menu-item (click)="resetAllChecklists()">
+          <mat-icon class="mr-2! text-gray-500!">replay</mat-icon>
+          <span class="pr-2">Reset All Checklists</span>
+        </button>
+      </mat-menu>
     </div>
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="menu"
-      aria-label="More options"
-      class="hidden! sm:inline-flex!"
-    >
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu" class="mt-2">
-      <button mat-menu-item (click)="onGroupEditClick()">
-        <mat-icon class="mr-2! text-gray-500!">edit</mat-icon>
-        <span class="pr-2">Edit</span>
-      </button>
-      <button mat-menu-item (click)="openNewChecklistDialog()">
-        <mat-icon class="mr-2! text-gray-500!">add</mat-icon>
-        <span class="pr-2">Add Checklist</span>
-      </button>
-      <button mat-menu-item (click)="isEditMode() ? deactivateEditMode() : activateEditMode()">
-        <mat-icon class="mr-2! text-gray-500!">dashboard_2_edit</mat-icon>
-        <span class="pr-2">{{ isEditMode() ? 'Exit Edit Mode' : 'Edit Mode' }}</span>
-      </button>
-      <button
-        mat-menu-item
-        (click)="isSelectMode() ? deactivateSelectMode() : activateSelectMode()"
-      >
-        <mat-icon class="mr-2! text-gray-500!">check_box</mat-icon>
-        <span class="pr-2">{{ isSelectMode() ? 'Exit Batch Delete' : 'Batch Delete' }}</span>
-      </button>
-      <button mat-menu-item (click)="resetAllChecklists()">
-        <mat-icon class="mr-2! text-gray-500!">replay</mat-icon>
-        <span class="pr-2">Reset All Checklists</span>
-      </button>
-    </mat-menu>
   </div>
 
   @if (checklistGroup()?.description) {
