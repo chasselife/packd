@@ -184,7 +184,8 @@ export class ImportChecklistComponent {
         itemIsDone = values[itemIsDoneIndex] === 'true';
         itemIcon = values[itemIconIndex] || '';
         itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
-        itemSubItems = this.unescapeCSVField(values[itemSubItemsIndex] || '');
+        // itemSubItems is a JSON string, parseCSVLine already unescaped it, so use it directly
+        itemSubItems = values[itemSubItemsIndex] || '';
       } else {
         // Old format without groups (backward compatibility)
         const checklistIdIndex = header.indexOf('Checklist ID');
@@ -212,7 +213,8 @@ export class ImportChecklistComponent {
         itemIsDone = values[itemIsDoneIndex] === 'true';
         itemIcon = values[itemIconIndex] || '';
         itemSortOrder = parseInt(values[itemSortOrderIndex] || '0', 10) || 0;
-        itemSubItems = this.unescapeCSVField(values[itemSubItemsIndex] || '');
+        // itemSubItems is a JSON string, parseCSVLine already unescaped it, so use it directly
+        itemSubItems = values[itemSubItemsIndex] || '';
       }
 
       // Process groups
@@ -262,12 +264,56 @@ export class ImportChecklistComponent {
         // Add item if it has a title
         if (itemTitle) {
           let subItemsArray: string[] | undefined = undefined;
-          if (itemSubItems) {
+          if (itemSubItems && itemSubItems.trim()) {
+            const trimmed = itemSubItems.trim();
             try {
-              subItemsArray = JSON.parse(itemSubItems);
+              // Check if it looks like a JSON array (starts with [)
+              if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                // Try to parse as JSON
+                const parsed = JSON.parse(trimmed);
+                // Ensure it's an array
+                if (Array.isArray(parsed)) {
+                  subItemsArray = parsed.filter((item) => typeof item === 'string' && item.trim());
+                }
+              } else {
+                // Not valid JSON array format, try treating as comma-separated values
+                const parts = trimmed
+                  .split(',')
+                  .map((p) => p.trim())
+                  .filter((p) => p);
+                if (parts.length > 0) {
+                  subItemsArray = parts;
+                }
+              }
             } catch (e) {
-              // If parsing fails, treat as empty array
-              subItemsArray = undefined;
+              // JSON.parse failed - might be unquoted array like [item1,item2]
+              // or comma-separated values
+              if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                // Looks like array but JSON.parse failed - probably unquoted values
+                // Extract content between brackets and split by comma
+                const content = trimmed.slice(1, -1).trim();
+                if (content) {
+                  const parts = content
+                    .split(',')
+                    .map((p) => p.trim())
+                    .filter((p) => p);
+                  if (parts.length > 0) {
+                    subItemsArray = parts;
+                  }
+                }
+              } else {
+                // Not an array format, treat as comma-separated values
+                const parts = trimmed
+                  .split(',')
+                  .map((p) => p.trim())
+                  .filter((p) => p);
+                if (parts.length > 0) {
+                  subItemsArray = parts;
+                } else if (trimmed) {
+                  // Single value
+                  subItemsArray = [trimmed];
+                }
+              }
             }
           }
           entry.items.push({
