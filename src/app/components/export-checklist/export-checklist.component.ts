@@ -1,15 +1,22 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { DatabaseService } from '../../services/database.service';
+import { Router } from '@angular/router';
 import { getColorClasses } from '../../constants/color-options.constant';
-import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
+import { Checklist } from '../../models/checklist.model';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-export-checklist',
@@ -27,6 +34,8 @@ import { ChecklistGroup } from '../../models/checklist-group.model';
 export class ExportChecklistComponent implements OnInit {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
+
+  @ViewChild('successMessage', { static: false }) successMessageRef?: ElementRef;
 
   checklistGroups = signal<ChecklistGroup[]>([]);
   ungroupedChecklists = signal<Checklist[]>([]);
@@ -325,6 +334,10 @@ export class ExportChecklistComponent implements OnInit {
       URL.revokeObjectURL(url);
 
       this.exportSuccess.set(true);
+      this.successMessageRef?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     } catch (error) {
       console.error('Error exporting data:', error);
       alert('Failed to export data. Please try again.');

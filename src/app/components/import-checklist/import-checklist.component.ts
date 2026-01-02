@@ -1,15 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { DatabaseService } from '../../services/database.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Router } from '@angular/router';
 import { getColorClasses } from '../../constants/color-options.constant';
-import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
+import { Checklist, ChecklistItem } from '../../models/checklist.model';
+import { DatabaseService } from '../../services/database.service';
 
 interface ParsedChecklist {
   checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>;
@@ -38,6 +38,8 @@ interface ParsedGroup {
 export class ImportChecklistComponent {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
+
+  @ViewChild('successMessage', { static: false }) successMessageRef?: ElementRef;
 
   fileSelected = signal(false);
   parsedData = signal<ParsedChecklist[]>([]);
@@ -561,6 +563,10 @@ export class ImportChecklistComponent {
       // Reset selections after successful import
       this.selectedIndices.set(new Set());
       this.selectedGroupIndices.set(new Set());
+      this.successMessageRef?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     } catch (error) {
       console.error('Error importing data:', error);
       this.errorMessage.set('Failed to import data. Please try again.');

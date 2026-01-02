@@ -29,11 +29,19 @@
     </mat-card-content>
   </mat-card>
   } @if (importSuccess()) {
-  <mat-card class="mb-6 bg-green-50 border border-green-200">
+  <mat-card #successMessage class="mb-6 bg-green-50 border border-green-200">
     <mat-card-content>
-      <div class="flex items-center gap-2 text-green-700">
-        <mat-icon>check_circle</mat-icon>
-        <span>Successfully imported {{ importSuccess() }} checklist(s)!</span>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-2 text-green-700">
+          <mat-icon>check_circle</mat-icon>
+          <span>Successfully imported {{ importSuccess() }} checklist(s)!</span>
+        </div>
+        <div class="flex justify-end">
+          <button mat-raised-button color="primary" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to lists
+          </button>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>
