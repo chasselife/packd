@@ -13,6 +13,7 @@ import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { getColorClasses as getColorClassesHelper } from '../../constants/color-options.constant';
+import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
 
 @Component({
   selector: 'app-checklist-item',
@@ -539,9 +540,17 @@ export class ChecklistItemComponent {
     };
   }
   resetChecklistItems(): void {
-    const checklistId = Number(this.id());
-    this.databaseService.resetChecklistItemsByChecklistId(checklistId).then(() => {
-      this.loadChecklistAndItems(checklistId);
+    const dialogRef = this.dialog.open(ConfirmResetDialogComponent, {
+      width: '400px',
+      data: {},
+    });
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        const checklistId = Number(this.id());
+        this.databaseService.resetChecklistItemsByChecklistId(checklistId).then(() => {
+          this.loadChecklistAndItems(checklistId);
+        });
+      }
     });
   }
 }
@@ -555,7 +564,6 @@ export class ChecklistItemComponent {
     <h2 mat-dialog-title>Delete Checklist Item</h2>
     <mat-dialog-content>
       <p>Are you sure you want to delete "{{ data.title }}"?</p>
-      <p class="text-sm text-gray-600">This action cannot be undone.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <div class="mb-2">

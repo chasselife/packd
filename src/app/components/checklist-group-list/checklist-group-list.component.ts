@@ -570,6 +570,9 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
   resetAllChecklists(): void {
     const dialogRef = this.dialog.open(ConfirmResetDialogComponent, {
       width: '400px',
+      data: {
+        isGroup: true,
+      },
     });
     dialogRef.afterClosed().subscribe(async (confirmed) => {
       if (confirmed) {

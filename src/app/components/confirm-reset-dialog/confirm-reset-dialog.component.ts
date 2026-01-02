@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -8,10 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
   template: `
-    <h2 mat-dialog-title>Reset all checklists</h2>
+    <h2 mat-dialog-title>Reset all {{ data.isGroup ? 'checklists' : 'items' }}</h2>
     <mat-dialog-content>
-      <p>Are you sure you want to reset all the items of the checklists?</p>
-      <p class="text-sm text-gray-600">This action cannot be undone.</p>
+      <p>
+        Are you sure you want to reset all the items
+        {{ data.isGroup ? 'of the checklists' : 'of the checklist' }}?
+      </p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <div class="mb-2">
@@ -23,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ConfirmResetDialogComponent {
   dialogRef = inject(MatDialogRef<ConfirmResetDialogComponent>);
+  data = inject<{ isGroup: boolean }>(MAT_DIALOG_DATA);
 
   onCancel(): void {
     this.dialogRef.close(false);

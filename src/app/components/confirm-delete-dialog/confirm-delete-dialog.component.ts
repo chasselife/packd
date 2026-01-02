@@ -20,7 +20,6 @@ import { MatButtonModule } from '@angular/material/button';
           data.count && data.count > 1 ? 'these ' + data.count + ' items' : '"' + data.title + '"'
         }}?
       </p>
-      <p class="text-sm text-gray-600">This action cannot be undone.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <div class="mb-2">
