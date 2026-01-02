@@ -111,7 +111,6 @@ export class ChecklistTileComponent {
 
   doneItemsCount = computed(() => {
     if (this.isChecklist()) {
-      console.log(this.item());
       return (<Checklist>this.item()).items?.filter((item) => item.isDone).length;
     }
     return undefined;

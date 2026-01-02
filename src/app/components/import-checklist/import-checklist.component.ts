@@ -93,13 +93,15 @@ export class ImportChecklistComponent {
     checklists: ParsedChecklist[];
     groups: ParsedGroup[];
   } {
-    const lines = csv.split('\n').filter((line) => line.trim());
-    if (lines.length < 2) {
+    // Parse CSV into rows, handling newlines within quoted fields
+    const rows = this.parseCSVRows(csv);
+
+    if (rows.length < 2) {
       throw new Error('CSV file is empty or invalid');
     }
 
     // Parse header
-    const header = this.parseCSVLine(lines[0]);
+    const header = this.parseCSVLine(rows[0]);
     const hasGroups = header.includes('Group Title');
 
     // Parse data rows
@@ -114,12 +116,12 @@ export class ImportChecklistComponent {
 
     const groupMap = new Map<string, ParsedGroup>();
 
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (!line.trim()) continue;
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row.trim()) continue;
 
       // Parse CSV line (handle quoted fields)
-      const values = this.parseCSVLine(line);
+      const values = this.parseCSVLine(row);
       if (values.length < header.length) {
         continue; // Skip invalid rows
       }
@@ -310,6 +312,53 @@ export class ImportChecklistComponent {
       checklists: ungroupedChecklists,
       groups: Array.from(groupMap.values()),
     };
+  }
+
+  /**
+   * Parses CSV string into rows, properly handling newlines within quoted fields.
+   * This method respects CSV quoting rules where newlines inside quoted fields
+   * are part of the field value, not row separators.
+   */
+  private parseCSVRows(csv: string): string[] {
+    const rows: string[] = [];
+    let currentRow = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < csv.length; i++) {
+      const char = csv[i];
+      const nextChar = csv[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Escaped quote (double quote)
+          currentRow += '"';
+          i++; // Skip next quote
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+          currentRow += char;
+        }
+      } else if (char === '\r' && !inQuotes && nextChar === '\n') {
+        // Handle \r\n line endings - skip \r, \n will be handled next
+        continue;
+      } else if (char === '\n' && !inQuotes) {
+        // End of row (only if not inside quotes)
+        if (currentRow.trim() || rows.length === 0) {
+          // Include row if it has content or if it's the header row
+          rows.push(currentRow);
+        }
+        currentRow = '';
+      } else {
+        currentRow += char;
+      }
+    }
+
+    // Add the last row if it exists
+    if (currentRow.trim() || rows.length === 0) {
+      rows.push(currentRow);
+    }
+
+    return rows;
   }
 
   private parseCSVLine(line: string): string[] {
