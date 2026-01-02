@@ -7,6 +7,7 @@ import { NewChecklistItemDialogComponent } from './components/new-checklist-item
 import { ImportChecklistComponent } from './components/import-checklist/import-checklist.component';
 import { ChecklistGroupListComponent } from './components/checklist-group-list/checklist-group-list.component';
 import { NewChecklistGroupDialogComponent } from './components/new-checklist-group-dialog/new-checklist-group-dialog.component';
+import { ExportChecklistComponent } from './components/export-checklist/export-checklist.component';
 
 export const routes: Routes = [
   {
@@ -42,6 +43,10 @@ export const routes: Routes = [
   {
     path: 'import',
     component: ImportChecklistComponent,
+  },
+  {
+    path: 'export',
+    component: ExportChecklistComponent,
   },
   {
     path: 'checklist-group/new',
