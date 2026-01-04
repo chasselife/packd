@@ -486,6 +486,10 @@ export class ChecklistListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/export']);
   }
 
+  openSearchPage(): void {
+    this.router.navigate(['/search']);
+  }
+
   async onCombinedDrop(event: CdkDragDrop<ChecklistItemWithType[]>): Promise<void> {
     if (!this.isEditMode() || this.isSelectMode()) {
       return; // Only allow reordering in edit mode (not select mode)

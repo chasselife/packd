@@ -1,0 +1,96 @@
+<div class="max-w-6xl mx-auto px-4 py-6 flex flex-col min-h-dvh">
+  <div
+    class="flex justify-between items-center mb-4 md:mb-6 border-b border-gray-200 pb-6 -ml-4 -mr-4 px-8"
+  >
+    <h1 class="text-2xl font-semibold text-primary font-sans flex gap-3 items-center">
+      <img class="w-auto h-10" src="chckd.svg" alt="Chckd." />
+    </h1>
+    <button
+      mat-button
+      (click)="goBack()"
+      aria-label="Back"
+      class="text-primary flex! w-auto! text-lg! items-center gap-2 pr-3! -mr-3!"
+      color="primary"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+  </div>
+
+  <div class="mb-6 px-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Search checklists and groups</mat-label>
+      <input
+        matInput
+        type="text"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+        placeholder="Type to search..."
+        autofocus
+      />
+      <mat-icon matPrefix class="text-gray-500!">search</mat-icon>
+      @if (searchQuery()) {
+      <button mat-icon-button matSuffix (click)="searchQuery.set('')" aria-label="Clear">
+        <mat-icon class="text-gray-500!">clear</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (isLoading()) {
+  <div class="text-center py-12 text-gray-600 flex-1 flex flex-col justify-center">
+    <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!"
+      >hourglass_empty</mat-icon
+    >
+    <p>Loading...</p>
+  </div>
+  } @else if (searchQuery().trim() === '') {
+  <div class="text-center py-16 px-8 text-gray-600 flex-1 flex flex-col justify-center">
+    <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!">search</mat-icon>
+    <p class="m-0 text-gray-500">Start typing to search for checklists and groups</p>
+  </div>
+  } @else if (filteredResults().length === 0) {
+  <div class="text-center py-16 px-8 text-gray-600 flex-1 flex flex-col justify-center">
+    <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!"
+      >search_off</mat-icon
+    >
+    <p class="m-0 text-gray-500">No results found for "{{ searchQuery() }}"</p>
+  </div>
+  } @else {
+  <div class="mb-4 text-sm text-gray-600">
+    Found {{ filteredResults().length }} result{{ filteredResults().length !== 1 ? 's' : '' }}
+  </div>
+  <div
+    class="select-none flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-4 content-start gap-4"
+  >
+    @for (item of filteredResults(); track item.id) { @let isGroup = item.isGroup; @let colorClasses
+    = getColorClasses(item.color); @if (isGroup) {
+    <app-checklist-tile
+      [item]="item"
+      [isEditMode]="false"
+      [isSelectMode]="false"
+      [isChecklist]="false"
+      [colorClasses]="colorClasses"
+      [showBorder]="true"
+      [showDuplicateButton]="false"
+      [defaultIcon]="'folder'"
+      [checklistCount]="getGroupChecklistCount(item.id)"
+      [isSelected]="false"
+      (clicked)="onTileClick($event)"
+    />
+    } @else {
+    <app-checklist-tile
+      [item]="item"
+      [isEditMode]="false"
+      [isSelectMode]="false"
+      [colorClasses]="colorClasses"
+      [showDuplicateButton]="false"
+      [defaultIcon]="'checklist'"
+      [isSelected]="false"
+      (clicked)="onTileClick($event)"
+    />
+    } }
+  </div>
+  }
+  <app-footer />
+</div>

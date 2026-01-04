@@ -8,6 +8,7 @@ import { ImportChecklistComponent } from './components/import-checklist/import-c
 import { ChecklistGroupListComponent } from './components/checklist-group-list/checklist-group-list.component';
 import { NewChecklistGroupDialogComponent } from './components/new-checklist-group-dialog/new-checklist-group-dialog.component';
 import { ExportChecklistComponent } from './components/export-checklist/export-checklist.component';
+import { SearchChecklistComponent } from './components/search-checklist/search-checklist.component';
 
 export const routes: Routes = [
   {
@@ -59,5 +60,9 @@ export const routes: Routes = [
   {
     path: 'checklist-group/:id',
     component: ChecklistGroupListComponent,
+  },
+  {
+    path: 'search',
+    component: SearchChecklistComponent,
   },
 ];
