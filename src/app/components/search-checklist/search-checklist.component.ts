@@ -130,4 +130,3 @@ export class SearchChecklistComponent implements OnInit {
     this.router.navigate(['/']);
   }
 }
-

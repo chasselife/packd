@@ -60,9 +60,7 @@
       Preview: {{ getSelectedCount() }} of {{ parsedGroups().length + parsedData().length }} item(s)
       selected
     </h2>
-    <div
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mb-6 max-h-96 overflow-y-auto"
-    >
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 mb-6 py-6">
       <!-- Groups -->
       @for (groupData of parsedGroups(); track $index) { @let colorClasses =
       getColorClasses(groupData.group.color);

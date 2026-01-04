@@ -38,6 +38,7 @@ export type TileItem = Checklist | ChecklistGroup;
       }
       :host {
         display: flex;
+        min-height: 150px;
       }
 
       /* Checklist tile styling - card-like appearance */

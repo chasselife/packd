@@ -58,12 +58,12 @@
   </mat-card>
   } @else {
   <div class="mb-6">
-    <div class="flex justify-between items-center mb-4 px-2">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 px-2">
       <h2 class="text-lg font-semibold">
         {{ getSelectedCount() }} of
         {{ checklistGroups().length + ungroupedChecklists().length }} item(s) selected
       </h2>
-      <div class="flex gap-2">
+      <div class="flex gap-2 mt-2 sm:mt-0 -ml-2 sm:ml-0">
         <button mat-button (click)="selectAll()" class="text-sm">
           <mat-icon class="text-lg!">select_all</mat-icon>
           Select All
@@ -79,9 +79,7 @@
     @if (checklistGroups().length > 0) {
     <div class="mb-6">
       <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Checklist Groups</h3>
-      <div
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 max-h-96 overflow-y-auto"
-      >
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 py-6">
         @for (group of checklistGroups(); track group.id) { @let colorClasses =
         getColorClasses(group.color);
         <app-checklist-tile
@@ -105,9 +103,7 @@
     @if (ungroupedChecklists().length > 0) {
     <div class="mb-6">
       <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Ungrouped Checklists</h3>
-      <div
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 max-h-96 overflow-y-auto"
-      >
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 py-6">
         @for (checklist of ungroupedChecklists(); track checklist.id) { @let colorClasses =
         getColorClasses(checklist.color);
         <app-checklist-tile
@@ -125,7 +121,7 @@
     }
   </div>
 
-  <div class="flex gap-4 px-4 justify-end">
+  <div class="flex gap-4 px-4 justify-end sticky bottom-0 bg-white py-4">
     <button mat-raised-button (click)="goBack()">Back</button>
     <button
       mat-raised-button

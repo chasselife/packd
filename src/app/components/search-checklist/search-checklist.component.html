@@ -18,8 +18,17 @@
   </div>
 
   <div class="mb-6 px-4">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Search checklists and groups</mat-label>
+    <mat-form-field
+      appearance="outline"
+      class="w-full"
+      [style.--mat-form-field-outlined-container-shape]="'8px'"
+      [style.--mat-form-field-outlined-outline-color]="'var(--color-gray-400)'"
+      [style.--mat-form-field-outlined-label-color]="'var(--color-gray-400)'"
+      [style.--mat-form-field-filled-hover-active-indicator-color]="'var(--color-gray-400)'"
+      [style.--mat-form-field-outlined-hover-outline-color]="'var(--color-gray-400)'"
+      [style.--mat-form-field-outlined-hover-label-color]="'var(--color-gray-400)'"
+    >
+      <mat-label class="text-base!">Search checklists and groups</mat-label>
       <input
         matInput
         type="text"
@@ -27,8 +36,9 @@
         (input)="onSearchInput($event)"
         placeholder="Type to search..."
         autofocus
+        class="text-base!"
       />
-      <mat-icon matPrefix class="text-gray-500!">search</mat-icon>
+      <mat-icon matPrefix class="text-gray-400! text-xl! -mt-1">search</mat-icon>
       @if (searchQuery()) {
       <button mat-icon-button matSuffix (click)="searchQuery.set('')" aria-label="Clear">
         <mat-icon class="text-gray-500!">clear</mat-icon>
