@@ -28,12 +28,7 @@
           Item Title
         </label>
         <mat-form-field appearance="outline" class="w-full">
-          <input
-            matInput
-            formControlName="title"
-            placeholder="What needs to be done?"
-            class="text-base"
-          />
+          <input matInput formControlName="title" placeholder="Item name" class="text-base" />
           @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
           <mat-error>Title is required</mat-error>
           }
