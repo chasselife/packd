@@ -10,7 +10,7 @@
         <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
       </button>
       <h1
-        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 justify-center sm:justify-start"
+        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0"
       >
         @if (checklistGroup()) { @if (checklistGroup()!.icon) {
         <mat-icon
@@ -95,14 +95,14 @@
         [class.line-clamp-3]="!isDescriptionExpanded()"
         [class.cursor-pointer]="isDescriptionTruncated()"
         (click)="isDescriptionTruncated() && toggleDescription()"
-        class="text-sm sm:text-base text-gray-700 leading-relaxed sm:leading-loose text-center sm:text-left whitespace-pre-wrap flex-1 m-0"
+        class="text-sm sm:text-base text-gray-700 leading-relaxed sm:leading-loose whitespace-pre-wrap flex-1 m-0"
         #descriptionElement
         [innerHTML]="checklistGroup()!.description"
       ></p>
       @if (isDescriptionTruncated()) { @if (!isDescriptionExpanded()) {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline justify-center sm:justify-start gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
+        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
       >
         <span>See more</span>
         <mat-icon class="text-base! w-4! h-4!">expand_more</mat-icon>
@@ -110,7 +110,7 @@
       } @else {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline justify-center sm:justify-start gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
+        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
       >
         <span>See less</span>
         <mat-icon class="text-base! w-4! h-4!">expand_less</mat-icon>

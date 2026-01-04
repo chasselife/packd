@@ -66,80 +66,31 @@
       <!-- Groups -->
       @for (groupData of parsedGroups(); track $index) { @let colorClasses =
       getColorClasses(groupData.group.color);
-      <div
-        class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer border-2"
-        [class]="
-          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-        "
-        [class.opacity-50]="!isGroupSelected($index)"
-        (click)="toggleGroupSelection($index)"
-      >
-        <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
-          <mat-checkbox
-            color="primary"
-            [style.--mdc-checkbox-selected-hover-state-layer-color]="groupData.group.color"
-            [style.--mdc-checkbox-selected-pressed-state-layer-color]="groupData.group.color"
-            [style.--mdc-checkbox-selected-icon-color]="groupData.group.color"
-            [style.--mat-checkbox-selected-icon-color]="groupData.group.color"
-            [checked]="isGroupSelected($index)"
-            (change)="toggleGroupSelection($index)"
-            (click)="$event.stopPropagation()"
-          ></mat-checkbox>
-        </div>
-        <div class="md:mb-1">
-          <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-            {{ groupData.group.icon || 'folder' }}
-          </mat-icon>
-        </div>
-        <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-          {{ groupData.group.title }}
-        </div>
-        <div class="flex-1"></div>
-        <div class="bg-white/50 text-center rounded-lg text-sm mt-3 px-2 py-1">
-          <span>{{ groupData.checklists.length }} checklist(s)</span>
-        </div>
-      </div>
+      <app-checklist-tile
+        [item]="getGroupAsTileItem(groupData, $index)"
+        [isEditMode]="false"
+        [isSelectMode]="true"
+        [isChecklist]="false"
+        [colorClasses]="colorClasses"
+        [showBorder]="true"
+        [defaultIcon]="'folder'"
+        [checklistCount]="groupData.checklists.length"
+        [isSelected]="isGroupSelected($index)"
+        (selectionChanged)="onGroupSelectionChanged($event, $index)"
+      />
       }
       <!-- Ungrouped Checklists -->
       @for (data of parsedData(); track $index) { @let colorClasses =
       getColorClasses(data.checklist.color);
-      <div
-        class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer"
-        [class]="
-          colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-        "
-        [class.opacity-50]="!isSelected($index)"
-        (click)="toggleSelection($index)"
-      >
-        <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
-          <mat-checkbox
-            color="primary"
-            [style.--mdc-checkbox-selected-hover-state-layer-color]="data.checklist.color"
-            [style.--mdc-checkbox-selected-pressed-state-layer-color]="data.checklist.color"
-            [style.--mdc-checkbox-selected-icon-color]="data.checklist.color"
-            [style.--mat-checkbox-selected-icon-color]="data.checklist.color"
-            [checked]="isSelected($index)"
-            (change)="toggleSelection($index)"
-            (click)="$event.stopPropagation()"
-          ></mat-checkbox>
-        </div>
-        <div class="md:mb-1">
-          <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-            {{ data.checklist.icon || 'checklist' }}
-          </mat-icon>
-        </div>
-        <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-          {{ data.checklist.title }}
-        </div>
-        <div class="flex-1"></div>
-        <div class="bg-white/50 rounded-lg text-sm mt-3 px-2 py-1">
-          @if (data.items.length > 0) {
-          <span>{{ data.items.length }} item(s)</span>
-          } @else {
-          <span class="">No items</span>
-          }
-        </div>
-      </div>
+      <app-checklist-tile
+        [item]="getChecklistAsTileItem(data, $index)"
+        [isEditMode]="false"
+        [isSelectMode]="true"
+        [colorClasses]="colorClasses"
+        [defaultIcon]="'checklist'"
+        [isSelected]="isSelected($index)"
+        (selectionChanged)="onChecklistSelectionChanged($event, $index)"
+      />
       }
     </div>
   </div>

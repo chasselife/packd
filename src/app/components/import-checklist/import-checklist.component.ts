@@ -10,6 +10,7 @@ import { getColorClasses } from '../../constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
+import { ChecklistTileComponent, TileItem } from '../checklist-tile/checklist-tile.component';
 
 interface ParsedChecklist {
   checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>;
@@ -32,6 +33,7 @@ interface ParsedGroup {
     MatCardModule,
     MatProgressBarModule,
     MatCheckboxModule,
+    ChecklistTileComponent,
   ],
   templateUrl: './import-checklist.component.html',
 })
@@ -450,24 +452,28 @@ export class ImportChecklistComponent {
     return field.replace(/""/g, '"');
   }
 
-  toggleSelection(index: number): void {
-    const selected = new Set(this.selectedIndices());
-    if (selected.has(index)) {
-      selected.delete(index);
-    } else {
+  onChecklistSelectionChanged(event: { item: TileItem; selected: boolean }, index: number): void {
+    if (event.selected) {
+      const selected = new Set(this.selectedIndices());
       selected.add(index);
+      this.selectedIndices.set(selected);
+    } else {
+      const selected = new Set(this.selectedIndices());
+      selected.delete(index);
+      this.selectedIndices.set(selected);
     }
-    this.selectedIndices.set(selected);
   }
 
-  toggleGroupSelection(index: number): void {
-    const selected = new Set(this.selectedGroupIndices());
-    if (selected.has(index)) {
-      selected.delete(index);
-    } else {
+  onGroupSelectionChanged(event: { item: TileItem; selected: boolean }, index: number): void {
+    if (event.selected) {
+      const selected = new Set(this.selectedGroupIndices());
       selected.add(index);
+      this.selectedGroupIndices.set(selected);
+    } else {
+      const selected = new Set(this.selectedGroupIndices());
+      selected.delete(index);
+      this.selectedGroupIndices.set(selected);
     }
-    this.selectedGroupIndices.set(selected);
   }
 
   isSelected(index: number): boolean {
@@ -577,6 +583,26 @@ export class ImportChecklistComponent {
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
     return getColorClasses(color, false);
+  }
+
+  getGroupAsTileItem(groupData: ParsedGroup, index: number): TileItem {
+    // Convert parsed group to TileItem format (add missing fields with defaults)
+    return {
+      ...groupData.group,
+      id: index, // Use index as temporary ID
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as ChecklistGroup;
+  }
+
+  getChecklistAsTileItem(data: ParsedChecklist, index: number): TileItem {
+    // Convert parsed checklist to TileItem format (add missing fields with defaults)
+    return {
+      ...data.checklist,
+      id: index, // Use index as temporary ID
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Checklist;
   }
 
   reset(): void {

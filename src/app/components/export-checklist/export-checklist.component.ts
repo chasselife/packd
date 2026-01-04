@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  inject,
-  OnInit,
-  signal,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -17,6 +10,7 @@ import { getColorClasses } from '../../constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
+import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 
 @Component({
   selector: 'app-export-checklist',
@@ -28,6 +22,7 @@ import { DatabaseService } from '../../services/database.service';
     MatCardModule,
     MatCheckboxModule,
     MatProgressBarModule,
+    ChecklistTileComponent,
   ],
   templateUrl: './export-checklist.component.html',
 })
@@ -83,24 +78,32 @@ export class ExportChecklistComponent implements OnInit {
     }
   }
 
-  toggleGroupSelection(groupId: number): void {
-    const selected = new Set(this.selectedGroupIds());
-    if (selected.has(groupId)) {
-      selected.delete(groupId);
-    } else {
-      selected.add(groupId);
+  onGroupSelectionChanged(event: { item: ChecklistGroup; selected: boolean }): void {
+    if (event.item.id) {
+      if (event.selected) {
+        const selected = new Set(this.selectedGroupIds());
+        selected.add(event.item.id);
+        this.selectedGroupIds.set(selected);
+      } else {
+        const selected = new Set(this.selectedGroupIds());
+        selected.delete(event.item.id);
+        this.selectedGroupIds.set(selected);
+      }
     }
-    this.selectedGroupIds.set(selected);
   }
 
-  toggleChecklistSelection(checklistId: number): void {
-    const selected = new Set(this.selectedChecklistIds());
-    if (selected.has(checklistId)) {
-      selected.delete(checklistId);
-    } else {
-      selected.add(checklistId);
+  onChecklistSelectionChanged(event: { item: Checklist; selected: boolean }): void {
+    if (event.item.id) {
+      if (event.selected) {
+        const selected = new Set(this.selectedChecklistIds());
+        selected.add(event.item.id);
+        this.selectedChecklistIds.set(selected);
+      } else {
+        const selected = new Set(this.selectedChecklistIds());
+        selected.delete(event.item.id);
+        this.selectedChecklistIds.set(selected);
+      }
     }
-    this.selectedChecklistIds.set(selected);
   }
 
   isGroupSelected(groupId?: number): boolean {

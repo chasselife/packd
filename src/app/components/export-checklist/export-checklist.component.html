@@ -84,39 +84,18 @@
       >
         @for (group of checklistGroups(); track group.id) { @let colorClasses =
         getColorClasses(group.color);
-        <div
-          class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer border-2"
-          [class]="
-            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-          "
-          [class.opacity-50]="!isGroupSelected(group.id)"
-          (click)="toggleGroupSelection(group.id!)"
-        >
-          <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
-            <mat-checkbox
-              color="primary"
-              [style.--mdc-checkbox-selected-hover-state-layer-color]="group.color"
-              [style.--mdc-checkbox-selected-pressed-state-layer-color]="group.color"
-              [style.--mdc-checkbox-selected-icon-color]="group.color"
-              [style.--mat-checkbox-selected-icon-color]="group.color"
-              [checked]="isGroupSelected(group.id)"
-              (change)="toggleGroupSelection(group.id!)"
-              (click)="$event.stopPropagation()"
-            ></mat-checkbox>
-          </div>
-          <div class="md:mb-1">
-            <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-              {{ group.icon || 'folder' }}
-            </mat-icon>
-          </div>
-          <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-            {{ group.title }}
-          </div>
-          <div class="flex-1"></div>
-          <div class="bg-white/50 text-center rounded-lg text-sm mt-3 px-2 py-1">
-            <span>{{ getGroupChecklistCount(group.id) }} checklist(s)</span>
-          </div>
-        </div>
+        <app-checklist-tile
+          [item]="group"
+          [isEditMode]="false"
+          [isSelectMode]="true"
+          [isChecklist]="false"
+          [colorClasses]="colorClasses"
+          [showBorder]="true"
+          [defaultIcon]="'folder'"
+          [checklistCount]="getGroupChecklistCount(group.id)"
+          [isSelected]="isGroupSelected(group.id)"
+          (selectionChanged)="onGroupSelectionChanged($event)"
+        />
         }
       </div>
     </div>
@@ -131,43 +110,15 @@
       >
         @for (checklist of ungroupedChecklists(); track checklist.id) { @let colorClasses =
         getColorClasses(checklist.color);
-        <div
-          class="rounded-xl p-6 transition-colors duration-300 flex flex-col items-center justify-center relative backdrop-blur-sm cursor-pointer"
-          [class]="
-            colorClasses.bgClass + ' ' + colorClasses.borderClass + ' ' + colorClasses.textClass
-          "
-          [class.opacity-50]="!isChecklistSelected(checklist.id)"
-          (click)="toggleChecklistSelection(checklist.id!)"
-        >
-          <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
-            <mat-checkbox
-              color="primary"
-              [style.--mdc-checkbox-selected-hover-state-layer-color]="checklist.color"
-              [style.--mdc-checkbox-selected-pressed-state-layer-color]="checklist.color"
-              [style.--mdc-checkbox-selected-icon-color]="checklist.color"
-              [style.--mat-checkbox-selected-icon-color]="checklist.color"
-              [checked]="isChecklistSelected(checklist.id)"
-              (change)="toggleChecklistSelection(checklist.id!)"
-              (click)="$event.stopPropagation()"
-            ></mat-checkbox>
-          </div>
-          <div class="md:mb-1">
-            <mat-icon class="text-4xl! w-10! flex h-10! md:text-5xl! md:w-12! md:h-12!">
-              {{ checklist.icon || 'checklist' }}
-            </mat-icon>
-          </div>
-          <div class="text-sm sm:text-lg font-medium text-center wrap-break-word">
-            {{ checklist.title }}
-          </div>
-          <div class="flex-1"></div>
-          <div class="bg-white/50 rounded-lg text-sm mt-3 px-2 py-1">
-            @if (checklist.items && checklist.items.length > 0) {
-            <span>{{ checklist.items.length }} item(s)</span>
-            } @else {
-            <span class="">No items</span>
-            }
-          </div>
-        </div>
+        <app-checklist-tile
+          [item]="checklist"
+          [isEditMode]="false"
+          [isSelectMode]="true"
+          [colorClasses]="colorClasses"
+          [defaultIcon]="'checklist'"
+          [isSelected]="isChecklistSelected(checklist.id)"
+          (selectionChanged)="onChecklistSelectionChanged($event)"
+        />
         }
       </div>
     </div>

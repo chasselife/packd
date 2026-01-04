@@ -138,6 +138,8 @@
   <div class="text-[.625rem] whitespace-pre-wrap line-clamp-2 text-center mt-2">
     {{ itemDescription }}
   </div>
+  } @if (layout() === 'vertical') {
+  <div class="flex-1"></div>
   } @if (!isEditMode() && !isChecklist() && checklistCount() !== undefined && checklistCount()! > 0)
   {
   <div
@@ -149,9 +151,7 @@
   >
     {{ checklistCount() }} checklist{{ checklistCount()! > 1 ? 's' : '' }}
   </div>
-  } @if (layout() === 'vertical') {
-  <div class="flex-1"></div>
-  @if (isChecklist() && !isEditMode()) {
+  } @if (layout() === 'vertical') { @if (isChecklist() && !isEditMode()) {
   <div
     class="flex flex-row text-sm/[1.5rem] items-center content-center gap-3 mt-4 empty:mt-0 max-w-[calc(100%+2.5rem)]"
   >
