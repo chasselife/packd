@@ -139,6 +139,7 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
         if (currentGroupId && Number(currentGroupId) === this.groupId) {
           this.loadChecklists();
         }
+        this.checkDescriptionTruncation();
       });
   }
 

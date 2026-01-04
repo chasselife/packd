@@ -166,7 +166,7 @@ export class ChecklistTileComponent {
 
   onMouseDown(event: MouseEvent | TouchEvent): void {
     // Don't interfere with drag and drop when in edit mode or select mode
-    if (this.isEditMode() || this.isSelectMode()) {
+    if (this.isEditMode()) {
       return;
     }
     this.mouseDown.emit({ item: this.item(), event });
@@ -174,7 +174,7 @@ export class ChecklistTileComponent {
 
   onMouseUp(event: MouseEvent | TouchEvent): void {
     // Don't interfere with drag and drop when in edit mode or select mode
-    if (this.isEditMode() || this.isSelectMode()) {
+    if (this.isEditMode()) {
       return;
     }
     this.mouseUp.emit(event);
@@ -182,7 +182,7 @@ export class ChecklistTileComponent {
 
   onMouseLeave(): void {
     // Don't interfere with drag and drop when in edit mode or select mode
-    if (this.isEditMode() || this.isSelectMode()) {
+    if (this.isEditMode()) {
       return;
     }
     this.mouseLeave.emit();
@@ -190,7 +190,7 @@ export class ChecklistTileComponent {
 
   onTouchMove(event: TouchEvent): void {
     // Don't interfere with drag and drop when in edit mode or select mode
-    if (this.isEditMode() || this.isSelectMode()) {
+    if (this.isEditMode()) {
       return;
     }
     this.touchMove.emit(event);
@@ -198,7 +198,7 @@ export class ChecklistTileComponent {
 
   onTouchEnd(event: TouchEvent): void {
     // Don't interfere with drag and drop when in edit mode or select mode
-    if (this.isEditMode() || this.isSelectMode()) {
+    if (this.isEditMode()) {
       return;
     }
     this.touchEnd.emit({ item: this.item(), event, isGroup: !this.isChecklist() });
