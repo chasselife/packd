@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject, isDevMode } from '@angula
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterOutlet, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter } from 'rxjs';
+import { filter, take } from 'rxjs';
 import {
   trigger,
   transition,
@@ -13,8 +13,10 @@ import {
   animate,
 } from '@angular/animations';
 import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
+import { InstallPromptDialogComponent } from './components/install-prompt-dialog/install-prompt-dialog.component';
 import { SeedDataService } from './services/seed-data.service';
 import { DatabaseService } from './services/database.service';
+import { PwaInstallService } from './services/pwa-install.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -139,10 +141,12 @@ export class App implements OnInit {
   private dialog = inject(MatDialog);
   private router = inject(Router);
   private databaseService = inject(DatabaseService);
+  private pwaInstallService = inject(PwaInstallService);
   routeAnimationState: 'forward' | 'back' = 'forward';
   private urlHistory: string[] = [];
   private isBackNavigation = false;
   showStorageWarning = false;
+  private installPromptShown = false;
 
   async ngOnInit() {
     // Check if using localStorage fallback
@@ -210,6 +214,51 @@ export class App implements OnInit {
           this.showUpdateDialog();
         });
     }
+
+    // Show PWA install prompt on initial load
+    this.checkAndShowInstallPrompt();
+  }
+
+  private checkAndShowInstallPrompt(): void {
+    // Don't show if already installed
+    if (this.pwaInstallService.isInstalled()) {
+      return;
+    }
+
+    // Subscribe to install prompt availability
+    this.pwaInstallService.installPromptAvailable
+      .pipe(filter((available) => available && !this.installPromptShown))
+      .subscribe(() => {
+        // Wait a bit for the app to fully load before showing prompt
+        setTimeout(() => {
+          if (this.pwaInstallService.canShowPrompt && !this.installPromptShown) {
+            this.showInstallPromptDialog();
+          }
+        }, 2000);
+      });
+
+    // Also check immediately in case the event already fired
+    setTimeout(() => {
+      if (this.pwaInstallService.canShowPrompt && !this.installPromptShown) {
+        this.showInstallPromptDialog();
+      }
+    }, 2000); // Wait 2 seconds after initial load
+  }
+
+  private showInstallPromptDialog(): void {
+    if (this.installPromptShown) {
+      return; // Prevent showing multiple times
+    }
+
+    this.installPromptShown = true;
+    const dialogRef = this.dialog.open(InstallPromptDialogComponent, {
+      disableClose: false,
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      // Dialog closed, user either installed or dismissed
+    });
   }
 
   dismissStorageWarning(): void {
