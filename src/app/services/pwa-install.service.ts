@@ -66,7 +66,7 @@ export class PwaInstallService {
     try {
       this.installPromptEvent.prompt();
       const { outcome } = await this.installPromptEvent.userChoice;
-      
+
       if (outcome === 'accepted') {
         this.installPromptEvent = null;
         this.installPromptAvailable$.next(false);
@@ -96,17 +96,17 @@ export class PwaInstallService {
     if (typeof window === 'undefined') {
       return false;
     }
-    
+
     // Check if running in standalone mode (installed PWA)
     if (window.matchMedia('(display-mode: standalone)').matches) {
       return true;
     }
-    
+
     // Check for iOS standalone mode
     if ((window.navigator as any).standalone === true) {
       return true;
     }
-    
+
     return false;
   }
 }
@@ -116,4 +116,3 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
-
