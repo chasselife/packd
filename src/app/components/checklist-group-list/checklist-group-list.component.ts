@@ -164,7 +164,7 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
         // Reset expanded state when loading a new group
         this.isDescriptionExpanded.set(false);
         // Check if description is truncated after view updates
-        setTimeout(() => this.checkDescriptionTruncation(), 100);
+        setTimeout(() => this.checkDescriptionTruncation(), 300);
       } else {
         this.router.navigate(['/']);
       }
@@ -176,7 +176,7 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
 
   ngAfterViewInit(): void {
     // Check if description is truncated after view initialization
-    setTimeout(() => this.checkDescriptionTruncation(), 100);
+    setTimeout(() => this.checkDescriptionTruncation(), 300);
   }
 
   checkDescriptionTruncation(): void {
