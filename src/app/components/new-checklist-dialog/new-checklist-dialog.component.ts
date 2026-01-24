@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -13,6 +13,7 @@ import { DatabaseService } from '../../services/database.service';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { COLOR_OPTIONS } from '../../constants/color-options.constant';
 import { CHECKLIST_ICON_OPTIONS } from '../../constants/icon-options.constant';
+import { getColorClasses, ColorClasses } from '../../constants/color-options.constant';
 
 @Component({
   selector: 'app-new-checklist-dialog',
@@ -42,6 +43,9 @@ export class NewChecklistDialogComponent implements OnInit {
   isDuplicateMode = false;
   checklistId: number | null = null;
   checklistGroups: ChecklistGroup[] = [];
+  parentGroup: ChecklistGroup | null = null;
+  currentChecklist: Checklist | null = null;
+  cdr = inject(ChangeDetectorRef);
 
   constructor() {
     // Initialize form with default values to prevent template errors
@@ -79,6 +83,7 @@ export class NewChecklistDialogComponent implements OnInit {
       try {
         const checklist = await this.databaseService.getChecklist(this.checklistId);
         if (checklist) {
+          this.currentChecklist = checklist;
           this.isEditMode = !isDuplicate;
 
           // Automatically append "Copy" to the title in duplicate mode
@@ -107,8 +112,24 @@ export class NewChecklistDialogComponent implements OnInit {
         this.form.patchValue({
           groupId: groupId,
         });
+        try {
+          const group = await this.databaseService.getChecklistGroup(groupId);
+          console.log({ group });
+          this.parentGroup = group || null;
+          // Set the group's color as the default color
+          if (this.parentGroup?.color) {
+            this.form.patchValue({
+              color: this.parentGroup.color,
+            });
+            this.cdr.detectChanges();
+          }
+        } catch (error) {
+          console.error('Error loading checklist group:', error);
+        }
       }
     }
+
+    // Load the group to get its color
   }
 
   goBack(): void {
@@ -224,5 +245,19 @@ export class NewChecklistDialogComponent implements OnInit {
         console.error('Error duplicating checklist:', error);
       }
     }
+  }
+
+  getGroupColorClasses(): ColorClasses {
+    // In edit mode, use the checklist's color; otherwise use the parent group's color
+    const color = this.form?.value?.color ?? '#1d93c8';
+    return getColorClasses(color, false);
+  }
+
+  getGroupColor(): string {
+    // In edit mode, use the checklist's color; otherwise use the parent group's color
+    if (this.isEditMode && this.currentChecklist?.color) {
+      return this.currentChecklist.color;
+    }
+    return this.parentGroup?.color || '#1d93c8';
   }
 }

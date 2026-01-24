@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DOCUMENT, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -7,9 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ChecklistItem } from '../../models/checklist.model';
+import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
 import { CHECKLIST_ITEM_ICON_OPTIONS } from '../../constants/icon-options.constant';
+import { getColorClasses, ColorClasses } from '../../constants/color-options.constant';
 
 @Component({
   selector: 'app-new-checklist-item-dialog',
@@ -37,6 +38,9 @@ export class NewChecklistItemDialogComponent implements OnInit {
   isEditMode = false;
   checklistId: number | null = null;
   itemId: number | null = null;
+  checklist: Checklist | null | undefined = null;
+  cdr = inject(ChangeDetectorRef);
+  isTagInputFocused = false;
 
   newTagInput = '';
 
@@ -63,6 +67,14 @@ export class NewChecklistItemDialogComponent implements OnInit {
     }
 
     this.checklistId = Number(checklistIdParam);
+
+    // Load the checklist to get its color
+    try {
+      this.checklist = await this.databaseService.getChecklist(this.checklistId);
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error loading checklist:', error);
+    }
 
     if (itemIdParam) {
       // Edit mode
@@ -173,5 +185,13 @@ export class NewChecklistItemDialogComponent implements OnInit {
       event.preventDefault();
       this.addTag();
     }
+  }
+
+  getChecklistColorClasses(): ColorClasses {
+    return getColorClasses(this.checklist?.color, false);
+  }
+
+  getChecklistColor(): string {
+    return this.checklist?.color || '#1d93c8';
   }
 }

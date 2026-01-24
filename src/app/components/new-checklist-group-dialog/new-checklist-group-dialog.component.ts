@@ -13,6 +13,7 @@ import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.compone
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { COLOR_OPTIONS } from '../../constants/color-options.constant';
 import { CHECKLIST_ICON_OPTIONS } from '../../constants/icon-options.constant';
+import { getColorClasses, ColorClasses } from '../../constants/color-options.constant';
 
 @Component({
   selector: 'app-new-checklist-group-dialog',
@@ -146,5 +147,14 @@ export class NewChecklistGroupDialogComponent implements OnInit {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+  }
+
+  getSelectedColorClasses(): ColorClasses {
+    const selectedColor = this.form?.get('color')?.value;
+    return getColorClasses(selectedColor, false);
+  }
+
+  getSelectedColorValue(): string {
+    return this.form?.get('color')?.value || '#1d93c8';
   }
 }

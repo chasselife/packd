@@ -1,4 +1,5 @@
 <div class="max-w-4xl mx-auto p-4 sm:p-6 pb-0 sm:pb-0 flex flex-col min-h-dvh">
+  @let selectedColorClasses = getSelectedColorClasses();
   <div class="flex items-center gap-3 mb-4">
     <button
       mat-button
@@ -6,9 +7,16 @@
       class="min-w-[unset]! w-auto! shrink-0"
       aria-label="Go back"
     >
-      <mat-icon class="mr-0! text-2xl! w-6! h-6! text-primary!">arrow_back</mat-icon>
+      <mat-icon [class]="'mr-0! text-2xl! w-6! h-6! ' + selectedColorClasses.textClass"
+        >arrow_back</mat-icon
+      >
     </button>
-    <h2 class="text-lg! sm:text-xl! md:text-2xl! text-primary flex items-center gap-3 flex-1">
+    <h2
+      [class]="
+        'text-lg! sm:text-xl! md:text-2xl! flex items-center gap-3 flex-1 ' +
+        selectedColorClasses.textClass
+      "
+    >
       @if (isEditMode) {
       <span>Edit Checklist Group</span>
       } @else {
@@ -22,10 +30,16 @@
       <!-- Title Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon class="text-base! text-primary-600">title</mat-icon>
+          <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">title</mat-icon>
           Group Title
         </label>
-        <mat-form-field appearance="outline" class="w-full">
+        <mat-form-field
+          appearance="outline"
+          class="w-full"
+          [style.--mat-form-field-outlined-focus-outline-color]="
+            selectedColorClasses.textColorValue
+          "
+        >
           <input
             matInput
             formControlName="title"
@@ -41,10 +55,16 @@
       <!-- Description Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon class="text-base! text-primary-600">description</mat-icon>
+          <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">description</mat-icon>
           Description
         </label>
-        <mat-form-field appearance="outline" class="w-full">
+        <mat-form-field
+          appearance="outline"
+          class="w-full"
+          [style.--mat-form-field-outlined-focus-outline-color]="
+            selectedColorClasses.textColorValue
+          "
+        >
           <textarea
             matInput
             formControlName="description"
@@ -60,15 +80,23 @@
         <!-- Icon Field -->
         <div class="space-y-2">
           <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <mat-icon class="text-base! text-primary-600">palette</mat-icon>
+            <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">palette</mat-icon>
             Icon
           </label>
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field
+            appearance="outline"
+            class="w-full"
+            [style.--mat-form-field-outlined-focus-outline-color]="
+              selectedColorClasses.textColorValue
+            "
+          >
             <mat-select formControlName="icon">
               <mat-select-trigger>
                 @if (getSelectedIcon(); as selectedIcon) {
                 <div class="flex items-center gap-3 py-1">
-                  <mat-icon class="text-primary-600">{{ selectedIcon.value }}</mat-icon>
+                  <mat-icon [class]="selectedColorClasses.textClass">{{
+                    selectedIcon.value
+                  }}</mat-icon>
                   <span class="font-medium">{{ selectedIcon.label }}</span>
                 </div>
                 }
@@ -91,7 +119,7 @@
         <!-- Color Field -->
         <div class="space-y-2">
           <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <mat-icon class="text-base! text-primary-600">color_lens</mat-icon>
+            <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">color_lens</mat-icon>
             Color Theme
           </label>
           <div class="w-full">
@@ -137,9 +165,10 @@
       </button>
       <button
         mat-raised-button
-        color="primary"
         (click)="isEditMode ? onSave() : onCreate()"
         [disabled]="!form.valid"
+        [style.background-color]="selectedColorClasses.textColorValue"
+        [style.color]="'white'"
         class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
       >
         <mat-icon class="text-lg">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
