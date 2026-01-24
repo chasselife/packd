@@ -102,7 +102,7 @@
       @if (isDescriptionTruncated()) { @if (!isDescriptionExpanded()) {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
+        class="text-xs sm:text-sm w-full text-primary font-semibold flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md -mt-1 py-1 px-2 -ml-2"
       >
         <span>See more</span>
         <mat-icon class="text-base! w-4! h-4!">expand_more</mat-icon>
@@ -110,7 +110,7 @@
       } @else {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold mt-2 flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 py-1 -ml-2"
+        class="text-xs sm:text-sm w-full text-primary font-semibold flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 -mt-1 py-1 -ml-2"
       >
         <span>See less</span>
         <mat-icon class="text-base! w-4! h-4!">expand_less</mat-icon>

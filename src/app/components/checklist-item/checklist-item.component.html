@@ -164,14 +164,11 @@
       <!-- Card content -->
       <div
         cdkDrag
-        [cdkDragDisabled]="!dragDropEnabled()"
-        cdkDragHandle
         class="checklist-item flex justify-between items-center border  relative group bg-white overflow-hidden"
         [class.cursor-move]="dragDropEnabled()"
         [class.cursor-default]="!dragDropEnabled()"
         [class.transition-all]="!dragDropEnabled()"
         [class.duration-300]="!dragDropEnabled()"
-        [style.touch-action]="dragDropEnabled() ? 'none' : 'pan-y'"
         [class.p-4]="layoutMode() === 'full'"
         [class.p-3]="layoutMode() === 'compact'"
         [class.rounded-xl]="layoutMode() === 'full' && !isItemSwiped(item)"
@@ -200,7 +197,9 @@
           <!-- Drag handle visual indicator -->
           @if (dragDropEnabled()) {
           <div
-            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors pointer-events-none"
+            
+            cdkDragHandle
+            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Drag handle"
           >
             <mat-icon class="text-xl sm:text-2xl">drag_indicator</mat-icon>
