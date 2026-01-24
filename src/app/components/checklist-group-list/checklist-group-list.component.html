@@ -1,16 +1,22 @@
 <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col min-h-dvh" (click)="onContainerClick($event)">
   <div class="border-b border-gray-200 pb-4 -ml-4 -mr-4 px-4">
     <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4">
+      @let groupColorClasses = getGroupColorClasses();
       <button
         mat-button
         (click)="goBack()"
         class="min-w-[unset]! w-auto! shrink-0"
         aria-label="Go back"
       >
-        <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
+        <mat-icon [class]="'text-2xl! w-6! h-6! mr-0! ' + groupColorClasses.textClass"
+          >arrow_back</mat-icon
+        >
       </button>
       <h1
-        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0"
+        [class]="
+          'text-lg sm:text-xl md:text-2xl font-semibold font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 ' +
+          groupColorClasses.textClass
+        "
       >
         @if (checklistGroup()) { @if (checklistGroup()!.icon) {
         <mat-icon
@@ -24,18 +30,20 @@
       <div class="flex items-center">
         <button
           mat-fab
-          color="primary"
           (click)="openNewChecklistDialog()"
-          class="shrink-0 sm:hidden! w-11! h-11! shadow-none!"
+          [class]="'shrink-0 sm:hidden! w-11! h-11! shadow-none! ' + groupColorClasses.bgClass"
+          [style.background-color]="getGroupColor()"
+          [style.color]="'white'"
           aria-label="Add Checklist"
         >
           <mat-icon>add</mat-icon>
         </button>
         <button
           mat-raised-button
-          color="primary"
           (click)="openNewChecklistDialog()"
-          class="shrink-0 hidden! sm:inline-flex!"
+          [class]="'shrink-0 hidden! sm:inline-flex! ' + groupColorClasses.bgClass"
+          [style.background-color]="getGroupColor()"
+          [style.color]="'white'"
         >
           <mat-icon>add</mat-icon>
           <span>Add Checklist</span>
@@ -45,7 +53,7 @@
           mat-icon-button
           [matMenuTriggerFor]="menu"
           aria-label="More options"
-          class="sm:hidden! -mr-2"
+          [class]="'sm:hidden! -mr-2 ' + groupColorClasses.textClass"
         >
           <mat-icon>more_vert</mat-icon>
         </button>
@@ -54,7 +62,7 @@
         mat-icon-button
         [matMenuTriggerFor]="menu"
         aria-label="More options"
-        class="hidden! sm:inline-flex!"
+        [class]="'hidden! sm:inline-flex! ' + groupColorClasses.textClass"
       >
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -102,7 +110,10 @@
       @if (isDescriptionTruncated()) { @if (!isDescriptionExpanded()) {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md -mt-1 py-1 px-2 -ml-2"
+        [class]="
+          'text-xs sm:text-sm w-full font-semibold flex items-baseline gap-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 rounded-md -mt-1 py-1 px-2 -ml-2 ' +
+          groupColorClasses.textClass
+        "
       >
         <span>See more</span>
         <mat-icon class="text-base! w-4! h-4!">expand_more</mat-icon>
@@ -110,7 +121,10 @@
       } @else {
       <button
         (click)="toggleDescription(); $event.stopPropagation()"
-        class="text-xs sm:text-sm w-full text-primary font-semibold flex items-baseline gap-1.5 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 rounded-md px-2 -mt-1 py-1 -ml-2"
+        [class]="
+          'text-xs sm:text-sm w-full font-semibold flex items-baseline gap-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 rounded-md px-2 -mt-1 py-1 -ml-2 ' +
+          groupColorClasses.textClass
+        "
       >
         <span>See less</span>
         <mat-icon class="text-base! w-4! h-4!">expand_less</mat-icon>

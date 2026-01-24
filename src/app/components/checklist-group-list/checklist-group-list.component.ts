@@ -494,6 +494,14 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
     return getColorClasses(color, false);
   }
 
+  getGroupColorClasses(): { bgClass: string; borderClass: string; textClass: string } {
+    return this.getColorClasses(this.checklistGroup()?.color);
+  }
+
+  getGroupColor(): string {
+    return this.checklistGroup()?.color || '#1d93c8';
+  }
+
   isChecklistSelected(checklistId?: number): boolean {
     if (!checklistId) return false;
     return this.selectedChecklistIds().has(checklistId);

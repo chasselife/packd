@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
-import { getColorClasses as getColorClassesHelper } from '../../constants/color-options.constant';
+import { ColorClasses, getColorClasses } from '../../constants/color-options.constant';
 import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
 
 @Component({
@@ -526,18 +526,33 @@ export class ChecklistItemComponent {
     }, this.longPressDuration);
   }
 
-  getColorClasses(color?: string): {
-    bgClass: string;
-    borderClass: string;
-    textClass: string;
-    buttonClass: string;
-  } {
-    return getColorClassesHelper(color, true) as {
-      bgClass: string;
-      borderClass: string;
-      textClass: string;
-      buttonClass: string;
-    };
+  getChecklistColorClasses(): ColorClasses {
+    return getColorClasses(this.checklist()?.color, true);
+  }
+
+  getChecklistColor(): string {
+    return this.checklist()?.color || '#1d93c8';
+  }
+
+  getTextColorClass(variant: 'default' | '600' | '900' = 'default'): string {
+    const colorClasses = this.getChecklistColorClasses();
+    let textClass = colorClasses.textClass;
+
+    if (variant === '600') {
+      // Replace -700 with -600, or -800 with -600, or add -600 for primary
+      textClass = textClass
+        .replace(/-700!$/, '-600!')
+        .replace(/-800!$/, '-600!')
+        .replace(/^text-primary!$/, 'text-primary-600!');
+    } else if (variant === '900') {
+      // Replace -700 with -900, or -800 with -900, or add -900 for primary
+      textClass = textClass
+        .replace(/-700!$/, '-900!')
+        .replace(/-800!$/, '-900!')
+        .replace(/^text-primary!$/, 'text-primary-900!');
+    }
+
+    return textClass;
   }
   resetChecklistItems(): void {
     const dialogRef = this.dialog.open(ConfirmResetDialogComponent, {

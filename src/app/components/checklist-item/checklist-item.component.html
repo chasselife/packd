@@ -1,35 +1,53 @@
-<div class="max-w-6xl mx-auto p-4 sm:p-6 pt-6 sm:pt-6 flex flex-col min-h-dvh" (click)="closeSwipe()">
+<div
+  class="max-w-6xl mx-auto p-4 sm:p-6 pt-6 sm:pt-6 flex flex-col min-h-dvh"
+  (click)="closeSwipe()"
+>
   <div class="border-b border-gray-200 pb-4 -ml-4 -mr-4 px-4">
-
     <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4">
-    
-          <button mat-button (click)="goBack()" class="min-w-[unset]! w-auto! shrink-0" aria-label="Go back">
-      <mat-icon class="text-2xl! w-6! h-6! mr-0!  text-primary!">arrow_back</mat-icon>
-    </button>
-      <h1
-        class="text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 "
+      @let checklistColorClasses = getChecklistColorClasses();
+      <button
+        mat-button
+        (click)="goBack()"
+        class="min-w-[unset]! w-auto! shrink-0"
+        aria-label="Go back"
       >
-        @if (checklist()) { 
-          @if (checklist()!.icon) {
-            <mat-icon class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0">{{ checklist()!.icon }}</mat-icon>
-          }
-          <span class="truncate">{{ checklist()!.title }}</span>
+        <mat-icon [class]="'text-2xl! w-6! h-6! mr-0! ' + checklistColorClasses.textClass"
+          >arrow_back</mat-icon
+        >
+      </button>
+      <h1
+        [class]="
+          'text-lg sm:text-xl md:text-2xl font-semibold font-sans flex gap-2 sm:gap-3 items-center flex-1 min-w-0 ' +
+          checklistColorClasses.textClass
+        "
+      >
+        @if (checklist()) { @if (checklist()!.icon) {
+        <mat-icon
+          class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0"
+          >{{ checklist()!.icon }}</mat-icon
+        >
+        }
+        <span class="truncate">{{ checklist()!.title }}</span>
         }
       </h1>
-            <button 
+      <button
         mat-fab
-        color="primary" 
-        (click)="openNewItemDialog()" 
-        class="shrink-0 sm:hidden! w-12! h-12! shadow-none!"
+        (click)="openNewItemDialog()"
+        [class]="
+          'shrink-0 sm:hidden! w-12! h-12! shadow-none! ' + checklistColorClasses.bgClass + '!'
+        "
+        [style.background-color]="checklistColorClasses.textColorValue"
+        [style.color]="'white'"
         aria-label="Add Item"
       >
         <mat-icon>add</mat-icon>
       </button>
-      <button 
-        mat-raised-button 
-        color="primary" 
-        (click)="openNewItemDialog()" 
-        class="shrink-0 hidden! sm:inline-flex!"
+      <button
+        mat-raised-button
+        (click)="openNewItemDialog()"
+        [class]="'shrink-0 hidden! sm:inline-flex! ' + checklistColorClasses.bgClass"
+        [style.background-color]="getChecklistColor()"
+        [style.color]="'white'"
       >
         <mat-icon>add</mat-icon>
         <span>Add Item</span>
@@ -37,7 +55,7 @@
     </div>
   </div>
 
-@if (isLoading()) {
+  @if (isLoading()) {
   <div class="text-center py-4 text-gray-600 flex-1 flex flex-col justify-center">
     Loading checklist items...
   </div>
@@ -46,80 +64,85 @@
     <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!"> block </mat-icon>
     <p class="m-0 text-gray-500">No items in the checklist yet.</p>
   </div>
-  } @else {
-        @if (checklistItems().length > 0) {
-      <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
-      <div class="flex items-center gap-2">
+  } @else { @if (checklistItems().length > 0) {
+  <div class="mt-2 sm:mt-4 mb-4 sm:mb-6 flex justify-between items-center gap-2 px-2 sm:px-4 py-2">
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [style.background-color]="
+          dragDropEnabled() ? checklist()?.color + '20' : 'var(--color-gray-100)'
+        "
+        [style.color]="
+          dragDropEnabled() ? checklistColorClasses.textColorValue : 'var(--color-gray-500)'
+        "
+        [class.opacity-70!]="!dragDropEnabled()"
+        (click)="toggleDragDrop()"
+        aria-label="Toggle drag and drop"
+        [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
+        class="transition-all rounded-lg"
+      >
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [style.background-color]="
+          sortByDoneEnabled() ? checklist()?.color + '20' : 'var(--color-gray-100)'
+        "
+        [style.color]="
+          sortByDoneEnabled() ? checklistColorClasses.textColorValue : 'var(--color-gray-500)'
+        "
+        [class.opacity-70!]="!sortByDoneEnabled()"
+        (click)="toggleSortByDone()"
+        aria-label="Toggle sort by done"
+        [attr.title]="sortByDoneEnabled() ? 'Disable sort by done' : 'Enable sort by done'"
+        class="transition-all rounded-lg"
+      >
+        <mat-icon>low_priority</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="bg-gray-100! text-gray-500! opacity-70! transition-all rounded-lg"
+        (click)="resetChecklistItems()"
+        aria-label="Reset checklist items"
+        title="Reset checklist items"
+      >
+        <mat-icon>replay</mat-icon>
+      </button>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="flex gap-1 bg-gray-100 rounded-4xl p-1 border border-gray-200">
         <button
           mat-icon-button
-          [class.bg-primary-100!]="dragDropEnabled()"
-          [class.text-primary!]="dragDropEnabled()"
-          [class.bg-gray-100!]="!dragDropEnabled()"
-          [class.text-gray-500!]="!dragDropEnabled()"
-          [class.opacity-70!]="!dragDropEnabled()"
-          (click)="toggleDragDrop()"
-          aria-label="Toggle drag and drop"
-          [attr.title]="dragDropEnabled() ? 'Disable drag and drop' : 'Enable drag and drop'"
-          class="transition-all rounded-lg"
+          [class.bg-white!]="layoutMode() === 'compact'"
+          [class]="
+            layoutMode() === 'compact' ? checklistColorClasses.textClass + '!' : 'text-gray-600'
+          "
+          [class.shadow-sm]="layoutMode() === 'compact'"
+          (click)="setLayoutMode('compact')"
+          aria-label="Compact view"
+          title="Compact view"
+          class="transition-all"
         >
-          <mat-icon>drag_indicator</mat-icon>
+          <mat-icon>view_stream</mat-icon>
         </button>
         <button
           mat-icon-button
-          [class.bg-primary-100!]="sortByDoneEnabled()"
-          [class.text-primary!]="sortByDoneEnabled()"
-          [class.bg-gray-100!]="!sortByDoneEnabled()"
-          [class.text-gray-500!]="!sortByDoneEnabled()"
-          [class.opacity-70!]="!sortByDoneEnabled()"
-          (click)="toggleSortByDone()"
-          aria-label="Toggle sort by done"
-          [attr.title]="sortByDoneEnabled() ? 'Disable sort by done' : 'Enable sort by done'"
-          class="transition-all rounded-lg"
+          [class.bg-white!]="layoutMode() === 'full'"
+          [class]="
+            layoutMode() === 'full' ? checklistColorClasses.textClass + '!' : 'text-gray-600'
+          "
+          [class.shadow-sm]="layoutMode() === 'full'"
+          (click)="setLayoutMode('full')"
+          aria-label="Full view"
+          title="Full view"
+          class="transition-all"
         >
-          <mat-icon>low_priority</mat-icon>
+          <mat-icon>view_agenda</mat-icon>
         </button>
-        <button
-          mat-icon-button
-          class="bg-gray-100! text-gray-500! opacity-70! transition-all rounded-lg"
-          (click)="resetChecklistItems()"
-          aria-label="Reset checklist items"
-          title="Reset checklist items"
-        >
-          <mat-icon>replay</mat-icon>
-        </button>
-      </div>
-      <div class="flex items-center gap-2">
-        <div class="flex gap-1 bg-gray-100 rounded-4xl p-1 border border-gray-200">
-          <button
-            mat-icon-button
-            [class.bg-white!]="layoutMode() === 'compact'"
-            [class.text-primary!]="layoutMode() === 'compact'"
-            [class.shadow-sm]="layoutMode() === 'compact'"
-            [class.text-gray-600]="layoutMode() !== 'compact'"
-            (click)="setLayoutMode('compact')"
-            aria-label="Compact view"
-            title="Compact view"
-            class="transition-all"
-          >
-            <mat-icon>view_stream</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            [class.bg-white!]="layoutMode() === 'full'"
-            [class.text-primary!]="layoutMode() === 'full'"
-            [class.shadow-sm]="layoutMode() === 'full'"
-            [class.text-gray-600]="layoutMode() !== 'full'"
-            (click)="setLayoutMode('full')"
-            aria-label="Full view"
-            title="Full view"
-            class="transition-all"
-          >
-            <mat-icon>view_agenda</mat-icon>
-          </button>
-        </div>
       </div>
     </div>
-    }
+  </div>
+  }
   <div
     cdkDropList
     cdkDropListOrientation="mixed"
@@ -130,10 +153,16 @@
     class="select-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4"
   >
     @for (item of checklistItems(); track item.id) {
-    <div class="relative " [class.rounded-xl]="layoutMode() === 'full'" [class.rounded-lg]="layoutMode() !== 'full'" (click)="$event.stopPropagation()">
+    <div
+      class="relative"
+      [class.rounded-xl]="layoutMode() === 'full'"
+      [class.rounded-lg]="layoutMode() !== 'full'"
+      (click)="$event.stopPropagation()"
+    >
       <!-- Action buttons behind the card -->
-      <div 
-        class="absolute bg-primary- right-0 top-0 bottom-0 flex items-center gap-2 px-2 bg-primary-500 z-10 transition-opacity duration-200"
+      <div
+        class="absolute right-0 top-0 bottom-0 flex items-center gap-2 px-2 z-10 transition-opacity duration-200"
+        [style.background-color]="getChecklistColor()"
         [class.opacity-100]="isItemSwiped(item)"
         [class.opacity-0]="!isItemSwiped(item)"
         [class.pointer-events-none]="!isItemSwiped(item)"
@@ -160,11 +189,11 @@
           <mat-icon class="text-2xl!">delete</mat-icon>
         </button>
       </div>
-      
+
       <!-- Card content -->
       <div
         cdkDrag
-        class="checklist-item flex justify-between items-center border  relative group bg-white overflow-hidden"
+        class="checklist-item flex justify-between items-center border relative group overflow-hidden"
         [class.cursor-move]="dragDropEnabled()"
         [class.cursor-default]="!dragDropEnabled()"
         [class.transition-all]="!dragDropEnabled()"
@@ -177,15 +206,23 @@
         [class.rounded-lg]="layoutMode() !== 'full' && !isItemSwiped(item)"
         [class.rounded-tl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
         [class.rounded-bl-lg]="layoutMode() !== 'full' && isItemSwiped(item)"
-        [class.bg-white]="!item.isDone"
-        [class.bg-primary-50/80]="item.isDone"
-        [class.border-gray-200]="!item.isDone"
-        [class.border-primary-400]="item.isDone"
+        class="{{
+          item.isDone
+            ? checklistColorClasses.bgClass +
+              ' ' +
+              checklistColorClasses.borderClass +
+              ' ' +
+              checklistColorClasses.textClass
+            : 'bg-white border-gray-200'
+        }}"
+        [style.border-color]="item.isDone ? checklistColorClasses.textClass : undefined"
         [class.shadow-sm]="!item.isDone"
         [class.shadow-md]="item.isDone"
         [class.hover:shadow-md]="!item.isDone"
         [class.hover:border-gray-300]="!item.isDone"
-        [style.transform]="isItemSwiped(item) && !dragDropEnabled() ? 'translateX(-120px)' : 'translateX(0)'"
+        [style.transform]="
+          isItemSwiped(item) && !dragDropEnabled() ? 'translateX(-120px)' : 'translateX(0)'
+        "
         (touchstart)="onTouchStart($event, item)"
         (touchmove)="onTouchMove($event, item)"
         (touchend)="onTouchEnd($event, item)"
@@ -197,33 +234,41 @@
           <!-- Drag handle visual indicator -->
           @if (dragDropEnabled()) {
           <div
-            
             cdkDragHandle
-            class="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors"
+            class="shrink-0 cursor-grab active:cursor-grabbing{{
+              item.isDone ? checklistColorClasses.textClass : ' text-gray-400 hover:text-gray-600'
+            }} transition-colors"
             aria-label="Drag handle"
           >
             <mat-icon class="text-xl sm:text-2xl">drag_indicator</mat-icon>
           </div>
           }
           <div
-            class="shrink-0 cursor-pointer  active:scale-95"
+            class="shrink-0 cursor-pointer active:scale-95"
             [class.transition-transform]="!dragDropEnabled()"
             (click)="toggleItemDone(item); $event.stopPropagation()"
             (mousedown)="$event.stopPropagation()"
           >
             @if (item.isDone) {
-            <mat-icon class="text-2xl sm:text-3xl text-primary-600!">check_circle</mat-icon>
+            <mat-icon [class]="'text-2xl sm:text-3xl ' + getTextColorClass('600')"
+              >check_circle</mat-icon
+            >
             } @else {
-            <mat-icon class="text-2xl sm:text-3xl text-gray-400 group-hover:text-gray-500">radio_button_unchecked</mat-icon>
+            <mat-icon class="text-2xl sm:text-3xl text-gray-400 group-hover:text-gray-500"
+              >radio_button_unchecked</mat-icon
+            >
             }
           </div>
-          <div class="flex-1 min-w-0 cursor-pointer" (click)="toggleItemDone(item); $event.stopPropagation()">
+          <div
+            class="flex-1 min-w-0 cursor-pointer"
+            (click)="toggleItemDone(item); $event.stopPropagation()"
+          >
             <h3
               class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center"
               [class.text-base]="layoutMode() === 'full'"
               [class.text-sm]="layoutMode() === 'compact'"
               [class.text-gray-900]="!item.isDone"
-              [class.text-primary-900]="item.isDone"
+              [class]="item.isDone ? getTextColorClass('900') : ''"
               [class.line-through]="item.isDone"
               [class.opacity-60]="item.isDone"
             >
@@ -236,17 +281,20 @@
             <p
               class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed"
               [class.text-gray-500]="!item.isDone"
-              [class.text-primary]="item.isDone"
+              [class]="item.isDone ? checklistColorClasses.textClass : ''"
               [class.opacity-70]="item.isDone"
             >
               {{ item.description }}
             </p>
-            }
-            @if (item.subItems && item.subItems.length > 0 && layoutMode() === 'full') {
+            } @if (item.subItems && item.subItems.length > 0 && layoutMode() === 'full') {
             <div class="flex flex-wrap gap-1.5 mt-2">
               @for (subItem of item.subItems; track subItem) {
               <span
-                class="inline-flex items-center px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-normal border border-gray-200"
+                class="inline-flex items-center px-1.5 py-0.5 {{
+                  item.isDone
+                    ? checklistColorClasses.borderClass + ' ' + checklistColorClasses.textClass
+                    : 'bg-gray-100 text-gray-600'
+                }} rounded-full text-xs font-normal border border-gray-200"
                 [class.opacity-60]="item.isDone"
               >
                 {{ subItem }}
@@ -254,16 +302,17 @@
               }
             </div>
             }
-            
           </div>
         </div>
         <!-- Desktop hover buttons -->
         @if (layoutMode() === 'full') {
-        <div class="hidden sm:flex gap-0.5 sm:gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div
+          class="hidden sm:flex gap-0.5 sm:gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
           <button
             mat-icon-button
-            color="primary"
             (click)="openEditItemDialog(item); $event.stopPropagation()"
+            [class]="checklistColorClasses.textClass"
             aria-label="Edit item"
             class="flex! content-center! items-center! w-8! h-8! sm:w-12! sm:h-12!"
           >

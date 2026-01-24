@@ -12,6 +12,7 @@ export interface ColorClasses {
   textClass: string;
   buttonClass?: string;
   textColorValue?: string;
+  bgColorValue?: string;
 }
 
 // Predefined colors suitable for glassmorphism/liquid glass effects
@@ -255,6 +256,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
     borderClass: 'border-primary',
     textClass: 'text-primary!',
     textColorValue: 'var(--color-primary)',
+    bgColorValue: 'var(--color-primary-500)',
     ...(includeButtonClass && {
       buttonClass: 'bg-primary-500/30 hover:bg-primary-500/40',
     }),
@@ -269,6 +271,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
   let borderClass = colorOption.borderClass;
   let textClass = colorOption.textClass;
   let textColorValue = colorOption.textClass.replace(/^text-/, 'var(--color-').replace(/!$/, '');
+  let bgColorValue = colorOption.bgClass.replace(/^bg-/, 'var(--color-').replace(/!$/, '');
 
   if (includeButtonClass) {
     // Replace -700 with -500 for borders, -700 with -800 for text
@@ -284,6 +287,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
     bgClass: colorOption.bgClass,
     borderClass: borderClass,
     textClass: textClass,
+    bgColorValue,
     textColorValue,
   };
 
