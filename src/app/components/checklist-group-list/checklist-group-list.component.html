@@ -32,7 +32,7 @@
           mat-fab
           (click)="openNewChecklistDialog()"
           [class]="'shrink-0 sm:hidden! w-11! h-11! shadow-none! ' + groupColorClasses.bgClass"
-          [style.background-color]="getGroupColor()"
+          [style.background-color]="groupColorClasses.textColorValue"
           [style.color]="'white'"
           aria-label="Add Checklist"
         >
@@ -42,7 +42,7 @@
           mat-raised-button
           (click)="openNewChecklistDialog()"
           [class]="'shrink-0 hidden! sm:inline-flex! ' + groupColorClasses.bgClass"
-          [style.background-color]="getGroupColor()"
+          [style.background-color]="groupColorClasses.textColorValue"
           [style.color]="'white'"
         >
           <mat-icon>add</mat-icon>

@@ -17,7 +17,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatabaseService } from '../../services/database.service';
-import { getColorClasses } from '../../constants/color-options.constant';
+import { ColorClasses, getColorClasses } from '../../constants/color-options.constant';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
@@ -490,11 +490,11 @@ export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterView
     }
   }
 
-  getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
+  getColorClasses(color?: string): ColorClasses {
     return getColorClasses(color, false);
   }
 
-  getGroupColorClasses(): { bgClass: string; borderClass: string; textClass: string } {
+  getGroupColorClasses(): ColorClasses {
     return this.getColorClasses(this.checklistGroup()?.color);
   }
 

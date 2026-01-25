@@ -46,7 +46,7 @@
         mat-raised-button
         (click)="openNewItemDialog()"
         [class]="'shrink-0 hidden! sm:inline-flex! ' + checklistColorClasses.bgClass"
-        [style.background-color]="getChecklistColor()"
+        [style.background-color]="checklistColorClasses.textColorValue"
         [style.color]="'white'"
       >
         <mat-icon>add</mat-icon>
