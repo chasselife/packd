@@ -14,9 +14,9 @@ import {
   getColorClasses,
 } from '../../../core/constants/color-options.constant';
 import { CHECKLIST_ICON_OPTIONS } from '../../../core/constants/icon-options.constant';
+import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
-import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 
 @Component({
   selector: 'app-new-checklist-group-dialog',

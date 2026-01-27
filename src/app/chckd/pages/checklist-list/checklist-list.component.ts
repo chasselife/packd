@@ -18,15 +18,15 @@ import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/ro
 import { filter, Subscription } from 'rxjs';
 import { FooterComponent } from '../../../core/components/footer/footer.component';
 import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
+import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
+import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import { ConfirmResetDialogComponent } from '../../components/confirm-reset-dialog/confirm-reset-dialog.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
-import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
-import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
-import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
 
 @Component({
-  selector: 'app-checklist-group-list',
+  selector: 'app-checklist-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -39,7 +39,7 @@ import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-res
     FooterComponent,
     ChecklistTileComponent,
   ],
-  templateUrl: './checklist-group-list.component.html',
+  templateUrl: './checklist-list.component.html',
   styles: [
     `
       @keyframes wiggle {
@@ -91,7 +91,7 @@ import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-res
     `,
   ],
 })
-export class ChecklistGroupListComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ChecklistListComponent implements OnInit, OnDestroy, AfterViewInit {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);

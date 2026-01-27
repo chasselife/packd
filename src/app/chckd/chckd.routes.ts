@@ -1,18 +1,18 @@
-import { ChecklistGroupListComponent } from './components/checklist-group-list/checklist-group-list.component';
-import { ChecklistItemComponent } from './components/checklist-item/checklist-item.component';
-import { ChecklistListComponent } from './components/checklist-list/checklist-list.component';
-import { ExportChecklistComponent } from './components/export-checklist/export-checklist.component';
-import { ImportChecklistComponent } from './components/import-checklist/import-checklist.component';
-import { NewChecklistDialogComponent } from './components/new-checklist-dialog/new-checklist-dialog.component';
-import { NewChecklistGroupDialogComponent } from './components/new-checklist-group-dialog/new-checklist-group-dialog.component';
-import { NewChecklistItemDialogComponent } from './components/new-checklist-item-dialog/new-checklist-item-dialog.component';
-import { SearchChecklistComponent } from './components/search-checklist/search-checklist.component';
-import { SeedDataComponent } from './components/seed-data/seed-data.component';
+import { ChecklistItemsComponent } from './pages/checklist-items/checklist-items.component';
+import { ChecklistListComponent } from './pages/checklist-list/checklist-list.component';
+import { ChecklistComponent } from './pages/checklist/checklist.component';
+import { ExportChecklistComponent } from './pages/export-checklist/export-checklist.component';
+import { ImportChecklistComponent } from './pages/import-checklist/import-checklist.component';
+import { NewChecklistDialogComponent } from './pages/new-checklist-dialog/new-checklist-dialog.component';
+import { NewChecklistGroupDialogComponent } from './pages/new-checklist-group-dialog/new-checklist-group-dialog.component';
+import { NewChecklistItemDialogComponent } from './pages/new-checklist-item-dialog/new-checklist-item-dialog.component';
+import { SearchChecklistComponent } from './pages/search-checklist/search-checklist.component';
+import { SeedDataComponent } from './pages/seed-data/seed-data.component';
 
 export default [
   {
     path: '',
-    component: ChecklistListComponent,
+    component: ChecklistComponent,
   },
 
   {
@@ -25,7 +25,7 @@ export default [
   },
   {
     path: 'checklist/:id',
-    component: ChecklistItemComponent,
+    component: ChecklistItemsComponent,
   },
 
   {
@@ -58,7 +58,7 @@ export default [
   },
   {
     path: 'checklist-group/:id',
-    component: ChecklistGroupListComponent,
+    component: ChecklistListComponent,
   },
   {
     path: 'search',

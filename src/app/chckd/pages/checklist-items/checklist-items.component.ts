@@ -11,12 +11,12 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
+import { ConfirmResetDialogComponent } from '../../components/confirm-reset-dialog/confirm-reset-dialog.component';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
-import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
 
 @Component({
-  selector: 'app-checklist-item',
+  selector: 'app-checklist-items',
   standalone: true,
   imports: [
     CommonModule,
@@ -26,9 +26,9 @@ import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-res
     MatDialogModule,
     DragDropModule,
   ],
-  templateUrl: './checklist-item.component.html',
+  templateUrl: './checklist-items.component.html',
 })
-export class ChecklistItemComponent {
+export class ChecklistItemsComponent {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private dialog = inject(MatDialog);

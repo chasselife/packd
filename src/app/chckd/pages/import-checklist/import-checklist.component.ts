@@ -7,10 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { getColorClasses } from '../../../core/constants/color-options.constant';
+import {
+  ChecklistTileComponent,
+  TileItem,
+} from '../../components/checklist-tile/checklist-tile.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
-import { ChecklistTileComponent, TileItem } from '../checklist-tile/checklist-tile.component';
 
 interface ParsedChecklist {
   checklist: Omit<Checklist, 'id' | 'createdAt' | 'updatedAt'>;

@@ -9,19 +9,19 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { FooterComponent } from '../../../core/components/footer/footer.component';
 import { getColorClasses } from '../../../core/constants/color-options.constant';
+import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
+import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
 import { SeedDataService } from '../../services/seed-data.service';
-import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
-import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 
 type ChecklistItemWithType =
   | (Checklist & { isGroup: false })
   | (ChecklistGroup & { isGroup: true });
 
 @Component({
-  selector: 'app-checklist-list',
+  selector: 'app-checklist',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,7 +34,7 @@ type ChecklistItemWithType =
     FooterComponent,
     ChecklistTileComponent,
   ],
-  templateUrl: './checklist-list.component.html',
+  templateUrl: './checklist.component.html',
   styles: [
     `
       @keyframes wiggle {
@@ -86,7 +86,7 @@ type ChecklistItemWithType =
     `,
   ],
 })
-export class ChecklistListComponent implements OnInit, OnDestroy {
+export class ChecklistComponent implements OnInit, OnDestroy {
   private databaseService = inject(DatabaseService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
