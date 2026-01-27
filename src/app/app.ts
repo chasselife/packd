@@ -13,10 +13,10 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
-import { InstallPromptDialogComponent } from './components/install-prompt-dialog/install-prompt-dialog.component';
-import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
-import { PwaInstallService } from './services/pwa-install.service';
-import { LocalStorageWarning } from './shared/local-storage-warning/local-storage-warning';
+import { InstallPromptDialogComponent } from './chckd/components/install-prompt-dialog/install-prompt-dialog.component';
+import { UpdateAvailableDialogComponent } from './chckd/components/update-available-dialog/update-available-dialog.component';
+import { LocalStorageWarning } from './core/components/local-storage-warning/local-storage-warning';
+import { PwaInstallService } from './core/services/pwa-install.service';
 
 @Component({
   selector: 'app-root',

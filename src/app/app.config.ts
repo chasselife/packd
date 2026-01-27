@@ -1,20 +1,19 @@
 import {
   ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
+  importProvidersFrom,
+  inject,
   isDevMode,
   provideAppInitializer,
-  inject,
-  importProvidersFrom,
+  provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { BrowserModule } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
-import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
-import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { routes } from './app.routes';
+import { GoogleAnalyticsService } from './core/services/google-analytics.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
