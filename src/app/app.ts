@@ -1,27 +1,26 @@
-import { ChangeDetectorRef, Component, OnInit, inject, isDevMode } from '@angular/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { RouterOutlet, Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter, take } from 'rxjs';
 import {
-  trigger,
-  transition,
-  style,
-  query,
+  animate,
   animateChild,
   group,
-  animate,
+  query,
+  style,
+  transition,
+  trigger,
 } from '@angular/animations';
-import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
-import { InstallPromptDialogComponent } from './components/install-prompt-dialog/install-prompt-dialog.component';
-import { SeedDataService } from './services/seed-data.service';
-import { DatabaseService } from './services/database.service';
-import { PwaInstallService } from './services/pwa-install.service';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, isDevMode } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs';
+import { InstallPromptDialogComponent } from './components/install-prompt-dialog/install-prompt-dialog.component';
+import { UpdateAvailableDialogComponent } from './components/update-available-dialog/update-available-dialog.component';
+import { PwaInstallService } from './services/pwa-install.service';
+import { LocalStorageWarning } from './shared/local-storage-warning/local-storage-warning';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatDialogModule, CommonModule],
+  imports: [RouterOutlet, MatDialogModule, CommonModule, LocalStorageWarning],
   templateUrl: './app.html',
   styleUrl: './app.css',
   animations: [
@@ -140,20 +139,15 @@ export class App implements OnInit {
   private swUpdate = inject(SwUpdate);
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  private databaseService = inject(DatabaseService);
+
   private pwaInstallService = inject(PwaInstallService);
   routeAnimationState: 'forward' | 'back' = 'forward';
   private urlHistory: string[] = [];
   private isBackNavigation = false;
-  showStorageWarning = false;
+
   private installPromptShown = false;
 
   async ngOnInit() {
-    // Check if using localStorage fallback
-    setTimeout(() => {
-      this.showStorageWarning = this.databaseService.isUsingLocalStorage;
-    }, 100);
-
     // Listen to NavigationStart to detect back navigation
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -259,10 +253,6 @@ export class App implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       // Dialog closed, user either installed or dismissed
     });
-  }
-
-  dismissStorageWarning(): void {
-    this.showStorageWarning = false;
   }
 
   private showUpdateDialog(): void {
