@@ -13,9 +13,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
-import { InstallPromptDialogComponent } from './chckd/components/install-prompt-dialog/install-prompt-dialog.component';
-import { UpdateAvailableDialogComponent } from './chckd/components/update-available-dialog/update-available-dialog.component';
+import { InstallPromptDialogComponent } from './core/components/install-prompt-dialog/install-prompt-dialog.component';
 import { LocalStorageWarning } from './core/components/local-storage-warning/local-storage-warning';
+import { UpdateAvailableDialogComponent } from './core/components/update-available-dialog/update-available-dialog.component';
 import { PwaInstallService } from './core/services/pwa-install.service';
 
 @Component({

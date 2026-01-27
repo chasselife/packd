@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ColorPickerComponent } from '../../../core/components/color-picker/color-picker.component';
 import {
   COLOR_OPTIONS,
   ColorClasses,
@@ -16,7 +17,6 @@ import { CHECKLIST_ICON_OPTIONS } from '../../../core/constants/icon-options.con
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { DatabaseService } from '../../services/database.service';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
-import { ColorPickerComponent } from '../color-picker/color-picker.component';
 
 @Component({
   selector: 'app-new-checklist-group-dialog',

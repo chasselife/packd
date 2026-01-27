@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { FooterComponent } from '../../../core/components/footer/footer.component';
 import { getColorClasses } from '../../../core/constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
@@ -14,7 +15,6 @@ import { DatabaseService } from '../../services/database.service';
 import { SeedDataService } from '../../services/seed-data.service';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
-import { FooterComponent } from '../footer/footer.component';
 
 type ChecklistItemWithType =
   | (Checklist & { isGroup: false })

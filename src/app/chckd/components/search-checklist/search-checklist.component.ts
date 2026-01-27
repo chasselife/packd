@@ -6,12 +6,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
+import { FooterComponent } from '../../../core/components/footer/footer.component';
 import { getColorClasses } from '../../../core/constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
-import { FooterComponent } from '../footer/footer.component';
 
 type ChecklistItemWithType =
   | (Checklist & { isGroup: false })

@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { FooterComponent } from '../../../core/components/footer/footer.component';
 import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
@@ -23,7 +24,6 @@ import { DatabaseService } from '../../services/database.service';
 import { ChecklistTileComponent } from '../checklist-tile/checklist-tile.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConfirmResetDialogComponent } from '../confirm-reset-dialog/confirm-reset-dialog.component';
-import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-checklist-group-list',
