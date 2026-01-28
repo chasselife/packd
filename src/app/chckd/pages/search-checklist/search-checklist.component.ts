@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../../../core/components/footer/footer.component';
-import { getColorClasses } from '../../../core/constants/color-options.constant';
+import { getColorData } from '../../../core/constants/color-options.constant';
 import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
@@ -106,7 +106,7 @@ export class SearchChecklistComponent implements OnInit {
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
-    return getColorClasses(color, false);
+    return getColorData(color, false);
   }
 
   getGroupChecklistCount(groupId?: number): number {

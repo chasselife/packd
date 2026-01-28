@@ -6,7 +6,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
-import { getColorClasses } from '../../../core/constants/color-options.constant';
+import { BackButton } from '../../../core/components/back-button/back-button';
+import { FormHeader } from '../../../core/components/layout/form-header/form-header';
+import { getColorData } from '../../../core/constants/color-options.constant';
 import {
   ChecklistTileComponent,
   TileItem,
@@ -37,6 +39,8 @@ interface ParsedGroup {
     MatProgressBarModule,
     MatCheckboxModule,
     ChecklistTileComponent,
+    FormHeader,
+    BackButton,
   ],
   templateUrl: './import-checklist.component.html',
 })
@@ -585,7 +589,7 @@ export class ImportChecklistComponent {
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
-    return getColorClasses(color, false);
+    return getColorData(color, false);
   }
 
   getGroupAsTileItem(groupData: ParsedGroup, index: number): TileItem {

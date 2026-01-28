@@ -16,8 +16,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { AddButton } from '../../../core/components/add-button/add-button';
+import { BackButton } from '../../../core/components/back-button/back-button';
 import { FooterComponent } from '../../../core/components/footer/footer.component';
-import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
+import { PageHeader } from '../../../core/components/layout/page-header/page-header';
+import { Menu, MenuConfig } from '../../../core/components/menu/menu';
+import { ColorData, getColorData } from '../../../core/constants/color-options.constant';
 import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
 import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConfirmResetDialogComponent } from '../../components/confirm-reset-dialog/confirm-reset-dialog.component';
@@ -38,6 +42,10 @@ import { DatabaseService } from '../../services/database.service';
     DragDropModule,
     FooterComponent,
     ChecklistTileComponent,
+    PageHeader,
+    BackButton,
+    AddButton,
+    Menu,
   ],
   templateUrl: './checklist-list.component.html',
   styles: [
@@ -120,6 +128,35 @@ export class ChecklistListComponent implements OnInit, OnDestroy, AfterViewInit 
   private touchStartX = 0;
   private touchStartY = 0;
   private touchMoved = false;
+
+  menus: MenuConfig[] = [
+    {
+      label: 'Edit',
+      icon: 'edit',
+      handler: () => this.onGroupEditClick(),
+    },
+    {
+      label: 'Add Checklist',
+      icon: 'add',
+      handler: () => this.openNewChecklistDialog(),
+    },
+    {
+      label: 'Toggle Edit Mode',
+      icon: 'dashboard_2_edit',
+      handler: () => (this.isEditMode() ? this.deactivateEditMode() : this.activateEditMode()),
+    },
+    {
+      label: 'Toggle Batch Delete',
+      icon: 'check_box',
+      handler: () =>
+        this.isSelectMode() ? this.deactivateSelectMode() : this.activateSelectMode(),
+    },
+    {
+      label: 'Reset All Checklists',
+      icon: 'replay',
+      handler: () => this.resetAllChecklists(),
+    },
+  ];
 
   async ngOnInit(): Promise<void> {
     const groupIdParam = this.route.snapshot.paramMap.get('id');
@@ -387,7 +424,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy, AfterViewInit 
         (c) =>
           c.sortOrder > originalSortOrder &&
           c.id !== newChecklistId &&
-          c.id !== originalChecklist.id
+          c.id !== originalChecklist.id,
       );
 
       for (const c of checklistsToShift) {
@@ -490,11 +527,11 @@ export class ChecklistListComponent implements OnInit, OnDestroy, AfterViewInit 
     }
   }
 
-  getColorClasses(color?: string): ColorClasses {
-    return getColorClasses(color, false);
+  getColorClasses(color?: string): ColorData {
+    return getColorData(color, false);
   }
 
-  getGroupColorClasses(): ColorClasses {
+  getGroupColorData(): ColorData {
     return this.getColorClasses(this.checklistGroup()?.color);
   }
 
@@ -525,7 +562,7 @@ export class ChecklistListComponent implements OnInit, OnDestroy, AfterViewInit 
     const allIds = new Set(
       this.checklists()
         .map((c) => c.id)
-        .filter((id): id is number => id !== undefined)
+        .filter((id): id is number => id !== undefined),
     );
     this.selectedChecklistIds.set(allIds);
   }

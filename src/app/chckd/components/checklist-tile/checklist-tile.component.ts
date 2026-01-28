@@ -4,7 +4,7 @@ import { Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { ColorClasses } from '../../../core/constants/color-options.constant';
+import { ColorData } from '../../../core/constants/color-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
 
@@ -44,7 +44,9 @@ export type TileItem = Checklist | ChecklistGroup;
       /* Checklist tile styling - card-like appearance */
       .checklist-tile {
         transform: translateY(0);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
       .checklist-tile:not(.no-hover):hover {
@@ -54,7 +56,9 @@ export type TileItem = Checklist | ChecklistGroup;
       /* Group tile styling - folder-like appearance */
       .group-tile {
         transform: translateY(0) perspective(1000px) rotateX(0deg);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
         position: relative;
         overflow: visible;
       }
@@ -90,7 +94,7 @@ export class ChecklistTileComponent {
   item = input.required<TileItem>();
   isEditMode = input.required<boolean>();
   isSelectMode = input<boolean>(false);
-  colorClasses = input.required<ColorClasses>();
+  colorClasses = input.required<ColorData>();
   showDuplicateButton = input<boolean>(false);
   showBorder = input<boolean>(false);
   defaultIcon = input<string>('checklist');

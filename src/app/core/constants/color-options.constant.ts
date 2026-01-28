@@ -6,7 +6,7 @@ export interface ColorOption {
   textClass: string;
 }
 
-export interface ColorClasses {
+export interface ColorData {
   bgClass: string;
   borderClass: string;
   textClass: string;
@@ -250,8 +250,8 @@ export const COLOR_OPTIONS: ColorOption[] = [
  * @param includeButtonClass - Whether to include buttonClass in the result (for checklist items)
  * @returns Color classes object with bgClass, borderClass, textClass, and optionally buttonClass
  */
-export function getColorClasses(color?: string, includeButtonClass: boolean = false): ColorClasses {
-  const defaultColor: ColorClasses = {
+export function getColorData(color?: string, includeButtonClass: boolean = false): ColorData {
+  const defaultColor: ColorData = {
     bgClass: 'bg-primary-500/20',
     borderClass: 'border-primary',
     textClass: 'text-primary!',
@@ -283,7 +283,7 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
       .replace(/^text-primary$/, 'text-primary-800!');
   }
 
-  const result: ColorClasses = {
+  const result: ColorData = {
     bgClass: colorOption.bgClass,
     borderClass: borderClass,
     textClass: textClass,
@@ -306,4 +306,8 @@ export function getColorClasses(color?: string, includeButtonClass: boolean = fa
   }
 
   return result;
+}
+
+export function getDefaultColor() {
+  return getColorData();
 }

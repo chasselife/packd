@@ -1,0 +1,22 @@
+<div class="flex justify-between items-center py-4 px-4 gap-3 border-b border-gray-200">
+  <ng-content select="[slot='left-buttons']" />
+  <ng-content select="[slot='title']">
+    <h1
+      [class]="
+        'text-lg sm:text-xl md:text-2xl flex gap-2 sm:gap-3 items-center flex-1 min-w-0 ' +
+        colorData().textClass
+      "
+    >
+      @if (icon()) {
+        <mat-icon
+          class="text-3xl sm:text-4xl md:text-5xl w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0"
+          >{{ icon() }}</mat-icon
+        >
+      }
+      @if (title()) {
+        <span class="truncate">{{ title() }}</span>
+      }
+    </h1>
+  </ng-content>
+  <ng-content select="[slot='right-buttons']" />
+</div>

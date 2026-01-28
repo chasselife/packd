@@ -103,3 +103,8 @@ mat-dialog-actions {
   padding: 8px 18px !important;
   margin: 0 !important;
 }
+
+
+.page-wrapper {
+  @apply max-w-6xl mx-auto flex flex-col min-h-dvh;
+}

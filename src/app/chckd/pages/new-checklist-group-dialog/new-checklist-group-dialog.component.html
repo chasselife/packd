@@ -1,44 +1,28 @@
-<div class="max-w-4xl mx-auto p-4 sm:p-6 pb-0 sm:pb-0 flex flex-col min-h-dvh">
-  @let selectedColorClasses = getSelectedColorClasses();
-  <div class="flex items-center gap-3 mb-4">
-    <button
-      mat-button
-      (click)="goBack()"
-      class="min-w-[unset]! w-auto! shrink-0"
-      aria-label="Go back"
-    >
-      <mat-icon [class]="'mr-0! text-2xl! w-6! h-6! ' + selectedColorClasses.textClass"
-        >arrow_back</mat-icon
-      >
-    </button>
-    <h2
-      [class]="
-        'text-lg! sm:text-xl! md:text-2xl! flex items-center gap-3 flex-1 ' +
-        selectedColorClasses.textClass
-      "
-    >
-      @if (isEditMode) {
-      <span>Edit Checklist Group</span>
-      } @else {
-      <span>Add Checklist Group</span>
-      }
-    </h2>
-  </div>
+<div class="page-wrapper">
+  @let colorData = getSelectedColorClasses();
+  <app-form-header
+    [colorData]="colorData"
+    [title]="isEditMode ? 'Edit Checklist Group' : 'Add Checklist Group'"
+  >
+    <app-back-button
+      slot="left-buttons"
+      (back)="goBack()"
+      [colorData]="colorData"
+    ></app-back-button>
+  </app-form-header>
 
-  <div class="flex-1 overflow-y-auto px-4">
+  <div class="flex-1 overflow-y-auto px-4 py-6">
     <form [formGroup]="form" class="flex flex-col w-full">
       <!-- Title Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">title</mat-icon>
+          <mat-icon [class]="'text-base! ' + colorData.textClass">title</mat-icon>
           Group Title
         </label>
         <mat-form-field
           appearance="outline"
           class="w-full"
-          [style.--mat-form-field-outlined-focus-outline-color]="
-            selectedColorClasses.textColorValue
-          "
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
         >
           <input
             matInput
@@ -47,7 +31,7 @@
             class="text-base"
           />
           @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
-          <mat-error>Title is required</mat-error>
+            <mat-error>Title is required</mat-error>
           }
         </mat-form-field>
       </div>
@@ -55,15 +39,13 @@
       <!-- Description Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">description</mat-icon>
+          <mat-icon [class]="'text-base! ' + colorData.textClass">description</mat-icon>
           Description
         </label>
         <mat-form-field
           appearance="outline"
           class="w-full"
-          [style.--mat-form-field-outlined-focus-outline-color]="
-            selectedColorClasses.textColorValue
-          "
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
         >
           <textarea
             matInput
@@ -75,57 +57,50 @@
         </mat-form-field>
       </div>
 
-      <!-- Icon and Color Selection in Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2">
-        <!-- Icon Field -->
-        <div class="space-y-2">
-          <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">palette</mat-icon>
-            Icon
-          </label>
-          <mat-form-field
-            appearance="outline"
-            class="w-full"
-            [style.--mat-form-field-outlined-focus-outline-color]="
-              selectedColorClasses.textColorValue
-            "
-          >
-            <mat-select formControlName="icon">
-              <mat-select-trigger>
-                @if (getSelectedIcon(); as selectedIcon) {
+      <!-- Icon Field -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <mat-icon [class]="'text-base! ' + colorData.textClass">palette</mat-icon>
+          Icon
+        </label>
+        <mat-form-field
+          appearance="outline"
+          class="w-full"
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
+        >
+          <mat-select formControlName="icon">
+            <mat-select-trigger>
+              @if (getSelectedIcon(); as selectedIcon) {
                 <div class="flex items-center gap-3 py-1">
-                  <mat-icon [class]="selectedColorClasses.textClass">{{
-                    selectedIcon.value
-                  }}</mat-icon>
+                  <mat-icon [class]="colorData.textClass">{{ selectedIcon.value }}</mat-icon>
                   <span class="font-medium">{{ selectedIcon.label }}</span>
                 </div>
-                }
-              </mat-select-trigger>
-              @for (icon of icons; track icon.value) {
+              }
+            </mat-select-trigger>
+            @for (icon of icons; track icon.value) {
               <mat-option [value]="icon.value">
                 <div class="flex items-center gap-3 py-1">
                   <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
                   <span>{{ icon.label }}</span>
                 </div>
               </mat-option>
-              }
-            </mat-select>
-            @if (form.get('icon')?.hasError('required') && form.get('icon')?.touched) {
-            <mat-error>Icon is required</mat-error>
             }
-          </mat-form-field>
-        </div>
+          </mat-select>
+          @if (form.get('icon')?.hasError('required') && form.get('icon')?.touched) {
+            <mat-error>Icon is required</mat-error>
+          }
+        </mat-form-field>
 
         <!-- Color Field -->
         <div class="space-y-2">
           <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <mat-icon [class]="'text-base! ' + selectedColorClasses.textClass">color_lens</mat-icon>
+            <mat-icon [class]="'text-base! ' + colorData.textClass">color_lens</mat-icon>
             Color Theme
           </label>
           <div class="w-full">
             <app-color-picker [colors]="colorOptions" formControlName="color"></app-color-picker>
             @if (form.get('color')?.hasError('required') && form.get('color')?.touched) {
-            <div class="text-xs text-red-600 mt-1 ml-1">Color is required</div>
+              <div class="text-xs text-red-600 mt-1 ml-1">Color is required</div>
             }
           </div>
         </div>
@@ -133,22 +108,27 @@
 
       <!-- Preview Section -->
       @if (form.get('title')?.value || form.get('icon')?.value || form.get('color')?.value) {
-      <div class="p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
-        <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
-        @let colorClasses = getSelectedColor(); @let defaultColorClasses = { bgClass:
-        'bg-primary-500/20', borderClass: 'border-primary', textClass: 'text-primary!' }; @let
-        previewColorClasses = colorClasses || defaultColorClasses;
-        <div class="w-40">
-          <app-checklist-tile
-            [item]="getPreviewGroup()"
-            [isEditMode]="false"
-            [isChecklist]="false"
-            [colorClasses]="previewColorClasses"
-            [showBorder]="true"
-            [defaultIcon]="'folder'"
-          />
+        <div class="p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+          <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
+          @let colorClasses = getSelectedColor();
+          @let defaultColorClasses =
+            {
+              bgClass: 'bg-primary-500/20',
+              borderClass: 'border-primary',
+              textClass: 'text-primary!',
+            };
+          @let previewColorClasses = colorClasses || defaultColorClasses;
+          <div class="w-40">
+            <app-checklist-tile
+              [item]="getPreviewGroup()"
+              [isEditMode]="false"
+              [isChecklist]="false"
+              [colorClasses]="previewColorClasses"
+              [showBorder]="true"
+              [defaultIcon]="'folder'"
+            />
+          </div>
         </div>
-      </div>
       }
     </form>
   </div>
@@ -167,7 +147,7 @@
         mat-raised-button
         (click)="isEditMode ? onSave() : onCreate()"
         [disabled]="!form.valid"
-        [style.background-color]="selectedColorClasses.textColorValue"
+        [style.background-color]="colorData.textColorValue"
         [style.color]="'white'"
         class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
       >

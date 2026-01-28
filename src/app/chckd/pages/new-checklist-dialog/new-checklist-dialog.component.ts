@@ -7,11 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { BackButton } from '../../../core/components/back-button/back-button';
 import { ColorPickerComponent } from '../../../core/components/color-picker/color-picker.component';
+import { FormHeader } from '../../../core/components/layout/form-header/form-header';
 import {
   COLOR_OPTIONS,
-  ColorClasses,
-  getColorClasses,
+  ColorData,
+  getColorData,
 } from '../../../core/constants/color-options.constant';
 import { CHECKLIST_ICON_OPTIONS } from '../../../core/constants/icon-options.constant';
 import { ChecklistGroup } from '../../models/checklist-group.model';
@@ -31,6 +33,8 @@ import { DatabaseService } from '../../services/database.service';
     MatButtonModule,
     MatIconModule,
     ColorPickerComponent,
+    FormHeader,
+    BackButton,
   ],
   templateUrl: './new-checklist-dialog.component.html',
 })
@@ -250,10 +254,10 @@ export class NewChecklistDialogComponent implements OnInit {
     }
   }
 
-  getGroupColorClasses(): ColorClasses {
+  getGroupColorClasses(): ColorData {
     // In edit mode, use the checklist's color; otherwise use the parent group's color
     const color = this.form?.value?.color ?? '#1d93c8';
-    return getColorClasses(color, false);
+    return getColorData(color, false);
   }
 
   getGroupColor(): string {

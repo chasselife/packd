@@ -1,146 +1,139 @@
-<div class="max-w-4xl mx-auto px-4 py-6">
-  <div class="flex items-center gap-2 sm:gap-3 w-full justify-center px-2 sm:px-4 mb-6">
-    <button
-      mat-button
-      (click)="goBack()"
-      class="min-w-[unset]! w-auto! shrink-0"
-      aria-label="Go back"
-    >
-      <mat-icon class="text-2xl! w-6! h-6! mr-0! text-primary!">arrow_back</mat-icon>
-    </button>
-    <h1 class="flex-1 text-lg sm:text-xl md:text-2xl font-semibold text-primary font-sans">
-      Export Checklists
-    </h1>
-  </div>
-  <div class="mb-6 px-2 sm:px-4">
-    <p class="text-gray-600">
+<div class="page-wrapper">
+  <app-form-header title="Export Checklists">
+    <app-back-button slot="left-buttons" (back)="goBack()"></app-back-button>
+  </app-form-header>
+
+  <div class="px-4 py-6">
+    <p class="text-gray-600 mb-6">
       Select which checklist groups and ungrouped checklists you want to export. All related
       checklists and items will be included in the export.
     </p>
-  </div>
 
-  @if (exportSuccess()) {
-  <mat-card #successMessage class="mb-6 bg-green-50 border border-green-200">
-    <mat-card-content>
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-2 text-green-700">
-          <mat-icon>check_circle</mat-icon>
-          <span>Export completed successfully!</span>
+    @if (exportSuccess()) {
+      <mat-card #successMessage class="mb-6 bg-green-50 border border-green-200">
+        <mat-card-content>
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-2 text-green-700">
+              <mat-icon>check_circle</mat-icon>
+              <span>Export completed successfully!</span>
+            </div>
+            <div class="flex justify-end">
+              <button mat-raised-button color="primary" (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon>
+                Back to lists
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @if (isLoading()) {
+      <mat-card>
+        <mat-card-content>
+          <div class="text-center py-8">
+            <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
+            <p class="text-gray-600">Loading checklists...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    } @else if (checklistGroups().length === 0 && ungroupedChecklists().length === 0) {
+      <mat-card>
+        <mat-card-content>
+          <div class="text-center py-8 text-gray-600">
+            <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!">
+              block
+            </mat-icon>
+            <p>No checklists or groups to export.</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 px-2">
+          <h2 class="text-lg font-semibold">
+            {{ getSelectedCount() }} of
+            {{ checklistGroups().length + ungroupedChecklists().length }} item(s) selected
+          </h2>
+          <div class="flex gap-2 mt-2 sm:mt-0 -ml-2 sm:ml-0">
+            <button mat-button (click)="selectAll()" class="text-sm">
+              <mat-icon class="text-lg!">select_all</mat-icon>
+              Select All
+            </button>
+            <button mat-button (click)="deselectAll()" class="text-sm">
+              <mat-icon class="text-lg!">remove_selection</mat-icon>
+              Deselect All
+            </button>
+          </div>
         </div>
-        <div class="flex justify-end">
-          <button mat-raised-button color="primary" (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-            Back to lists
-          </button>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  } @if (isLoading()) {
-  <mat-card>
-    <mat-card-content>
-      <div class="text-center py-8">
-        <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
-        <p class="text-gray-600">Loading checklists...</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  } @else if (checklistGroups().length === 0 && ungroupedChecklists().length === 0) {
-  <mat-card>
-    <mat-card-content>
-      <div class="text-center py-8 text-gray-600">
-        <mat-icon class="text-6xl! w-16! h-16! text-gray-300! mb-4! block! mx-auto!">
-          block
-        </mat-icon>
-        <p>No checklists or groups to export.</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  } @else {
-  <div class="mb-6">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 px-2">
-      <h2 class="text-lg font-semibold">
-        {{ getSelectedCount() }} of
-        {{ checklistGroups().length + ungroupedChecklists().length }} item(s) selected
-      </h2>
-      <div class="flex gap-2 mt-2 sm:mt-0 -ml-2 sm:ml-0">
-        <button mat-button (click)="selectAll()" class="text-sm">
-          <mat-icon class="text-lg!">select_all</mat-icon>
-          Select All
-        </button>
-        <button mat-button (click)="deselectAll()" class="text-sm">
-          <mat-icon class="text-lg!">remove_selection</mat-icon>
-          Deselect All
-        </button>
-      </div>
-    </div>
 
-    <!-- Checklist Groups -->
-    @if (checklistGroups().length > 0) {
-    <div class="mb-6">
-      <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Checklist Groups</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 py-6">
-        @for (group of checklistGroups(); track group.id) { @let colorClasses =
-        getColorClasses(group.color);
-        <app-checklist-tile
-          [item]="group"
-          [isEditMode]="false"
-          [isSelectMode]="true"
-          [isChecklist]="false"
-          [colorClasses]="colorClasses"
-          [showBorder]="true"
-          [defaultIcon]="'folder'"
-          [checklistCount]="getGroupChecklistCount(group.id)"
-          [isSelected]="isGroupSelected(group.id)"
-          (selectionChanged)="onGroupSelectionChanged($event)"
-        />
+        <!-- Checklist Groups -->
+        @if (checklistGroups().length > 0) {
+          <div class="mb-6">
+            <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Checklist Groups</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 py-6">
+              @for (group of checklistGroups(); track group.id) {
+                @let colorClasses = getColorClasses(group.color);
+                <app-checklist-tile
+                  [item]="group"
+                  [isEditMode]="false"
+                  [isSelectMode]="true"
+                  [isChecklist]="false"
+                  [colorClasses]="colorClasses"
+                  [showBorder]="true"
+                  [defaultIcon]="'folder'"
+                  [checklistCount]="getGroupChecklistCount(group.id)"
+                  [isSelected]="isGroupSelected(group.id)"
+                  (selectionChanged)="onGroupSelectionChanged($event)"
+                />
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Ungrouped Checklists -->
+        @if (ungroupedChecklists().length > 0) {
+          <div class="mb-6">
+            <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Ungrouped Checklists</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 py-6">
+              @for (checklist of ungroupedChecklists(); track checklist.id) {
+                @let colorClasses = getColorClasses(checklist.color);
+                <app-checklist-tile
+                  [item]="checklist"
+                  [isEditMode]="false"
+                  [isSelectMode]="true"
+                  [colorClasses]="colorClasses"
+                  [defaultIcon]="'checklist'"
+                  [isSelected]="isChecklistSelected(checklist.id)"
+                  (selectionChanged)="onChecklistSelectionChanged($event)"
+                />
+              }
+            </div>
+          </div>
         }
       </div>
-    </div>
-    }
 
-    <!-- Ungrouped Checklists -->
-    @if (ungroupedChecklists().length > 0) {
-    <div class="mb-6">
-      <h3 class="text-md font-medium mb-3 px-2 text-gray-700">Ungrouped Checklists</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 px-4 py-6">
-        @for (checklist of ungroupedChecklists(); track checklist.id) { @let colorClasses =
-        getColorClasses(checklist.color);
-        <app-checklist-tile
-          [item]="checklist"
-          [isEditMode]="false"
-          [isSelectMode]="true"
-          [colorClasses]="colorClasses"
-          [defaultIcon]="'checklist'"
-          [isSelected]="isChecklistSelected(checklist.id)"
-          (selectionChanged)="onChecklistSelectionChanged($event)"
-        />
-        }
+      <div class="flex gap-4 px-4 justify-end sticky bottom-0 bg-white py-4">
+        <button mat-raised-button (click)="goBack()">Back</button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="exportData()"
+          [disabled]="!hasSelection() || isExporting()"
+        >
+          <mat-icon>cloud_download</mat-icon>
+          Export {{ getSelectedCount() }} Item(s)
+        </button>
       </div>
-    </div>
+    }
+    @if (isExporting()) {
+      <mat-card class="mt-6">
+        <mat-card-content>
+          <div class="text-center py-8">
+            <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
+            <p class="text-gray-600">Exporting checklists...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
     }
   </div>
-
-  <div class="flex gap-4 px-4 justify-end sticky bottom-0 bg-white py-4">
-    <button mat-raised-button (click)="goBack()">Back</button>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="exportData()"
-      [disabled]="!hasSelection() || isExporting()"
-    >
-      <mat-icon>cloud_download</mat-icon>
-      Export {{ getSelectedCount() }} Item(s)
-    </button>
-  </div>
-  } @if (isExporting()) {
-  <mat-card class="mt-6">
-    <mat-card-content>
-      <div class="text-center py-8">
-        <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
-        <p class="text-gray-600">Exporting checklists...</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  }
 </div>

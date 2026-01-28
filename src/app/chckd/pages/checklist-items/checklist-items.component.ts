@@ -10,7 +10,10 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
-import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
+import { AddButton } from '../../../core/components/add-button/add-button';
+import { BackButton } from '../../../core/components/back-button/back-button';
+import { PageHeader } from '../../../core/components/layout/page-header/page-header';
+import { ColorData, getColorData } from '../../../core/constants/color-options.constant';
 import { ConfirmResetDialogComponent } from '../../components/confirm-reset-dialog/confirm-reset-dialog.component';
 import { Checklist, ChecklistItem } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
@@ -25,6 +28,9 @@ import { DatabaseService } from '../../services/database.service';
     MatButtonModule,
     MatDialogModule,
     DragDropModule,
+    PageHeader,
+    BackButton,
+    AddButton,
   ],
   templateUrl: './checklist-items.component.html',
 })
@@ -165,7 +171,7 @@ export class ChecklistItemsComponent {
       });
       // Update the local state
       this.checklistItems.update((items) =>
-        items.map((i) => (i.id === item.id ? { ...i, isDone: !i.isDone } : i))
+        items.map((i) => (i.id === item.id ? { ...i, isDone: !i.isDone } : i)),
       );
       this.applySorting();
     } catch (error) {
@@ -526,8 +532,8 @@ export class ChecklistItemsComponent {
     }, this.longPressDuration);
   }
 
-  getChecklistColorClasses(): ColorClasses {
-    return getColorClasses(this.checklist()?.color, true);
+  getChecklistColorData(): ColorData {
+    return getColorData(this.checklist()?.color, true);
   }
 
   getChecklistColor(): string {
@@ -535,7 +541,7 @@ export class ChecklistItemsComponent {
   }
 
   getTextColorClass(variant: 'default' | '600' | '900' = 'default'): string {
-    const colorClasses = this.getChecklistColorClasses();
+    const colorClasses = this.getChecklistColorData();
     let textClass = colorClasses.textClass;
 
     if (variant === '600') {

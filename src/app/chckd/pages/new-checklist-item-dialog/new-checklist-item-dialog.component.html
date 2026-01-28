@@ -1,50 +1,29 @@
-<div class="max-w-4xl mx-auto p-4 sm:p-6 pb-0 sm:pb-0 flex flex-col min-h-dvh">
-  @let checklistColorClasses = getChecklistColorClasses();
-  <div class="flex items-center gap-3 mb-4">
-    <button
-      mat-button
-      (click)="goBack()"
-      class="min-w-[unset]! w-auto! shrink-0"
-      aria-label="Go back"
-    >
-      <mat-icon [class]="'mr-0! text-2xl! w-6! h-6! ' + checklistColorClasses.textClass"
-        >arrow_back</mat-icon
-      >
-    </button>
-    <h2
-      [class]="
-        'text-lg! sm:text-xl! md:text-2xl! flex items-center gap-3 flex-1 ' +
-        checklistColorClasses.textClass
-      "
-    >
-      @if (isEditMode) {
-      <!-- <mat-icon class="text-primary">edit</mat-icon> -->
-      <span>Edit Item</span>
-      } @else {
-      <!-- <mat-icon class="text-primary">add_circle</mat-icon> -->
-      <span>Add Item</span>
-      }
-    </h2>
-  </div>
+<div class="page-wrapper">
+  @let colorData = getChecklistColorClasses();
+  <app-form-header [colorData]="colorData" [title]="isEditMode ? 'Edit Item' : 'Add Item'">
+    <app-back-button
+      slot="left-buttons"
+      (back)="goBack()"
+      [colorData]="colorData"
+    ></app-back-button>
+  </app-form-header>
 
-  <div class="flex-1 overflow-y-auto px-4">
+  <div class="flex-1 overflow-y-auto px-4 py-6">
     <form [formGroup]="form" class="flex flex-col w-full">
       <!-- Title Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + checklistColorClasses.textClass">title</mat-icon>
+          <mat-icon [class]="'text-base! ' + colorData.textClass">title</mat-icon>
           Item Title
         </label>
         <mat-form-field
           appearance="outline"
           class="w-full"
-          [style.--mat-form-field-outlined-focus-outline-color]="
-            checklistColorClasses.textColorValue
-          "
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
         >
           <input matInput formControlName="title" placeholder="Item name" class="text-base" />
           @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
-          <mat-error>Title is required</mat-error>
+            <mat-error>Title is required</mat-error>
           }
         </mat-form-field>
       </div>
@@ -52,9 +31,7 @@
       <!-- Sub-items Field -->
       <div class="space-y-2 mb-3">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + checklistColorClasses.textClass"
-            >page_menu_ios</mat-icon
-          >
+          <mat-icon [class]="'text-base! ' + colorData.textClass">page_menu_ios</mat-icon>
           Sub-items
           <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
         </label>
@@ -63,28 +40,28 @@
           #subItemsContainer
           class="w-full border border-gray-400 rounded p-3 min-h-[120px] bg-white has-[input:focus]:border-2"
           [style.border-color]="
-            isTagInputFocused ? checklistColorClasses.textColorValue : 'var(--color-gray-400)'
+            isTagInputFocused ? colorData.textColorValue : 'var(--color-gray-400)'
           "
         >
           <!-- Existing Tags -->
           @if (getSubItems().length > 0) {
-          <div class="flex flex-wrap gap-1.5 mb-2">
-            @for (tag of getSubItems(); track tag) {
-            <span
-              class="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-normal border border-gray-200"
-            >
-              <span>{{ tag }}</span>
-              <button
-                type="button"
-                (click)="removeTag(tag)"
-                class="ml-0.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
-                aria-label="Remove tag"
-              >
-                <mat-icon class="text-sm! w-4! h-4! text-gray-500">close</mat-icon>
-              </button>
-            </span>
-            }
-          </div>
+            <div class="flex flex-wrap gap-1.5 mb-2">
+              @for (tag of getSubItems(); track tag) {
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-normal border border-gray-200"
+                >
+                  <span>{{ tag }}</span>
+                  <button
+                    type="button"
+                    (click)="removeTag(tag)"
+                    class="ml-0.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
+                    aria-label="Remove tag"
+                  >
+                    <mat-icon class="text-sm! w-4! h-4! text-gray-500">close</mat-icon>
+                  </button>
+                </span>
+              }
+            </div>
           }
           <!-- Tag Input -->
           <input
@@ -98,27 +75,27 @@
             placeholder="Type a sub-item then press enter to add"
             class="w-full border-0 outline-none text-base bg-transparent placeholder-gray-500 placeholder:font-light"
           />
-          @if(newTagInput.length > 0) { @if (getSubItems().includes(newTagInput)) {
-          <p class="text-xs text-red-400 mt-1">Sub-item already exists</p>
-          } @else {
-          <p class="text-xs text-gray-500 mt-1">Press enter to add a sub-item</p>
-          } }
+          @if (newTagInput.length > 0) {
+            @if (getSubItems().includes(newTagInput)) {
+              <p class="text-xs text-red-400 mt-1">Sub-item already exists</p>
+            } @else {
+              <p class="text-xs text-gray-500 mt-1">Press enter to add a sub-item</p>
+            }
+          }
         </div>
       </div>
 
       <!-- Description Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + checklistColorClasses.textClass">description</mat-icon>
+          <mat-icon [class]="'text-base! ' + colorData.textClass">description</mat-icon>
           Description
           <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
         </label>
         <mat-form-field
           appearance="outline"
           class="w-full"
-          [style.--mat-form-field-outlined-focus-outline-color]="
-            checklistColorClasses.textColorValue
-          "
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
         >
           <textarea
             matInput
@@ -133,41 +110,37 @@
       <!-- Icon Field -->
       <div class="space-y-2">
         <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <mat-icon [class]="'text-base! ' + checklistColorClasses.textClass">palette</mat-icon>
+          <mat-icon [class]="'text-base! ' + colorData.textClass">palette</mat-icon>
           Icon
           <span class="text-xs font-normal text-gray-500 ml-1">(optional)</span>
         </label>
         <mat-form-field
           appearance="outline"
           class="w-full"
-          [style.--mat-form-field-outlined-focus-outline-color]="
-            checklistColorClasses.textColorValue
-          "
+          [style.--mat-form-field-outlined-focus-outline-color]="colorData.textColorValue"
         >
           <mat-select formControlName="icon">
             <mat-select-trigger>
               @if (getSelectedIcon(); as selectedIcon) {
-              <div class="flex items-center gap-3 py-1">
-                <mat-icon [class]="checklistColorClasses.textClass">{{
-                  selectedIcon.value
-                }}</mat-icon>
-                <span class="font-medium">{{ selectedIcon.label }}</span>
-              </div>
+                <div class="flex items-center gap-3 py-1">
+                  <mat-icon [class]="colorData.textClass">{{ selectedIcon.value }}</mat-icon>
+                  <span class="font-medium">{{ selectedIcon.label }}</span>
+                </div>
               } @else {
-              <span class="text-gray-400">None</span>
+                <span class="text-gray-400">None</span>
               }
             </mat-select-trigger>
             @for (icon of icons; track icon.value) {
-            <mat-option [value]="icon.value">
-              <div class="flex items-center gap-3 py-1">
-                @if (icon.value) {
-                <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
-                } @else {
-                <div class="w-6"></div>
-                }
-                <span>{{ icon.label }}</span>
-              </div>
-            </mat-option>
+              <mat-option [value]="icon.value">
+                <div class="flex items-center gap-3 py-1">
+                  @if (icon.value) {
+                    <mat-icon class="text-gray-600">{{ icon.value }}</mat-icon>
+                  } @else {
+                    <div class="w-6"></div>
+                  }
+                  <span>{{ icon.label }}</span>
+                </div>
+              </mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -175,37 +148,39 @@
 
       <!-- Preview Section -->
       @if (form.get('title')?.value || form.get('icon')?.value) {
-      <div class="p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
-        <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
-        <div
-          class="flex justify-between items-center border border-gray-200 bg-white rounded-xl p-4 shadow-sm"
-        >
-          <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
-            <div class="shrink-0 cursor-pointer">
-              <mat-icon class="text-2xl sm:text-3xl text-gray-400">radio_button_unchecked</mat-icon>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3
-                class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center text-base text-gray-900"
-              >
-                @if (getSelectedIcon(); as selectedIcon) {
-                <mat-icon class="align-middle shrink-0 text-lg sm:text-xl">{{
-                  selectedIcon.value
-                }}</mat-icon>
+        <div class="p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+          <p class="text-xs font-semibold text-gray-500 uppercase mb-4">Preview</p>
+          <div
+            class="flex justify-between items-center border border-gray-200 bg-white rounded-xl p-4 shadow-sm"
+          >
+            <div class="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
+              <div class="shrink-0 cursor-pointer">
+                <mat-icon class="text-2xl sm:text-3xl text-gray-400"
+                  >radio_button_unchecked</mat-icon
+                >
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="font-medium mb-1 flex gap-1.5 sm:gap-2 items-center text-base text-gray-900"
+                >
+                  @if (getSelectedIcon(); as selectedIcon) {
+                    <mat-icon class="align-middle shrink-0 text-lg sm:text-xl">{{
+                      selectedIcon.value
+                    }}</mat-icon>
+                  }
+                  <span class="truncate">{{ form.get('title')?.value || 'Item Title' }}</span>
+                </h3>
+                @if (form.get('description')?.value) {
+                  <p
+                    class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed line-clamp-2"
+                  >
+                    {{ form.get('description')?.value }}
+                  </p>
                 }
-                <span class="truncate">{{ form.get('title')?.value || 'Item Title' }}</span>
-              </h3>
-              @if (form.get('description')?.value) {
-              <p
-                class="text-sm m-0 mt-1 whitespace-pre-wrap text-gray-600 leading-relaxed line-clamp-2"
-              >
-                {{ form.get('description')?.value }}
-              </p>
-              }
+              </div>
             </div>
           </div>
         </div>
-      </div>
       }
     </form>
   </div>
@@ -224,7 +199,7 @@
         mat-raised-button
         (click)="onSave()"
         [disabled]="!form.valid"
-        [style.background-color]="checklistColorClasses.textColorValue"
+        [style.background-color]="colorData.textColorValue"
         [style.color]="'white'"
         class="px-6 py-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
       >

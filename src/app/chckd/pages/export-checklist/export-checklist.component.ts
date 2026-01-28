@@ -6,7 +6,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
-import { getColorClasses } from '../../../core/constants/color-options.constant';
+import { BackButton } from '../../../core/components/back-button/back-button';
+import { FormHeader } from '../../../core/components/layout/form-header/form-header';
+import { getColorData } from '../../../core/constants/color-options.constant';
 import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
 import { Checklist } from '../../models/checklist.model';
@@ -23,6 +25,8 @@ import { DatabaseService } from '../../services/database.service';
     MatCheckboxModule,
     MatProgressBarModule,
     ChecklistTileComponent,
+    BackButton,
+    FormHeader,
   ],
   templateUrl: './export-checklist.component.html',
 })
@@ -120,12 +124,12 @@ export class ExportChecklistComponent implements OnInit {
     const allGroupIds = new Set(
       this.checklistGroups()
         .map((g) => g.id)
-        .filter((id): id is number => id !== undefined)
+        .filter((id): id is number => id !== undefined),
     );
     const allChecklistIds = new Set(
       this.ungroupedChecklists()
         .map((c) => c.id)
-        .filter((id): id is number => id !== undefined)
+        .filter((id): id is number => id !== undefined),
     );
     this.selectedGroupIds.set(allGroupIds);
     this.selectedChecklistIds.set(allChecklistIds);
@@ -150,7 +154,7 @@ export class ExportChecklistComponent implements OnInit {
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
-    return getColorClasses(color, false);
+    return getColorData(color, false);
   }
 
   async exportData(): Promise<void> {
@@ -168,7 +172,7 @@ export class ExportChecklistComponent implements OnInit {
 
       // CSV Header - includes group information
       csvRows.push(
-        'Group ID,Group Title,Group Description,Group Icon,Group Color,Group Sort Order,Checklist ID,Checklist Title,Checklist Description,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order,Item Sub Items'
+        'Group ID,Group Title,Group Description,Group Icon,Group Color,Group Sort Order,Checklist ID,Checklist Title,Checklist Description,Checklist Icon,Checklist Color,Checklist Sort Order,Item ID,Item Title,Item Description,Item Is Done,Item Icon,Item Sort Order,Item Sub Items',
       );
 
       // Process selected groups and their checklists

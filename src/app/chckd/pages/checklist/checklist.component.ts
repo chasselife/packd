@@ -4,11 +4,13 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { AddButton } from '../../../core/components/add-button/add-button';
 import { FooterComponent } from '../../../core/components/footer/footer.component';
-import { getColorClasses } from '../../../core/constants/color-options.constant';
+import { PageHeader } from '../../../core/components/layout/page-header/page-header';
+import { Menu, MenuConfig } from '../../../core/components/menu/menu';
+import { getColorData } from '../../../core/constants/color-options.constant';
 import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
 import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ChecklistGroup } from '../../models/checklist-group.model';
@@ -28,11 +30,13 @@ type ChecklistItemWithType =
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    MatMenuModule,
     RouterModule,
     DragDropModule,
     FooterComponent,
     ChecklistTileComponent,
+    PageHeader,
+    AddButton,
+    Menu,
   ],
   templateUrl: './checklist.component.html',
   styles: [
@@ -118,6 +122,45 @@ export class ChecklistComponent implements OnInit, OnDestroy {
   private touchStartY = 0;
   private touchMoved = false;
 
+  menus: MenuConfig[] = [
+    {
+      label: 'Add Group',
+      icon: 'folder',
+      handler: () => this.openNewChecklistGroupDialog(),
+    },
+    {
+      label: 'Add Checklist',
+      icon: 'add',
+      handler: () => this.openNewChecklistDialog(),
+    },
+    {
+      label: 'Toggle Edit Mode',
+      icon: 'dashboard_2_edit',
+      handler: () => (this.isEditMode() ? this.deactivateEditMode() : this.activateEditMode()),
+    },
+    {
+      label: 'Toggle Batch Delete',
+      icon: 'check_box',
+      handler: () =>
+        this.isSelectMode() ? this.deactivateSelectMode() : this.activateSelectMode(),
+    },
+    {
+      label: 'Import Data',
+      icon: 'upload_file',
+      handler: () => this.openImportPage(),
+    },
+    {
+      label: 'Export Data',
+      icon: 'cloud_download',
+      handler: () => this.openExportPage(),
+    },
+    {
+      label: 'Search',
+      icon: 'search',
+      handler: () => this.openSearchPage(),
+    },
+  ];
+
   async ngOnInit(): Promise<void> {
     await this.seedDataService.seedInitialData();
     await this.loadData();
@@ -167,7 +210,7 @@ export class ChecklistComponent implements OnInit, OnDestroy {
       const ungroupedChecklists = await this.databaseService.getUngroupedChecklists();
       // Ensure all checklists have sortOrder (migration for existing data)
       const checklistsNeedingMigration = ungroupedChecklists.filter(
-        (c) => c.sortOrder === undefined
+        (c) => c.sortOrder === undefined,
       );
       if (checklistsNeedingMigration.length > 0) {
         // Migrate checklists without sortOrder
@@ -413,7 +456,7 @@ export class ChecklistComponent implements OnInit, OnDestroy {
         (c) =>
           c.sortOrder > originalSortOrder &&
           c.id !== newChecklistId &&
-          c.id !== originalChecklist.id
+          c.id !== originalChecklist.id,
       );
 
       for (const c of checklistsToShift) {
@@ -633,7 +676,7 @@ export class ChecklistComponent implements OnInit, OnDestroy {
 
       // Shift all groups after the original by 1 to make room
       const groupsToShift = allGroups.filter(
-        (g) => g.sortOrder > originalSortOrder && g.id !== newGroupId && g.id !== originalGroup.id
+        (g) => g.sortOrder > originalSortOrder && g.id !== newGroupId && g.id !== originalGroup.id,
       );
 
       for (const g of groupsToShift) {
@@ -714,7 +757,7 @@ export class ChecklistComponent implements OnInit, OnDestroy {
   }
 
   getColorClasses(color?: string): { bgClass: string; borderClass: string; textClass: string } {
-    return getColorClasses(color, false);
+    return getColorData(color, false);
   }
 
   isItemSelected(item: ChecklistItemWithType): boolean {
@@ -757,12 +800,12 @@ export class ChecklistComponent implements OnInit, OnDestroy {
     const allGroupIds = new Set(
       this.checklistGroups()
         .map((g) => g.id)
-        .filter((id): id is number => id !== undefined)
+        .filter((id): id is number => id !== undefined),
     );
     const allChecklistIds = new Set(
       this.checklists()
         .map((c) => c.id)
-        .filter((id): id is number => id !== undefined)
+        .filter((id): id is number => id !== undefined),
     );
     this.selectedGroupIds.set(allGroupIds);
     this.selectedChecklistIds.set(allChecklistIds);
@@ -785,10 +828,10 @@ export class ChecklistComponent implements OnInit, OnDestroy {
     if (totalCount === 0) return;
 
     const selectedChecklists = this.checklists().filter(
-      (c) => c.id && selectedChecklistIds.includes(c.id)
+      (c) => c.id && selectedChecklistIds.includes(c.id),
     );
     const selectedGroups = this.checklistGroups().filter(
-      (g) => g.id && selectedGroupIds.includes(g.id)
+      (g) => g.id && selectedGroupIds.includes(g.id),
     );
 
     let titleText = '';

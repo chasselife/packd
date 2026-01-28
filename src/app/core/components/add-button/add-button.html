@@ -1,0 +1,20 @@
+<button
+  mat-fab
+  (click)="add.emit()"
+  [class]="'shrink-0 sm:hidden! w-12! h-12! shadow-none! ' + colorData().bgClass"
+  [style.background-color]="colorData().textColorValue"
+  [style.color]="'white'"
+  aria-label="{{ label() }}"
+>
+  <mat-icon>{{ icon() }}</mat-icon>
+</button>
+<button
+  mat-raised-button
+  (click)="add.emit()"
+  [class]="'shrink-0 hidden! sm:inline-flex! ' + colorData().bgClass"
+  [style.background-color]="colorData().textColorValue"
+  [style.color]="'white'"
+>
+  <mat-icon>{{ icon() }}</mat-icon>
+  {{ label() }}
+</button>

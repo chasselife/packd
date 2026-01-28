@@ -7,11 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { BackButton } from '../../../core/components/back-button/back-button';
 import { ColorPickerComponent } from '../../../core/components/color-picker/color-picker.component';
+import { FormHeader } from '../../../core/components/layout/form-header/form-header';
 import {
   COLOR_OPTIONS,
-  ColorClasses,
-  getColorClasses,
+  ColorData,
+  getColorData,
 } from '../../../core/constants/color-options.constant';
 import { CHECKLIST_ICON_OPTIONS } from '../../../core/constants/icon-options.constant';
 import { ChecklistTileComponent } from '../../components/checklist-tile/checklist-tile.component';
@@ -32,6 +34,8 @@ import { DatabaseService } from '../../services/database.service';
     MatIconModule,
     ChecklistTileComponent,
     ColorPickerComponent,
+    FormHeader,
+    BackButton,
   ],
   templateUrl: './new-checklist-group-dialog.component.html',
 })
@@ -152,9 +156,9 @@ export class NewChecklistGroupDialogComponent implements OnInit {
     };
   }
 
-  getSelectedColorClasses(): ColorClasses {
+  getSelectedColorClasses(): ColorData {
     const selectedColor = this.form?.get('color')?.value;
-    return getColorClasses(selectedColor, false);
+    return getColorData(selectedColor, false);
   }
 
   getSelectedColorValue(): string {

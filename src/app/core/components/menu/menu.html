@@ -1,0 +1,11 @@
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu" class="ml-2 cursor-pointer">
+  <mat-icon>more_vert</mat-icon>
+</button>
+<mat-menu #menu="matMenu" class="mt-2">
+  @for (menu of menus(); track menu.label) {
+    <button mat-menu-item (click)="menu.handler()">
+      <mat-icon class="mr-2! text-gray-500!">{{ menu.icon }}</mat-icon>
+      <span class="pr-2">{{ menu.label }}</span>
+    </button>
+  }
+</mat-menu>

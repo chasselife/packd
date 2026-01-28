@@ -7,7 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ColorClasses, getColorClasses } from '../../../core/constants/color-options.constant';
+import { BackButton } from '../../../core/components/back-button/back-button';
+import { FormHeader } from '../../../core/components/layout/form-header/form-header';
+import { ColorData, getColorData } from '../../../core/constants/color-options.constant';
 import { CHECKLIST_ITEM_ICON_OPTIONS } from '../../../core/constants/icon-options.constant';
 import { Checklist } from '../../models/checklist.model';
 import { DatabaseService } from '../../services/database.service';
@@ -24,6 +26,8 @@ import { DatabaseService } from '../../services/database.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    FormHeader,
+    BackButton,
   ],
   templateUrl: './new-checklist-item-dialog.component.html',
 })
@@ -187,8 +191,8 @@ export class NewChecklistItemDialogComponent implements OnInit {
     }
   }
 
-  getChecklistColorClasses(): ColorClasses {
-    return getColorClasses(this.checklist?.color, false);
+  getChecklistColorClasses(): ColorData {
+    return getColorData(this.checklist?.color, false);
   }
 
   getChecklistColor(): string {
